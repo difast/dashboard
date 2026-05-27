@@ -694,6 +694,120 @@
             font-weight: 600;
         }
 
+        /* ===== Авторизация ===== */
+        #loginOverlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: white;
+            padding: 48px 40px;
+            border-radius: 20px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(239, 68, 68, 0.45);
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 10px;
+            min-height: 18px;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .save-status {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+            min-height: 14px;
+        }
+
         @media (max-width: 768px) {
             .charts-grid {
                 grid-template-columns: 1fr;
@@ -719,7 +833,21 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Экран авторизации -->
+    <div id="loginOverlay">
+        <div class="login-card">
+            <span class="login-icon">📊</span>
+            <div class="login-title">Бизнес Дашборд</div>
+            <div class="login-subtitle">Дмитрий Пятаков — введите пароль для доступа</div>
+            <input type="password" id="loginPassword" class="login-input"
+                   placeholder="Пароль"
+                   onkeydown="if(event.key==='Enter') login()">
+            <button class="login-btn" onclick="login()">Войти</button>
+            <div id="loginError" class="login-error"></div>
+        </div>
+    </div>
+
+    <div class="container" style="display: none;">
         <div class="header">
             <div>
                 <h1><span class="spinning-icon"></span>Бизнес Дашборт Дмитрия Пятакова</h1>
@@ -728,6 +856,10 @@
             <div class="month-selector">
                 <div class="month-header">Выбрать месяц</div>
                 <div class="month-buttons" id="monthButtons"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                <button class="logout-btn" onclick="logout()">Выйти →</button>
+                <div class="save-status" id="saveStatus"></div>
             </div>
         </div>
 
@@ -1200,6 +1332,141 @@
     </div>
 
     <script>
+        // ===== API / Авторизация =====
+        let isAuthenticated = false;
+        let saveTimer = null;
+
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/check');
+                const data = await res.json();
+                if (data.authenticated) {
+                    await loadFromServer();
+                    showDashboard();
+                } else {
+                    showLogin();
+                }
+            } catch (e) {
+                showLogin();
+            }
+        }
+
+        async function login() {
+            const password = document.getElementById('loginPassword').value;
+            document.getElementById('loginError').textContent = '';
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                if (res.ok) {
+                    await loadFromServer();
+                    showDashboard();
+                } else {
+                    const data = await res.json();
+                    document.getElementById('loginError').textContent = data.error || 'Неверный пароль';
+                }
+            } catch (e) {
+                document.getElementById('loginError').textContent = 'Ошибка соединения с сервером';
+            }
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            isAuthenticated = false;
+            monthlyData = {};
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').textContent = '';
+            showLogin();
+        }
+
+        function showLogin() {
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.querySelector('.container').style.display = 'none';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+            isAuthenticated = true;
+            initDashboard();
+        }
+
+        async function loadFromServer() {
+            const res = await fetch('/api/data');
+            if (res.ok) {
+                const data = await res.json();
+                monthlyData = deserializeMonthlyData(data);
+            }
+        }
+
+        function deserializeMonthlyData(data) {
+            const result = {};
+            for (const [key, md] of Object.entries(data)) {
+                result[key] = {
+                    ...md,
+                    expenses: (md.expenses || []).map(e => ({ ...e, date: new Date(e.date) })),
+                    projects: (md.projects || []).map(p => ({ ...p, date: new Date(p.date) })),
+                    goals: (md.goals || []).map(g => ({
+                        ...g,
+                        date: new Date(g.date),
+                        deadline: new Date(g.deadline)
+                    }))
+                };
+            }
+            return result;
+        }
+
+        function saveToServer() {
+            if (!isAuthenticated) return;
+            clearTimeout(saveTimer);
+            const statusEl = document.getElementById('saveStatus');
+            if (statusEl) statusEl.textContent = '...';
+            saveTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch('/api/data', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(monthlyData)
+                    });
+                    if (statusEl) {
+                        statusEl.textContent = res.ok ? 'Сохранено ✓' : 'Ошибка сохранения';
+                        setTimeout(() => { statusEl.textContent = ''; }, 2000);
+                    }
+                } catch (e) {
+                    if (statusEl) statusEl.textContent = 'Нет связи';
+                }
+            }, 800);
+        }
+
+        function loadMonthUI(monthKey) {
+            const data = monthlyData[monthKey];
+            if (!data) return;
+            const sp = data.schoolParams;
+            if (sp) {
+                document.getElementById('schoolPlan').value = sp.plan;
+                document.getElementById('schoolDone').value = sp.done;
+                document.getElementById('schoolLessonsPerWeek').value = sp.lessonsPerWeek;
+                document.getElementById('schoolPrice').value = sp.price;
+                document.getElementById('schoolRevenueTarget').value = sp.revenueTarget;
+            }
+            const pp = data.projectsParams;
+            if (pp) {
+                document.getElementById('projectsPlan').value = pp.plan;
+                document.getElementById('projectsAveragePlan').value = pp.averagePlan;
+            }
+        }
+
+        function initDashboard() {
+            initializeMonth(selectedMonth);
+            loadMonthUI(selectedMonth);
+            updateSchool();
+            updateProjectsPlan();
+            updateExpenses();
+        }
+
+        // ===== Данные =====
         const expenses = [];
         const projects = [];
         const goals = [];
@@ -1301,6 +1568,7 @@
 
             updateStats();
             updateGoals();
+            saveToServer();
         }
 
         function updateProjectsPlan() {
@@ -1312,8 +1580,9 @@
             // Сохраняем в monthData
             const monthData = getCurrentMonthData();
             monthData.projectsParams = { plan: planProjects, averagePlan: averagePlan };
-            
+
             updateProjects();
+            saveToServer();
         }
 
         function addProject() {
@@ -1338,6 +1607,7 @@
             document.getElementById('projectName').value = '';
             document.getElementById('projectCheck').value = '';
             updateProjects();
+            saveToServer();
         }
 
         function deleteProject(id) {
@@ -1346,6 +1616,7 @@
             if (index > -1) {
                 monthData.projects.splice(index, 1);
                 updateProjects();
+                saveToServer();
             }
         }
 
@@ -1424,6 +1695,7 @@
             document.getElementById('expenseName').value = '';
             document.getElementById('expenseAmount').value = '';
             updateExpenses();
+            saveToServer();
         }
 
         function deleteExpense(id) {
@@ -1432,6 +1704,7 @@
             if (index > -1) {
                 monthData.expenses.splice(index, 1);
                 updateExpenses();
+                saveToServer();
             }
         }
 
@@ -1507,6 +1780,7 @@
             document.getElementById('goalAmount').value = '';
             document.getElementById('goalDeadline').value = '';
             updateGoals();
+            saveToServer();
         }
 
         function deleteGoal(id) {
@@ -1515,6 +1789,7 @@
             if (index > -1) {
                 monthData.goals.splice(index, 1);
                 updateGoals();
+                saveToServer();
             }
         }
 
@@ -1524,6 +1799,7 @@
             if (goal) {
                 goal.completed = !goal.completed;
                 updateGoals();
+                saveToServer();
             }
         }
 
@@ -2076,11 +2352,11 @@
             btn.addEventListener('click', () => {
                 selectedMonth = monthKey;
                 initializeMonth(selectedMonth);
-                
-                // Обновляем активную кнопку
+
                 document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
+
+                loadMonthUI(selectedMonth);
                 updateSchool();
                 updateProjectsPlan();
                 updateExpenses();
@@ -2089,10 +2365,7 @@
             monthButtonsContainer.appendChild(btn);
         });
         
-        initializeMonth(selectedMonth);
-        updateSchool();
-        updateProjectsPlan();
-        updateExpenses();
+        checkAuth();
     </script>
 </body>
 </html>
