@@ -178,4 +178,33 @@ app.get('/api/bot/accounts',            requireAuth, (req, res) => botProxy(req,
 app.get('/api/bot/candles',             requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/portfolio/candles?${new URLSearchParams(req.query)}`));
 app.get('/api/bot/instruments/search',  requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/portfolio/instruments/search?${new URLSearchParams(req.query)}`))
 
+// Proxy: Crypto (Binance) bot — set CRYPTO_BOT_URL in Railway env vars
+const CRYPTO_URL = () => (process.env.CRYPTO_BOT_URL || '').replace(/\/$/, '');
+
+async function cryptoProxy(req, res, method, path, body) {
+    const base = CRYPTO_URL();
+    if (!base) return res.json({ _not_configured: true });
+    try {
+        const opts = { method, signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        const r = await fetch(`${base}${path}`, opts);
+        const data = await r.json();
+        res.status(r.ok ? 200 : r.status).json(data);
+    } catch (e) {
+        res.status(502).json({ error: 'Cannot reach crypto bot: ' + e.message });
+    }
+}
+
+app.get('/api/crypto/status',             requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  '/api/bot/status'));
+app.get('/api/crypto/config',             requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  '/api/bot/config'));
+app.post('/api/crypto/config',            requireAuth, (req, res) => cryptoProxy(req, res, 'POST', '/api/bot/config', req.body));
+app.post('/api/crypto/start',             requireAuth, (req, res) => cryptoProxy(req, res, 'POST', '/api/bot/start'));
+app.post('/api/crypto/stop',              requireAuth, (req, res) => cryptoProxy(req, res, 'POST', '/api/bot/stop'));
+app.get('/api/crypto/analytics/trades',   requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  `/api/analytics/trades?${new URLSearchParams(req.query)}`));
+app.get('/api/crypto/analytics/pnl',      requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  `/api/analytics/pnl?${new URLSearchParams(req.query)}`));
+app.get('/api/crypto/analytics/summary',  requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  '/api/analytics/summary'));
+app.get('/api/crypto/portfolio',          requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  '/api/portfolio/'));
+app.get('/api/crypto/candles',            requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  `/api/portfolio/candles?${new URLSearchParams(req.query)}`));
+app.get('/api/crypto/pairs/search',       requireAuth, (req, res) => cryptoProxy(req, res, 'GET',  `/api/portfolio/pairs/search?${new URLSearchParams(req.query)}`))
+
 app.listen(PORT, () => console.log(`Dashboard running on port ${PORT}${pgPool ? ' [PostgreSQL]' : ' [file storage]'}`));
