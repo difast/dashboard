@@ -205,6 +205,7 @@
         .input-field {
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .input-field label {
@@ -773,11 +774,22 @@
 
         /* ===== Красивый select ===== */
         .input-field select {
-            padding-right: 40px;
+            padding-right: 36px;
             appearance: none;
             -webkit-appearance: none;
-            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
+            background: #fff;
             cursor: pointer;
+        }
+        .input-field:has(select)::after {
+            content: '▾';
+            position: absolute;
+            right: 13px;
+            bottom: 2px;
+            height: 40px;
+            line-height: 40px;
+            color: var(--primary);
+            font-size: 20px;
+            pointer-events: none;
         }
 
         /* ===== Субвкладки Интегро ===== */
