@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бизнес Дашборт Дмитрия Пятакова</title>
+    <title>Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
@@ -116,25 +116,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .spinning-icon {
-            display: inline-block;
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 6px;
-            animation: spin 3s linear infinite;
-            margin-right: 4px;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
         }
 
         .header-date {
@@ -694,95 +675,79 @@
             font-weight: 600;
         }
 
-        /* ===== Авторизация ===== */
+        /* ===== Экран входа ===== */
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #ef4444;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            overflow: hidden;
+            flex-direction: column;
         }
 
-        .login-card {
-            background: white;
-            padding: 48px 40px;
-            border-radius: 20px;
-            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 400px;
+        /* Плавающие фигуры на экране входа */
+        .ls-shape {
+            position: absolute;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+        .ls-s1 { width: 130px; height: 130px; background: #dc2626; border-radius: 50%; opacity: .18; top: -40px; left: -30px; animation: lsFloat1 4.2s infinite ease-in-out, lsRotate 9s infinite linear; }
+        .ls-s2 { width: 85px;  height: 85px;  background: #991b1b; opacity: .22; top: 12%; left: 7%;  transform: rotate(45deg); animation: lsFloat2 5s   infinite ease-in-out; }
+        .ls-s3 { width: 55px;  height: 55px;  background: #f87171; border-radius: 50%; opacity: .25; top: 62%; left: 4%;  animation: lsFloat3 3.6s infinite ease-in-out; }
+        .ls-s4 { width: 150px; height: 150px; background: #b91c1c; border-radius: 28px; opacity: .15; bottom: -55px; left: 14%; animation: lsFloat1 6.5s infinite ease-in-out; }
+        .ls-s5 { width: 95px;  height: 95px;  background: #dc2626; border-radius: 50%; opacity: .2;  top: 8%;  right: 9%;  animation: lsFloat2 4.8s infinite ease-in-out; }
+        .ls-s6 { width: 52px;  height: 52px;  background: #991b1b; opacity: .22; top: 43%; right: 6%; transform: rotate(30deg); animation: lsFloat3 5.6s infinite ease-in-out; }
+        .ls-s7 { width: 110px; height: 110px; background: #c91c1c; border-radius: 20px; opacity: .18; bottom: -25px; right: -20px; animation: lsFloat1 7s   infinite ease-in-out, lsRotate 11s infinite linear; }
+        .ls-s8 { width: 42px;  height: 42px;  background: #fca5a5; border-radius: 50%; opacity: .3;  top: 74%; right: 22%; animation: lsFloat2 3.2s infinite ease-in-out; }
+        .ls-s9 { width: 68px;  height: 68px;  background: #b91c1c; opacity: .2;  top: 28%; left: 20%; transform: rotate(15deg); animation: lsFloat3 4.4s infinite ease-in-out; }
+        .ls-s10{ width: 38px;  height: 38px;  background: #f87171; border-radius: 50%; opacity: .25; top: 50%; left: 40%; animation: lsFloat1 2.8s infinite ease-in-out; }
+        .ls-s11{ width: 75px;  height: 75px;  background: #dc2626; border-radius: 12px; opacity: .16; bottom: 12%; left: 42%; animation: lsFloat2 6s   infinite ease-in-out; }
+        .ls-s12{ width: 48px;  height: 48px;  background: #fecaca; opacity: .2;  top: 20%; right: 28%; transform: rotate(60deg); animation: lsFloat3 3.9s infinite ease-in-out; }
+
+        @keyframes lsFloat1 { 0%,100% { transform: translateY(0);     } 50% { transform: translateY(-22px); } }
+        @keyframes lsFloat2 { 0%,100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(-16px) rotate(45deg); } }
+        @keyframes lsFloat3 { 0%,100% { transform: translateY(0) scale(1);   } 50% { transform: translateY(-26px) scale(1.08); } }
+        @keyframes lsRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .login-password-field {
+            position: relative;
+            z-index: 2;
+            width: 180px;
+            padding: 15px 24px;
+            border: 2.5px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 10px;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            font-family: monospace;
+        }
+        .login-password-field:focus {
+            width: 220px;
+            border-color: rgba(255, 255, 255, 0.65);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+        }
+        .login-error-msg {
+            position: relative;
+            z-index: 2;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            margin-top: 12px;
+            min-height: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
             text-align: center;
         }
 
-        .login-icon {
-            font-size: 56px;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .login-title {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 6px;
-        }
-
-        .login-subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 28px;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-size: 16px;
-            margin-bottom: 14px;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .login-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(239, 68, 68, 0.45);
-        }
-
-        .login-error {
-            color: var(--danger);
-            font-size: 13px;
-            margin-top: 10px;
-            min-height: 18px;
-            font-weight: 500;
-        }
-
+        /* ===== Кнопка выхода ===== */
         .logout-btn {
             padding: 8px 16px;
             border: 2px solid var(--border);
@@ -795,12 +760,10 @@
             transition: all 0.3s ease;
             white-space: nowrap;
         }
-
         .logout-btn:hover {
             border-color: var(--danger);
             color: var(--danger);
         }
-
         .save-status {
             font-size: 11px;
             color: var(--text-tertiary);
@@ -835,23 +798,28 @@
 <body>
     <!-- Экран авторизации -->
     <div id="loginOverlay">
-        <div class="login-card">
-            <span class="login-icon">📊</span>
-            <div class="login-title">Бизнес Дашборд</div>
-            <div class="login-subtitle">Дмитрий Пятаков — введите пароль для доступа</div>
-            <input type="password" id="loginPassword" class="login-input"
-                   placeholder="Пароль"
-                   onkeydown="if(event.key==='Enter') login()">
-            <button class="login-btn" onclick="login()">Войти</button>
-            <div id="loginError" class="login-error"></div>
-        </div>
+        <div class="ls-shape ls-s1"></div>
+        <div class="ls-shape ls-s2"></div>
+        <div class="ls-shape ls-s3"></div>
+        <div class="ls-shape ls-s4"></div>
+        <div class="ls-shape ls-s5"></div>
+        <div class="ls-shape ls-s6"></div>
+        <div class="ls-shape ls-s7"></div>
+        <div class="ls-shape ls-s8"></div>
+        <div class="ls-shape ls-s9"></div>
+        <div class="ls-shape ls-s10"></div>
+        <div class="ls-shape ls-s11"></div>
+        <div class="ls-shape ls-s12"></div>
+        <input type="password" id="loginPassword" class="login-password-field"
+               onkeydown="if(event.key==='Enter') login()">
+        <div id="loginError" class="login-error-msg"></div>
     </div>
 
     <div class="container" style="display: none;">
         <div class="header">
-            <div>
-                <h1><span class="spinning-icon"></span>Бизнес Дашборт Дмитрия Пятакова</h1>
-                <div class="header-date" id="currentDate"></div>
+            <div style="flex: 1; min-width: 180px; max-width: 520px;">
+                <canvas id="headerShapes" height="52" style="width: 100%; display: block; border-radius: 8px;"></canvas>
+                <div class="header-date" id="currentDate" style="margin-top: 8px;"></div>
             </div>
             <div class="month-selector">
                 <div class="month-header">Выбрать месяц</div>
@@ -1390,6 +1358,7 @@
             document.getElementById('loginOverlay').style.display = 'none';
             document.querySelector('.container').style.display = 'block';
             isAuthenticated = true;
+            initHeaderAnimation();
             initDashboard();
         }
 
@@ -1466,10 +1435,71 @@
             updateExpenses();
         }
 
+        // ===== Анимация заголовка =====
+        function initHeaderAnimation() {
+            const canvas = document.getElementById('headerShapes');
+            if (!canvas || !canvas.getContext) return;
+            canvas.width = canvas.offsetWidth || 400;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;
+            const H = canvas.height;
+
+            const colors = ['#ef4444','#dc2626','#b91c1c','#f87171','#fca5a5','#991b1b','#c91c1c'];
+            const types  = ['circle','square','triangle','diamond'];
+
+            const shapes = Array.from({ length: 14 }, (_, i) => ({
+                x:        (i / 13) * W * 0.92 + W * 0.04,
+                y:        H / 2,
+                size:     9 + Math.random() * 19,
+                speed:    0.4 + Math.random() * 1.4,
+                phase:    Math.random() * Math.PI * 2,
+                rot:      Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.06,
+                type:     types[Math.floor(Math.random() * types.length)],
+                color:    colors[Math.floor(Math.random() * colors.length)]
+            }));
+
+            let t = 0;
+
+            (function draw() {
+                ctx.clearRect(0, 0, W, H);
+                shapes.forEach(s => {
+                    const y = s.y + Math.sin(t * s.speed + s.phase) * (H * 0.28);
+                    s.rot += s.rotSpeed;
+                    const alpha = 0.65 + Math.sin(t * s.speed * 0.7 + s.phase) * 0.25;
+                    const r = s.size / 2;
+                    ctx.save();
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = s.color;
+                    ctx.shadowColor = s.color;
+                    ctx.shadowBlur = 5;
+                    ctx.translate(s.x, y);
+                    ctx.rotate(s.rot);
+                    switch (s.type) {
+                        case 'circle':
+                            ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); break;
+                        case 'square':
+                            ctx.fillRect(-r, -r, s.size, s.size); break;
+                        case 'triangle':
+                            ctx.beginPath();
+                            ctx.moveTo(0, -r);
+                            ctx.lineTo(r * 0.866, r * 0.5);
+                            ctx.lineTo(-r * 0.866, r * 0.5);
+                            ctx.closePath(); ctx.fill(); break;
+                        case 'diamond':
+                            ctx.beginPath();
+                            ctx.moveTo(0, -r); ctx.lineTo(r, 0);
+                            ctx.lineTo(0, r);  ctx.lineTo(-r, 0);
+                            ctx.closePath(); ctx.fill(); break;
+                    }
+                    ctx.restore();
+                });
+                t += 0.016;
+                requestAnimationFrame(draw);
+            })();
+        }
+
         // ===== Данные =====
-        const expenses = [];
-        const projects = [];
-        const goals = [];
         let charts = {};
         
         // Система хранения данных по месяцам
@@ -1484,23 +1514,12 @@
 
         function initializeMonth(monthKey) {
             if (!monthlyData[monthKey]) {
-                // Только июнь имеет данные по умолчанию, остальные месяцы пусты
-                const isJune = monthKey.endsWith('-06');
                 monthlyData[monthKey] = {
-                    expenses: isJune ? [] : [],
-                    projects: isJune ? [] : [],
-                    goals: isJune ? [] : [],
-                    schoolParams: {
-                        plan: isJune ? 20 : 0,
-                        done: isJune ? 15 : 0,
-                        lessonsPerWeek: isJune ? 2 : 0,
-                        price: isJune ? 500 : 0,
-                        revenueTarget: isJune ? 15000 : 0
-                    },
-                    projectsParams: {
-                        plan: isJune ? 5 : 0,
-                        averagePlan: isJune ? 15000 : 0
-                    }
+                    expenses: [],
+                    projects: [],
+                    goals: [],
+                    schoolParams: { plan: 0, done: 0, lessonsPerWeek: 0, price: 0, revenueTarget: 0 },
+                    projectsParams: { plan: 0, averagePlan: 0 }
                 };
             }
             return monthlyData[monthKey];
@@ -1708,19 +1727,31 @@
             }
         }
 
+        // ===== Хелперы расчёта выручки =====
+        function calcSchoolRevenue(monthKey) {
+            const md = monthlyData[monthKey];
+            if (!md || !md.schoolParams) return 0;
+            const sp = md.schoolParams;
+            return (sp.lessonsPerWeek || 0) * (sp.price || 0) * 4.3 * (sp.done || 0);
+        }
+
+        function calcProjectsRevenue(monthKey) {
+            const md = monthlyData[monthKey];
+            if (!md || !md.projects) return 0;
+            return md.projects
+                .filter(p => p.status === 'Завершено')
+                .reduce((sum, p) => sum + (p.check || 0), 0);
+        }
+
         function getMonthlyBalance() {
             const monthData = getCurrentMonthData();
-            
-            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
-            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
-            const totalIncome = schoolMonthly + projectsMonthly;
-
+            const schoolMonthly = calcSchoolRevenue(selectedMonth);
+            const projectsMonthly = calcProjectsRevenue(selectedMonth);
             const monthExpenses = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
-
             return {
-                income: totalIncome,
+                income: schoolMonthly + projectsMonthly,
                 expenses: monthExpenses,
-                balance: totalIncome - monthExpenses
+                balance: schoolMonthly + projectsMonthly - monthExpenses
             };
         }
 
@@ -1896,18 +1927,14 @@
 
         function updateStats() {
             const monthData = getCurrentMonthData();
-            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
-            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
-            const schoolDone = parseInt(document.getElementById('schoolDone').value) || 0;
-            const schoolPlan = parseInt(document.getElementById('schoolPlan').value) || 0;
+            const schoolMRR = calcSchoolRevenue(selectedMonth);
+            const projectsMRR = calcProjectsRevenue(selectedMonth);
+            const schoolDone = monthData.schoolParams ? (monthData.schoolParams.done || 0) : 0;
+            const schoolPlan = monthData.schoolParams ? (monthData.schoolParams.plan || 0) : 0;
             const projectsDone = monthData.projects.filter(p => p.status === 'Завершено').length;
-            const projectsPlan = parseInt(document.getElementById('projectsPlan').value) || 0;
+            const projectsPlan = monthData.projectsParams ? (monthData.projectsParams.plan || 0) : 0;
 
             const monthBalance = getMonthlyBalance();
-
-            // Расчет MRR (Monthly Recurring Revenue) - это просто месячная выручка
-            const schoolMRR = schoolMonthly;
-            const projectsMRR = projectsMonthly;
             const totalMRR = schoolMRR + projectsMRR;
 
             // Расчет ARR (Annual Recurring Revenue) - MRR × 12
@@ -1951,12 +1978,12 @@
 
         function initCharts() {
             const monthData = getCurrentMonthData();
-            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
-            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
-            const schoolDone = parseInt(document.getElementById('schoolDone').value) || 0;
-            const schoolPlan = parseInt(document.getElementById('schoolPlan').value) || 0;
+            const schoolMonthly = calcSchoolRevenue(selectedMonth);
+            const projectsMonthly = calcProjectsRevenue(selectedMonth);
+            const schoolDone = monthData.schoolParams ? (monthData.schoolParams.done || 0) : 0;
+            const schoolPlan = monthData.schoolParams ? (monthData.schoolParams.plan || 0) : 0;
             const projectsDone = monthData.projects.filter(p => p.status === 'Завершено').length;
-            const projectsPlan = parseInt(document.getElementById('projectsPlan').value) || 0;
+            const projectsPlan = monthData.projectsParams ? (monthData.projectsParams.plan || 0) : 0;
 
             if (charts.revenue) charts.revenue.destroy();
             if (charts.plan) charts.plan.destroy();
@@ -2167,33 +2194,17 @@
 
             // График выручки по месяцам
             const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart');
-            const months = ['Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-            const monthsKeys = ['06', '07', '08', '09', '10', '11', '12'];
+            const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+            const monthsKeys = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
             const currentYear = new Date().getFullYear();
-            
+
             const schoolMRRData = [];
             const projectsMRRData = [];
-            
+
             monthsKeys.forEach(monthNum => {
                 const monthKey = `${currentYear}-${monthNum}`;
-                const mData = monthlyData[monthKey] || initializeMonth(monthKey);
-                
-                // Школа MRR
-                const schoolPlan = mData.schoolParams.plan;
-                const schoolDone = mData.schoolParams.done;
-                const schoolLessonsPerWeek = mData.schoolParams.lessonsPerWeek;
-                const schoolPrice = mData.schoolParams.price;
-                
-                const weeklyPerStudent = schoolLessonsPerWeek * schoolPrice;
-                const monthlyPerStudent = weeklyPerStudent * 4.3;
-                const schoolMRR = monthlyPerStudent * schoolDone;
-                schoolMRRData.push(schoolMRR);
-                
-                // Проекты MRR
-                const projectsMRR = mData.projects
-                    .filter(p => p.status === 'Завершено')
-                    .reduce((sum, p) => sum + p.check, 0);
-                projectsMRRData.push(projectsMRR);
+                schoolMRRData.push(calcSchoolRevenue(monthKey));
+                projectsMRRData.push(calcProjectsRevenue(monthKey));
             });
 
             charts.monthlyRevenue = new Chart(monthlyRevenueCtx, {
@@ -2265,8 +2276,8 @@
             
             // Заголовок
             csv += '=== ДОХОД ===\n';
-            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
-            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
+            const schoolMonthly = calcSchoolRevenue(selectedMonth);
+            const projectsMonthly = calcProjectsRevenue(selectedMonth);
             csv += 'Школа MRR,' + formatCurrency(schoolMonthly) + '\n';
             csv += 'IT Проекты MRR,' + formatCurrency(projectsMonthly) + '\n';
             csv += 'Всего MRR,' + formatCurrency(schoolMonthly + projectsMonthly) + '\n\n';
