@@ -147,4 +147,35 @@ app.get('/api/1on1/stats', requireAuth, async (req, res) => {
     }
 });
 
+// Proxy: Trading bot — set TRADING_BOT_URL in Railway env vars
+const BOT_URL = () => (process.env.TRADING_BOT_URL || '').replace(/\/$/, '');
+
+async function botProxy(req, res, method, path, body) {
+    const base = BOT_URL();
+    if (!base) return res.json({ _not_configured: true });
+    try {
+        const opts = { method, signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        const r = await fetch(`${base}${path}`, opts);
+        const data = await r.json();
+        res.status(r.ok ? 200 : r.status).json(data);
+    } catch (e) {
+        res.status(502).json({ error: 'Cannot reach trading bot: ' + e.message });
+    }
+}
+
+app.get('/api/bot/status',              requireAuth, (req, res) => botProxy(req, res, 'GET', '/api/bot/status'));
+app.get('/api/bot/config',              requireAuth, (req, res) => botProxy(req, res, 'GET', '/api/bot/config'));
+app.post('/api/bot/config',             requireAuth, (req, res) => botProxy(req, res, 'POST', '/api/bot/config', req.body));
+app.post('/api/bot/start',              requireAuth, (req, res) => botProxy(req, res, 'POST', '/api/bot/start'));
+app.post('/api/bot/stop',               requireAuth, (req, res) => botProxy(req, res, 'POST', '/api/bot/stop'));
+app.get('/api/bot/strategies',          requireAuth, (req, res) => botProxy(req, res, 'GET', '/api/bot/strategies'));
+app.get('/api/bot/analytics/trades',    requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/analytics/trades?${new URLSearchParams(req.query)}`));
+app.get('/api/bot/analytics/pnl',       requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/analytics/pnl?${new URLSearchParams(req.query)}`));
+app.get('/api/bot/analytics/summary',   requireAuth, (req, res) => botProxy(req, res, 'GET', '/api/analytics/summary'));
+app.get('/api/bot/portfolio',           requireAuth, (req, res) => botProxy(req, res, 'GET', '/api/portfolio/'));
+app.get('/api/bot/accounts',            requireAuth, (req, res) => botProxy(req, res, 'GET', '/api/portfolio/accounts'));
+app.get('/api/bot/candles',             requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/portfolio/candles?${new URLSearchParams(req.query)}`));
+app.get('/api/bot/instruments/search',  requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/portfolio/instruments/search?${new URLSearchParams(req.query)}`))
+
 app.listen(PORT, () => console.log(`Dashboard running on port ${PORT}${pgPool ? ' [PostgreSQL]' : ' [file storage]'}`));

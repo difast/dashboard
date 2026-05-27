@@ -1454,11 +1454,206 @@
 
         <!-- ИНВЕСТИЦИИ -->
         <div id="investments" class="content">
-            <div class="section">
-                <h2 class="section-title">💎 Инвестиции</h2>
-                <p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">
-                    Раздел в разработке...
-                </p>
+            <!-- Sub-tabs -->
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="invTab('inv-overview', this)">📊 Обзор</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-trades', this)">📋 Сделки</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-portfolio', this)">💼 Портфель</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-pnl', this)">📈 P&amp;L</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-settings', this)">⚙️ Настройки</button>
+            </div>
+
+            <!-- ОБЗОР -->
+            <div id="inv-overview" class="sub-content active">
+                <div id="inv-not-configured" class="section" style="display:none;text-align:center;padding:40px 20px;">
+                    <div style="font-size:40px;margin-bottom:16px;">⚙️</div>
+                    <p style="color:var(--text-secondary);">Укажи <code style="background:var(--light);padding:2px 6px;border-radius:4px;">TRADING_BOT_URL</code> в Railway,<br>затем введи API-ключ Tinkoff в разделе Настройки.</p>
+                </div>
+                <div id="inv-main" style="display:none;">
+                    <!-- Controls -->
+                    <div class="section" style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="font-weight:600;font-size:15px;">Бот:</span>
+                            <button id="inv-toggle-btn" class="btn btn-primary" onclick="invToggleBot()" style="min-width:100px;">...</button>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:13px;color:var(--text-secondary);">Режим:</span>
+                            <select id="inv-mode-select" class="input-field" style="padding:6px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="invSaveConfig()">
+                                <option value="sandbox">Sandbox</option>
+                                <option value="live">Live</option>
+                            </select>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:13px;color:var(--text-secondary);">Стратегия:</span>
+                            <select id="inv-strategy-select" class="input-field" style="padding:6px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="invSaveConfig()">
+                                <option value="rsi">RSI</option>
+                                <option value="macd">MACD</option>
+                                <option value="bollinger">Bollinger Bands</option>
+                            </select>
+                        </div>
+                        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+                            <span id="inv-status-dot" style="width:10px;height:10px;border-radius:50%;background:#d1d5db;display:inline-block;"></span>
+                            <span id="inv-status-text" style="font-size:13px;color:var(--text-secondary);">—</span>
+                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="invLoadAll()">🔄</button>
+                        </div>
+                    </div>
+
+                    <!-- Summary cards -->
+                    <div class="stats-grid" id="inv-summary-cards" style="margin-bottom:24px;"></div>
+
+                    <!-- Candle chart -->
+                    <div class="section">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                            <h2 class="section-title" style="margin:0;">📉 График</h2>
+                            <select id="inv-chart-figi" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="invLoadCandles()">
+                                <option value="">Выбери инструмент</option>
+                            </select>
+                            <select id="inv-chart-interval" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="invLoadCandles()">
+                                <option value="1min">1 мин</option>
+                                <option value="5min">5 мин</option>
+                                <option value="15min">15 мин</option>
+                                <option value="1hour" selected>1 час</option>
+                                <option value="1day">День</option>
+                            </select>
+                        </div>
+                        <canvas id="inv-candle-chart" height="100"></canvas>
+                    </div>
+
+                    <!-- P&L chart (last 30 days) -->
+                    <div class="section">
+                        <h2 class="section-title">💹 P&amp;L (30 дней)</h2>
+                        <canvas id="inv-pnl-chart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- СДЕЛКИ -->
+            <div id="inv-trades" class="sub-content">
+                <div class="section">
+                    <h2 class="section-title">🔍 Поиск и фильтры</h2>
+                    <div class="input-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+                        <div class="input-field">
+                            <label>С даты</label>
+                            <input type="date" id="tr-from">
+                        </div>
+                        <div class="input-field">
+                            <label>По дату</label>
+                            <input type="date" id="tr-to">
+                        </div>
+                        <div class="input-field">
+                            <label>Инструмент</label>
+                            <input type="text" id="tr-instrument" placeholder="SBER, AAPL...">
+                        </div>
+                        <div class="input-field">
+                            <label>Направление</label>
+                            <select id="tr-direction">
+                                <option value="">Все</option>
+                                <option value="buy">Покупка</option>
+                                <option value="sell">Продажа</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label>Стратегия</label>
+                            <select id="tr-strategy">
+                                <option value="">Все</option>
+                                <option value="rsi">RSI</option>
+                                <option value="macd">MACD</option>
+                                <option value="bollinger">Bollinger</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label>Режим</label>
+                            <select id="tr-mode">
+                                <option value="">Все</option>
+                                <option value="sandbox">Sandbox</option>
+                                <option value="live">Live</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="invLoadTrades()" style="margin-top:8px;">🔍 Найти</button>
+                </div>
+                <div class="section">
+                    <div id="inv-trades-table"></div>
+                </div>
+            </div>
+
+            <!-- ПОРТФЕЛЬ -->
+            <div id="inv-portfolio" class="sub-content">
+                <div class="section">
+                    <h2 class="section-title">💼 Текущий портфель</h2>
+                    <div id="inv-portfolio-table"></div>
+                </div>
+            </div>
+
+            <!-- P&L -->
+            <div id="inv-pnl" class="sub-content">
+                <div class="section">
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+                        <h2 class="section-title" style="margin:0;">📈 P&amp;L по периодам</h2>
+                        <select id="pnl-period" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="invLoadPnl()">
+                            <option value="day">По дням (30 дн)</option>
+                            <option value="week">По неделям (12 нед)</option>
+                            <option value="month" selected>По месяцам (год)</option>
+                            <option value="custom">Произвольный период</option>
+                        </select>
+                        <span id="pnl-custom-range" style="display:none;gap:8px;align-items:center;">
+                            <input type="date" id="pnl-from" style="padding:6px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
+                            <span>—</span>
+                            <input type="date" id="pnl-to" style="padding:6px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
+                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="invLoadPnl()">OK</button>
+                        </span>
+                    </div>
+                    <div id="inv-pnl-total" style="font-size:22px;font-weight:700;margin-bottom:16px;"></div>
+                    <canvas id="inv-pnl-period-chart" height="100"></canvas>
+                    <div id="inv-pnl-table" style="margin-top:16px;"></div>
+                </div>
+            </div>
+
+            <!-- НАСТРОЙКИ -->
+            <div id="inv-settings" class="sub-content">
+                <div class="section">
+                    <h2 class="section-title">🔑 Tinkoff API</h2>
+                    <div class="input-grid" style="grid-template-columns:1fr;">
+                        <div class="input-field">
+                            <label>API Token (Tinkoff Invest)</label>
+                            <input type="password" id="inv-api-token" placeholder="Вставь токен из T-Invest...">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="invSaveToken()" style="margin-top:8px;">💾 Сохранить токен</button>
+                    <div id="inv-token-status" style="margin-top:8px;font-size:13px;"></div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🏦 Счёт</h2>
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <select id="inv-account-select" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;min-width:200px;">
+                            <option value="">Загрузка счетов...</option>
+                        </select>
+                        <button class="btn" onclick="invLoadAccounts()">🔄 Обновить</button>
+                        <button class="btn btn-primary" onclick="invSaveAccount()">✅ Выбрать</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📊 Параметры стратегий</h2>
+                    <div id="inv-strategy-params"></div>
+                    <button class="btn btn-primary" onclick="invSaveStrategyParams()" style="margin-top:12px;">💾 Сохранить параметры</button>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🔍 Поиск инструментов</h2>
+                    <div style="display:flex;gap:8px;margin-bottom:12px;">
+                        <input type="text" id="inv-search-input" placeholder="SBER, Apple, USD..." style="flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;" onkeydown="if(event.key==='Enter')invSearchInstruments()">
+                        <button class="btn btn-primary" onclick="invSearchInstruments()">🔍</button>
+                    </div>
+                    <div id="inv-search-results"></div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📡 Инструменты для торговли</h2>
+                    <div id="inv-instruments-list" style="margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+                    <p style="font-size:13px;color:var(--text-secondary);">Добавляй через поиск выше (кнопка +)</p>
+                </div>
             </div>
         </div>
 
@@ -1832,6 +2027,7 @@
             if (tabName === 'goals') updateGoals();
             if (tabName === 'notes') updateNotes();
             if (tabName === '1on1') load1on1Stats();
+            if (tabName === 'investments') invLoadAll();
         }
 
         function switchSubTab(subTabName, btn) {
@@ -2692,6 +2888,398 @@
         });
         
         checkAuth();
+
+        // ===== Investments / Trading Bot =====
+        let invCandleChart = null;
+        let invPnlChart = null;
+        let invPnlPeriodChart = null;
+        let invConfig = null;
+        let invStrategies = [];
+        let invInstruments = []; // list of FIGIs to trade
+
+        function invTab(id, btn) {
+            document.querySelectorAll('#investments .sub-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#investments .sub-tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (btn) btn.classList.add('active');
+            if (id === 'inv-trades') invLoadTrades();
+            if (id === 'inv-portfolio') invLoadPortfolio();
+            if (id === 'inv-pnl') invLoadPnl();
+            if (id === 'inv-settings') invLoadSettings();
+        }
+
+        async function invFetch(path, opts = {}) {
+            const res = await fetch(path, opts);
+            return res.json();
+        }
+
+        async function invLoadAll() {
+            const data = await invFetch('/api/bot/status');
+            if (data._not_configured) {
+                document.getElementById('inv-not-configured').style.display = 'block';
+                document.getElementById('inv-main').style.display = 'none';
+                return;
+            }
+            document.getElementById('inv-not-configured').style.display = 'none';
+            document.getElementById('inv-main').style.display = 'block';
+            invRenderStatus(data);
+
+            const cfg = await invFetch('/api/bot/config');
+            if (!cfg._not_configured) {
+                invConfig = cfg;
+                document.getElementById('inv-mode-select').value = cfg.mode || 'sandbox';
+                document.getElementById('inv-strategy-select').value = cfg.strategy || 'rsi';
+                invInstruments = cfg.instruments || [];
+            }
+
+            const [summary, strats] = await Promise.all([
+                invFetch('/api/bot/analytics/summary'),
+                invFetch('/api/bot/strategies'),
+            ]);
+            if (strats.strategies) invStrategies = strats.strategies;
+            invRenderSummaryCards(summary);
+            invPopulateChartSelect();
+            invLoadPnlMini();
+        }
+
+        function invRenderStatus(s) {
+            const dot  = document.getElementById('inv-status-dot');
+            const txt  = document.getElementById('inv-status-text');
+            const btn  = document.getElementById('inv-toggle-btn');
+            dot.style.background = s.active ? '#22c55e' : '#d1d5db';
+            txt.textContent = s.active
+                ? `Активен · ${s.strategy?.toUpperCase()} · ${s.mode} · ${s.uptime_sec ? Math.round(s.uptime_sec/60)+'мин' : ''}`
+                : `Остановлен · ${s.last_error ? '⚠️ ' + s.last_error.slice(0, 60) : s.mode}`;
+            btn.textContent = s.active ? '⏹ Стоп' : '▶ Старт';
+            btn.style.background = s.active ? '#ef4444' : '';
+        }
+
+        function invRenderSummaryCards(s) {
+            const fmt = v => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(2) + ' ₽';
+            const col = v => v == null ? '' : v > 0 ? 'color:#16a34a' : v < 0 ? 'color:var(--danger)' : '';
+            document.getElementById('inv-summary-cards').innerHTML = [
+                { icon: '🔄', label: 'Сделок всего',    value: s.total_trades ?? '—' },
+                { icon: '📅', label: 'Сегодня',          value: s.trades_today ?? 0 },
+                { icon: '📆', label: 'Неделя',           value: s.trades_week ?? 0 },
+                { icon: '💰', label: 'P&L сегодня',      value: fmt(s.pnl_today),   style: col(s.pnl_today) },
+                { icon: '📊', label: 'P&L неделя',       value: fmt(s.pnl_week),    style: col(s.pnl_week) },
+                { icon: '📈', label: 'P&L месяц',        value: fmt(s.pnl_month),   style: col(s.pnl_month) },
+                { icon: '💎', label: 'P&L всего',        value: fmt(s.pnl_total),   style: col(s.pnl_total) },
+            ].map(c => `<div class="stat-card">
+                <div style="font-size:26px;margin-bottom:6px;">${c.icon}</div>
+                <div class="stat-value" style="${c.style||''}">${c.value}</div>
+                <div class="stat-label">${c.label}</div>
+            </div>`).join('');
+        }
+
+        function invPopulateChartSelect() {
+            const sel = document.getElementById('inv-chart-figi');
+            sel.innerHTML = '<option value="">Выбери инструмент</option>' +
+                invInstruments.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+        }
+
+        async function invLoadCandles() {
+            const figi = document.getElementById('inv-chart-figi').value;
+            const interval = document.getElementById('inv-chart-interval').value;
+            if (!figi) return;
+            const data = await invFetch(`/api/bot/candles?figi=${encodeURIComponent(figi)}&interval=${interval}`);
+            if (!data.candles?.length) return;
+            const labels = data.candles.map(c => c.time.slice(5, 16).replace('T', ' '));
+            const closes = data.candles.map(c => c.close);
+            const ctx = document.getElementById('inv-candle-chart').getContext('2d');
+            if (invCandleChart) invCandleChart.destroy();
+            invCandleChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets: [{ label: figi, data: closes, borderColor: '#ef4444', borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(239,68,68,0.08)' }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 10 } } } },
+            });
+        }
+
+        async function invLoadPnlMini() {
+            const data = await invFetch('/api/bot/analytics/pnl?period=day');
+            if (!data.entries?.length) return;
+            const labels = data.entries.map(e => e.label);
+            const values = data.entries.map(e => e.pnl);
+            const ctx = document.getElementById('inv-pnl-chart').getContext('2d');
+            if (invPnlChart) invPnlChart.destroy();
+            invPnlChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets: [{ data: values, backgroundColor: values.map(v => v >= 0 ? '#22c55e' : '#ef4444') }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 15 } } } },
+            });
+        }
+
+        async function invToggleBot() {
+            const data = await invFetch('/api/bot/status');
+            const path = data.active ? '/api/bot/stop' : '/api/bot/start';
+            await invFetch(path, { method: 'POST' });
+            setTimeout(invLoadAll, 800);
+        }
+
+        async function invSaveConfig() {
+            const mode     = document.getElementById('inv-mode-select').value;
+            const strategy = document.getElementById('inv-strategy-select').value;
+            await invFetch('/api/bot/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode, strategy }),
+            });
+        }
+
+        // ---- Trades tab ----
+        async function invLoadTrades() {
+            const params = new URLSearchParams();
+            const v = id => document.getElementById(id)?.value;
+            if (v('tr-from'))       params.set('from_date', v('tr-from'));
+            if (v('tr-to'))         params.set('to_date',   v('tr-to'));
+            if (v('tr-instrument')) params.set('instrument', v('tr-instrument'));
+            if (v('tr-direction'))  params.set('direction',  v('tr-direction'));
+            if (v('tr-strategy'))   params.set('strategy',   v('tr-strategy'));
+            if (v('tr-mode'))       params.set('mode',       v('tr-mode'));
+            const data = await invFetch(`/api/bot/analytics/trades?${params}`);
+            const trades = Array.isArray(data) ? data : [];
+            const el = document.getElementById('inv-trades-table');
+            if (!trades.length) { el.innerHTML = '<p style="color:var(--text-secondary);padding:20px 0;">Сделки не найдены</p>'; return; }
+            el.innerHTML = `<div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="border-bottom:2px solid var(--border);">
+                    <th style="text-align:left;padding:8px;">Дата</th>
+                    <th style="padding:8px;">Инструмент</th>
+                    <th style="padding:8px;">Тип</th>
+                    <th style="padding:8px;">Кол-во</th>
+                    <th style="padding:8px;">Цена</th>
+                    <th style="padding:8px;">Сумма</th>
+                    <th style="padding:8px;">Стратегия</th>
+                    <th style="padding:8px;">Режим</th>
+                    <th style="padding:8px;">P&L</th>
+                </tr></thead>
+                <tbody>${trades.map(t => {
+                    const dir = t.direction === 'buy'
+                        ? '<span style="color:#16a34a;font-weight:600;">▲ BUY</span>'
+                        : '<span style="color:var(--danger);font-weight:600;">▼ SELL</span>';
+                    const pnl = t.pnl != null
+                        ? `<span style="color:${t.pnl>=0?'#16a34a':'var(--danger)'}">${t.pnl>=0?'+':''}${t.pnl.toFixed(2)}</span>`
+                        : '—';
+                    return `<tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px;white-space:nowrap;">${new Date(t.timestamp).toLocaleString('ru-RU')}</td>
+                        <td style="padding:8px;text-align:center;">${escapeHtml(t.instrument)}</td>
+                        <td style="padding:8px;text-align:center;">${dir}</td>
+                        <td style="padding:8px;text-align:center;">${t.quantity}</td>
+                        <td style="padding:8px;text-align:right;">${t.price.toFixed(2)}</td>
+                        <td style="padding:8px;text-align:right;">${t.total.toFixed(2)}</td>
+                        <td style="padding:8px;text-align:center;">${escapeHtml(t.strategy)}</td>
+                        <td style="padding:8px;text-align:center;">${escapeHtml(t.mode)}</td>
+                        <td style="padding:8px;text-align:right;">${pnl}</td>
+                    </tr>`;
+                }).join('')}</tbody></table></div>`;
+        }
+
+        // ---- Portfolio tab ----
+        async function invLoadPortfolio() {
+            const data = await invFetch('/api/bot/portfolio');
+            const positions = data.positions || [];
+            const el = document.getElementById('inv-portfolio-table');
+            if (!positions.length) { el.innerHTML = '<p style="color:var(--text-secondary);padding:20px 0;">Портфель пуст или недоступен</p>'; return; }
+            el.innerHTML = `<div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="border-bottom:2px solid var(--border);">
+                    <th style="text-align:left;padding:8px;">FIGI</th>
+                    <th style="padding:8px;">Кол-во</th>
+                    <th style="padding:8px;">Ср. цена</th>
+                    <th style="padding:8px;">Тек. цена</th>
+                    <th style="padding:8px;">Стоимость</th>
+                    <th style="padding:8px;">P&L</th>
+                    <th style="padding:8px;">P&L %</th>
+                </tr></thead>
+                <tbody>${positions.map(p => `
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px;font-weight:500;">${escapeHtml(p.figi)}</td>
+                        <td style="padding:8px;text-align:center;">${p.quantity}</td>
+                        <td style="padding:8px;text-align:right;">${p.avg_price.toFixed(2)}</td>
+                        <td style="padding:8px;text-align:right;">${p.current_price.toFixed(2)}</td>
+                        <td style="padding:8px;text-align:right;">${p.value.toFixed(2)}</td>
+                        <td style="padding:8px;text-align:right;color:${p.pnl>=0?'#16a34a':'var(--danger)'};">${p.pnl>=0?'+':''}${p.pnl.toFixed(2)}</td>
+                        <td style="padding:8px;text-align:right;color:${p.pnl_pct>=0?'#16a34a':'var(--danger)'};">${p.pnl_pct>=0?'+':''}${p.pnl_pct.toFixed(2)}%</td>
+                    </tr>`).join('')}
+                </tbody></table></div>`;
+        }
+
+        // ---- P&L tab ----
+        async function invLoadPnl() {
+            const period = document.getElementById('pnl-period')?.value || 'month';
+            const customRange = document.getElementById('pnl-custom-range');
+            if (customRange) customRange.style.display = period === 'custom' ? 'flex' : 'none';
+            const params = new URLSearchParams({ period });
+            if (period === 'custom') {
+                const f = document.getElementById('pnl-from')?.value;
+                const t = document.getElementById('pnl-to')?.value;
+                if (f) params.set('from_date', f);
+                if (t) params.set('to_date', t);
+            }
+            const data = await invFetch(`/api/bot/analytics/pnl?${params}`);
+            const entries = data.entries || [];
+            const total   = data.total_pnl || 0;
+            const totalEl = document.getElementById('inv-pnl-total');
+            totalEl.textContent = `Итог: ${total>=0?'+':''}${total.toFixed(2)} ₽`;
+            totalEl.style.color = total >= 0 ? '#16a34a' : 'var(--danger)';
+
+            if (entries.length) {
+                const ctx = document.getElementById('inv-pnl-period-chart').getContext('2d');
+                if (invPnlPeriodChart) invPnlPeriodChart.destroy();
+                invPnlPeriodChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: entries.map(e => e.label), datasets: [{ data: entries.map(e => e.pnl), backgroundColor: entries.map(e => e.pnl >= 0 ? '#22c55e' : '#ef4444') }] },
+                    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 20 } } } },
+                });
+            }
+
+            const tableEl = document.getElementById('inv-pnl-table');
+            tableEl.innerHTML = entries.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="border-bottom:2px solid var(--border);"><th style="text-align:left;padding:6px;">Период</th><th style="padding:6px;text-align:right;">P&L</th><th style="padding:6px;text-align:center;">Сделок</th></tr></thead>
+                <tbody>${entries.map(e => `<tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:6px;">${escapeHtml(e.label)}</td>
+                    <td style="padding:6px;text-align:right;color:${e.pnl>=0?'#16a34a':'var(--danger)'};">${e.pnl>=0?'+':''}${e.pnl.toFixed(2)} ₽</td>
+                    <td style="padding:6px;text-align:center;">${e.trades}</td>
+                </tr>`).join('')}</tbody></table>` : '<p style="color:var(--text-secondary);">Нет данных</p>';
+        }
+
+        // ---- Settings tab ----
+        async function invLoadSettings() {
+            if (!invConfig) {
+                const cfg = await invFetch('/api/bot/config');
+                if (!cfg._not_configured) invConfig = cfg;
+            }
+            if (invConfig) {
+                invInstruments = invConfig.instruments || [];
+                invRenderInstruments();
+                invRenderStrategyParams();
+            }
+            invLoadAccounts();
+        }
+
+        async function invSaveToken() {
+            const token = document.getElementById('inv-api-token').value.trim();
+            if (!token) return;
+            await invFetch('/api/bot/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ api_token: token }),
+            });
+            document.getElementById('inv-api-token').value = '';
+            document.getElementById('inv-token-status').textContent = '✅ Токен сохранён';
+            setTimeout(() => { document.getElementById('inv-token-status').textContent = ''; }, 3000);
+            invLoadAccounts();
+        }
+
+        async function invLoadAccounts() {
+            const data = await invFetch('/api/bot/accounts');
+            const sel = document.getElementById('inv-account-select');
+            if (!sel) return;
+            if (data.accounts?.length) {
+                sel.innerHTML = data.accounts.map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name || a.id)}</option>`).join('');
+                if (invConfig?.account_id) sel.value = invConfig.account_id;
+            } else {
+                sel.innerHTML = `<option value="">${data.error || 'Нет счетов'}</option>`;
+            }
+        }
+
+        async function invSaveAccount() {
+            const sel = document.getElementById('inv-account-select');
+            if (!sel?.value) return;
+            await invFetch('/api/bot/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account_id: sel.value }),
+            });
+        }
+
+        function invRenderStrategyParams() {
+            if (!invConfig) return;
+            const el = document.getElementById('inv-strategy-params');
+            const params = invConfig.strategy_params || {};
+            const labels = { period: 'Период', overbought: 'Перекупленность', oversold: 'Перепроданность', quantity: 'Кол-во лотов', fast: 'Быстрая', slow: 'Медленная', signal: 'Сигнал', std_dev: 'Отклонение σ' };
+            el.innerHTML = Object.entries(params).map(([strat, p]) => `
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600;margin-bottom:8px;text-transform:uppercase;font-size:13px;">${escapeHtml(strat)}</div>
+                    <div class="input-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">
+                        ${Object.entries(p).map(([k, v]) => `
+                            <div class="input-field">
+                                <label>${escapeHtml(labels[k] || k)}</label>
+                                <input type="number" step="any" id="sp-${strat}-${k}" value="${v}">
+                            </div>`).join('')}
+                    </div>
+                </div>`).join('');
+        }
+
+        async function invSaveStrategyParams() {
+            if (!invConfig) return;
+            const params = {};
+            Object.entries(invConfig.strategy_params || {}).forEach(([strat, p]) => {
+                params[strat] = {};
+                Object.keys(p).forEach(k => {
+                    const el = document.getElementById(`sp-${strat}-${k}`);
+                    if (el) params[strat][k] = parseFloat(el.value) || 0;
+                });
+            });
+            await invFetch('/api/bot/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ strategy_params: params }),
+            });
+        }
+
+        async function invSearchInstruments() {
+            const q = document.getElementById('inv-search-input').value.trim();
+            if (!q) return;
+            const data = await invFetch(`/api/bot/instruments/search?q=${encodeURIComponent(q)}`);
+            const el = document.getElementById('inv-search-results');
+            if (!data.instruments?.length) { el.innerHTML = '<p style="color:var(--text-secondary);">Ничего не найдено</p>'; return; }
+            el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="border-bottom:2px solid var(--border);"><th style="text-align:left;padding:6px;">Тикер</th><th style="text-align:left;padding:6px;">Название</th><th style="padding:6px;">Тип</th><th style="padding:6px;"></th></tr></thead>
+                <tbody>${data.instruments.map(i => `
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:6px;font-weight:600;">${escapeHtml(i.ticker)}</td>
+                        <td style="padding:6px;">${escapeHtml(i.name)}</td>
+                        <td style="padding:6px;text-align:center;color:var(--text-secondary);">${escapeHtml(i.instrument_type)}</td>
+                        <td style="padding:6px;text-align:center;"><button class="btn" style="padding:4px 10px;font-size:12px;" onclick="invAddInstrument('${escapeHtml(i.figi)}','${escapeHtml(i.ticker)}')">+</button></td>
+                    </tr>`).join('')}
+                </tbody></table>`;
+        }
+
+        async function invAddInstrument(figi, ticker) {
+            if (!invInstruments.includes(figi)) {
+                invInstruments.push(figi);
+                await invFetch('/api/bot/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ instruments: invInstruments }),
+                });
+                invRenderInstruments();
+                invPopulateChartSelect();
+            }
+        }
+
+        async function invRemoveInstrument(figi) {
+            invInstruments = invInstruments.filter(f => f !== figi);
+            await invFetch('/api/bot/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ instruments: invInstruments }),
+            });
+            invRenderInstruments();
+            invPopulateChartSelect();
+        }
+
+        function invRenderInstruments() {
+            const el = document.getElementById('inv-instruments-list');
+            if (!el) return;
+            el.innerHTML = invInstruments.length
+                ? invInstruments.map(f => `<span style="background:var(--light);border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:13px;display:flex;align-items:center;gap:6px;">
+                    ${escapeHtml(f)}
+                    <button onclick="invRemoveInstrument('${escapeHtml(f)}')" style="border:none;background:none;cursor:pointer;color:var(--danger);font-size:14px;padding:0;line-height:1;">×</button>
+                  </span>`).join('')
+                : '<span style="color:var(--text-secondary);font-size:13px;">Инструменты не добавлены</span>';
+        }
 
         // ===== 1on1 статистика =====
         let oo1Loaded = false;
