@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бизнес Дашборт Дмитрия Пятакова</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ef4444;
+            --secondary: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #991b1b;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f3f4f6;
+            --lighter: #ffffff;
+            --border: #e5e7eb;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--lighter);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .month-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 250px;
+        }
+
+        .month-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .month-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .month-btn {
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            background: var(--lighter);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .month-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .month-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-color: var(--secondary);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .month-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: var(--light);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spinning-icon {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 6px;
+            animation: spin 3s linear infinite;
+            margin-right: 4px;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .header-date {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--lighter);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background: var(--light);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            background: var(--lighter);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field input,
+        .input-field select {
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .input-field input:focus,
+        .input-field select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-subtext {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            padding: 1.5rem;
+            background: var(--lighter);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        .summary-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .chart-container {
+            background: var(--lighter);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .expenses-section {
+            background: var(--lighter);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        .expense-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #7f1d1d;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .expenses-list,
+        .projects-list,
+        .goals-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .expense-item,
+        .project-item,
+        .goal-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .expense-item:hover,
+        .project-item:hover,
+        .goal-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(4px);
+        }
+
+        .expense-info,
+        .project-info,
+        .goal-info {
+            flex: 1;
+        }
+
+        .expense-name,
+        .project-name,
+        .goal-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .expense-category,
+        .project-details,
+        .goal-details {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .project-details {
+            display: flex;
+            gap: 15px;
+        }
+
+        .goal-details {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+
+        .expense-amount,
+        .project-check {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 20px;
+        }
+
+        .goal-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 20px;
+        }
+
+        .project-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-in-progress {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .stats-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .comparison-card {
+            background: var(--lighter);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .comparison-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .comparison-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .comparison-label {
+            color: var(--text-secondary);
+        }
+
+        .comparison-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-good {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-bad {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Стили для целей */
+        .goal-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .goal-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .goal-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .goal-deadline {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .goal-progress-section {
+            margin: 15px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .progress-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .goal-progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success) 0%, #10b981 100%);
+            border-radius: 6px;
+            transition: width 0.4s ease;
+            position: relative;
+        }
+
+        .goal-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .goal-saved {
+            font-size: 12px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .goal-card {
+                padding: 15px;
+            }
+
+            .goal-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1><span class="spinning-icon"></span>Бизнес Дашборт Дмитрия Пятакова</h1>
+                <div class="header-date" id="currentDate"></div>
+            </div>
+            <div class="month-selector">
+                <div class="month-header">Выбрать месяц</div>
+                <div class="month-buttons" id="monthButtons"></div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('school')">🎓 Школа</button>
+            <button class="tab-btn" onclick="switchTab('projects')">💻 IT Проекты</button>
+            <button class="tab-btn" onclick="switchTab('expenses')">💰 Расходы</button>
+            <button class="tab-btn" onclick="switchTab('goals')">🎯 Цели</button>
+            <button class="tab-btn" onclick="switchTab('stats')">📈 Статистика</button>
+            <button class="tab-btn" onclick="switchTab('calvix')">🚀 Calvix</button>
+            <button class="tab-btn" onclick="switchTab('1on1')">👥 1on1</button>
+            <button class="tab-btn" onclick="switchTab('investments')">💎 Инвестиции</button>
+        </div>
+
+        <!-- ШКОЛА -->
+        <div id="school" class="content active">
+            <div class="section">
+                <h2 class="section-title">⚙️ Параметры школы</h2>
+                <div class="input-grid">
+                    <div class="input-field">
+                        <label>План учеников</label>
+                        <input type="number" id="schoolPlan" value="20" onchange="updateSchool()">
+                    </div>
+                    <div class="input-field">
+                        <label>Выполнено учеников</label>
+                        <input type="number" id="schoolDone" value="15" onchange="updateSchool()">
+                    </div>
+                    <div class="input-field">
+                        <label>Занятий в неделю</label>
+                        <input type="number" id="schoolLessonsPerWeek" value="2" step="0.5" onchange="updateSchool()">
+                    </div>
+                    <div class="input-field">
+                        <label>Цена за занятие</label>
+                        <input type="number" id="schoolPrice" value="500" onchange="updateSchool()">
+                    </div>
+                    <div class="input-field">
+                        <label>План выручки в месяц</label>
+                        <input type="number" id="schoolRevenueTarget" value="15000" onchange="updateSchool()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📊 Показатели</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">План / Выполнено</div>
+                        <div class="stat-value" id="schoolPlanValue">20</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="schoolPlanProgress" style="width: 75%;"></div>
+                        </div>
+                        <div class="stat-subtext" id="schoolDoneText">Выполнено: 15 (75%)</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Выручка за одного в неделю</div>
+                        <div class="stat-value" id="schoolWeekly">1 000 ₽</div>
+                        <div class="stat-subtext">2 занятия × 500 ₽</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Выручка за одного в месяц</div>
+                        <div class="stat-value" id="schoolMonthly">4 300 ₽</div>
+                        <div class="stat-subtext">За 4.3 недели</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Общая выручка в месяц</div>
+                        <div class="stat-value" id="schoolTotal">64 500 ₽</div>
+                        <div class="stat-subtext" id="schoolStatus"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Выполнение плана учеников</div>
+                    <div class="summary-value" id="schoolStudentPercent">75%</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Выполнение плана выручки</div>
+                    <div class="summary-value" id="schoolRevenuePercent">430%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IT ПРОЕКТЫ -->
+        <div id="projects" class="content">
+            <div class="section">
+                <h2 class="section-title">⚙️ Плановые показатели</h2>
+                <div class="input-grid">
+                    <div class="input-field">
+                        <label>План проектов</label>
+                        <input type="number" id="projectsPlan" value="5" onchange="updateProjectsPlan()">
+                    </div>
+                    <div class="input-field">
+                        <label>Средний чек (план)</label>
+                        <input type="number" id="projectsAveragePlan" value="15000" onchange="updateProjectsPlan()">
+                    </div>
+                    <div class="input-field">
+                        <label>План выручки в месяц (₽)</label>
+                        <input type="number" id="projectsRevenueTarget" value="75000" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">➕ Добавить новый проект</h2>
+                <div class="input-grid">
+                    <div class="input-field">
+                        <label>Название проекта</label>
+                        <input type="text" id="projectName" placeholder="Например: Веб-сайт для клиента">
+                    </div>
+                    <div class="input-field">
+                        <label>Средний чек (₽)</label>
+                        <input type="number" id="projectCheck" placeholder="15000">
+                    </div>
+                    <div class="input-field">
+                        <label>Статус</label>
+                        <select id="projectStatus">
+                            <option>В процессе</option>
+                            <option>Завершено</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addProject()">➕ Добавить проект</button>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📋 Список проектов</h2>
+                <div id="projectsList" class="projects-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>Проектов нет. Добавьте первый проект выше</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📊 Показатели</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">План / Выполнено</div>
+                        <div class="stat-value" id="projectsPlanValue">0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="projectsPlanProgress" style="width: 0%;"></div>
+                        </div>
+                        <div class="stat-subtext" id="projectsDoneText">Выполнено: 0 (0%)</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Средняя цена проекта</div>
+                        <div class="stat-value" id="projectsAverageValue">0 ₽</div>
+                        <div class="stat-subtext">Фактическая</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Общая выручка в месяц</div>
+                        <div class="stat-value" id="projectsTotal">0 ₽</div>
+                        <div class="stat-subtext" id="projectsStatus"></div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Выполнение плана выручки</div>
+                        <div class="stat-value" id="projectsRevenuePercent">0%</div>
+                        <div class="stat-subtext">от целевого плана</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Выполнение плана проектов</div>
+                    <div class="summary-value" id="projectsCompletionPercent">0%</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Выполнение плана выручки</div>
+                    <div class="summary-value" id="projectsRevenuePercentSummary">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- РАСХОДЫ -->
+        <div id="expenses" class="content">
+            <div class="expenses-section">
+                <h2 class="section-title">💸 Управление расходами</h2>
+                <div class="expense-controls">
+                    <div class="input-field">
+                        <label>Название расхода</label>
+                        <input type="text" id="expenseName" placeholder="Например: оплата сервера">
+                    </div>
+                    <div class="input-field">
+                        <label>Сумма (₽)</label>
+                        <input type="number" id="expenseAmount" placeholder="0">
+                    </div>
+                    <div class="input-field">
+                        <label>Категория</label>
+                        <select id="expenseCategory">
+                            <option>Зарплата</option>
+                            <option>Маркетинг</option>
+                            <option>Оборудование</option>
+                            <option>Интернет/Сервис</option>
+                            <option>Прочее</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addExpense()">➕ Добавить расход</button>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📋 История расходов</h2>
+                <div class="expenses-list" id="expensesList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>Расходов нет. Добавьте первый расход выше</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Всего расходов</div>
+                    <div class="summary-value" id="totalExpenses">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Расходы за месяц</div>
+                    <div class="summary-value" id="monthExpenses">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Чистая прибыль</div>
+                    <div class="summary-value" id="totalProfit">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Средний расход</div>
+                    <div class="summary-value" id="avgExpense">0 ₽</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЦЕЛИ -->
+        <div id="goals" class="content">
+            <div class="expenses-section">
+                <h2 class="section-title">🎯 Добавить новую цель</h2>
+                <div class="expense-controls">
+                    <div class="input-field">
+                        <label>Название цели</label>
+                        <input type="text" id="goalName" placeholder="Например: Новый ноутбук">
+                    </div>
+                    <div class="input-field">
+                        <label>Стоимость (₽)</label>
+                        <input type="number" id="goalAmount" placeholder="0">
+                    </div>
+                    <div class="input-field">
+                        <label>Дедлайн</label>
+                        <input type="date" id="goalDeadline">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addGoal()">➕ Добавить цель</button>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📋 Мои цели</h2>
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-label">Остаток (Доход - Расходы)</div>
+                        <div class="stat-value" id="availableBalance">0 ₽</div>
+                        <div class="stat-subtext">Доступно для целей</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Всего целей</div>
+                        <div class="stat-value" id="totalGoalsAmount">0 ₽</div>
+                        <div class="stat-subtext">Сумма всех целей</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Накоплено</div>
+                        <div class="stat-value" id="totalSavedAmount">0 ₽</div>
+                        <div class="stat-subtext">Сумма накопленных целей</div>
+                    </div>
+                </div>
+                <div id="goalsList" class="goals-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎯</div>
+                        <div>Целей нет. Добавьте первую цель выше</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СТАТИСТИКА -->
+        <div id="stats" class="content">
+            <div class="section">
+                <h2 class="section-title">📊 Динамика выручки</h2>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">📈 Выручка по направлениям</div>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">📊 План vs Выполнено</div>
+                        <canvas id="planChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">💹 Выручка по месяцам</h2>
+                <div class="charts-grid">
+                    <div class="chart-container" style="grid-column: 1 / -1;">
+                        <div class="chart-title">📈 MRR по месяцам (Школа и IT Проекты)</div>
+                        <canvas id="monthlyRevenueChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">💹 Категории расходов и Финансы</h2>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">💸 Распределение расходов</div>
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">💰 Доход vs Расходы</div>
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📈 Метрики по направлениям</h2>
+                <div class="stats-comparison">
+                    <div class="comparison-card">
+                        <div class="comparison-title">🎓 Школа</div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Студентов:</span>
+                            <span class="comparison-value" id="statSchoolStudents">0/0</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">MRR (месячно):</span>
+                            <span class="comparison-value" id="statSchoolMRR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">ARR (годово):</span>
+                            <span class="comparison-value" id="statSchoolARR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Оценка (x4):</span>
+                            <span class="comparison-value" id="statSchoolValuation">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Цель MRR:</span>
+                            <span class="comparison-value">500 000 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Выполнение цели:</span>
+                            <span class="comparison-value" id="statSchoolMRRPerf">0%</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">
+                                <span>Прогресс к цели</span>
+                                <span id="statSchoolMRRProgress">0 / 500 000 ₽</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="statSchoolMRRBar" style="width: 0%; max-width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-card">
+                        <div class="comparison-title">💻 IT Проекты</div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Проектов:</span>
+                            <span class="comparison-value" id="statProjectsProjects">0/0</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">MRR (месячно):</span>
+                            <span class="comparison-value" id="statProjectsMRR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">ARR (годово):</span>
+                            <span class="comparison-value" id="statProjectsARR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Оценка (x4):</span>
+                            <span class="comparison-value" id="statProjectsValuation">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Цель MRR:</span>
+                            <span class="comparison-value">500 000 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Выполнение цели:</span>
+                            <span class="comparison-value" id="statProjectsMRRPerf">0%</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">
+                                <span>Прогресс к цели</span>
+                                <span id="statProjectsMRRProgress">0 / 500 000 ₽</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="statProjectsMRRBar" style="width: 0%; max-width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-card">
+                        <div class="comparison-title">💳 Финансы (Всего)</div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">MRR (месячно):</span>
+                            <span class="comparison-value" id="statTotalMRR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">ARR (годово):</span>
+                            <span class="comparison-value" id="statTotalARR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Оценка (x4):</span>
+                            <span class="comparison-value" id="statTotalValuation">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Расходы:</span>
+                            <span class="comparison-value" id="statTotalExpenses">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Чистая прибыль:</span>
+                            <span class="comparison-value" id="statNetProfit">0 ₽</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📥 Экспорт данных</h2>
+                <button class="btn btn-primary" onclick="downloadCSV()">📊 Скачать CSV за выбранный месяц</button>
+                <p style="color: var(--text-secondary); font-size: 12px; margin-top: 15px;">
+                    Выгружает все данные (доход, расходы, проекты, цели) за выбранный месяц в формате CSV
+                </p>
+            </div>
+        </div>
+
+        <!-- CALVIX -->
+        <div id="calvix" class="content">
+            <div class="section">
+                <h2 class="section-title">🚀 Calvix</h2>
+                <p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">
+                    Раздел в разработке...
+                </p>
+            </div>
+        </div>
+
+        <!-- 1ON1 -->
+        <div id="1on1" class="content">
+            <div class="section">
+                <h2 class="section-title">👥 1on1</h2>
+                <p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">
+                    Раздел в разработке...
+                </p>
+            </div>
+        </div>
+
+        <!-- ИНВЕСТИЦИИ -->
+        <div id="investments" class="content">
+            <div class="section">
+                <h2 class="section-title">💎 Инвестиции</h2>
+                <p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">
+                    Раздел в разработке...
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const expenses = [];
+        const projects = [];
+        const goals = [];
+        let charts = {};
+        
+        // Система хранения данных по месяцам
+        let monthlyData = {}; // { 'YYYY-MM': { expenses: [], projects: [], goals: [] } }
+        let selectedMonth = null; // Текущий выбранный месяц
+
+        function getMonthKey(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${year}-${month}`;
+        }
+
+        function initializeMonth(monthKey) {
+            if (!monthlyData[monthKey]) {
+                // Только июнь имеет данные по умолчанию, остальные месяцы пусты
+                const isJune = monthKey.endsWith('-06');
+                monthlyData[monthKey] = {
+                    expenses: isJune ? [] : [],
+                    projects: isJune ? [] : [],
+                    goals: isJune ? [] : [],
+                    schoolParams: {
+                        plan: isJune ? 20 : 0,
+                        done: isJune ? 15 : 0,
+                        lessonsPerWeek: isJune ? 2 : 0,
+                        price: isJune ? 500 : 0,
+                        revenueTarget: isJune ? 15000 : 0
+                    },
+                    projectsParams: {
+                        plan: isJune ? 5 : 0,
+                        averagePlan: isJune ? 15000 : 0
+                    }
+                };
+            }
+            return monthlyData[monthKey];
+        }
+
+        function getCurrentMonthData() {
+            return initializeMonth(selectedMonth);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'stats') {
+                setTimeout(() => {
+                    initCharts();
+                }, 100);
+            }
+            
+            if (tabName === 'goals') {
+                updateGoals();
+            }
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB',
+                minimumFractionDigits: 0
+            }).format(value).replace('₽', '₽').trim();
+        }
+
+        function updateSchool() {
+            const plan = parseInt(document.getElementById('schoolPlan').value) || 0;
+            const done = parseInt(document.getElementById('schoolDone').value) || 0;
+            const lessonsPerWeek = parseFloat(document.getElementById('schoolLessonsPerWeek').value) || 0;
+            const price = parseFloat(document.getElementById('schoolPrice').value) || 0;
+            const revenueTarget = parseFloat(document.getElementById('schoolRevenueTarget').value) || 0;
+
+            // Сохраняем в monthData
+            const monthData = getCurrentMonthData();
+            monthData.schoolParams = { plan, done, lessonsPerWeek, price, revenueTarget };
+
+            const weeklyPerStudent = lessonsPerWeek * price;
+            const monthlyPerStudent = weeklyPerStudent * 4.3;
+            const totalMonthly = monthlyPerStudent * done;
+
+            document.getElementById('schoolPlanValue').textContent = plan;
+            document.getElementById('schoolWeekly').textContent = formatCurrency(weeklyPerStudent);
+            document.getElementById('schoolMonthly').textContent = formatCurrency(monthlyPerStudent);
+            document.getElementById('schoolTotal').textContent = formatCurrency(totalMonthly);
+
+            const planPercent = plan > 0 ? Math.round((done / plan) * 100) : 0;
+            const revenuePercent = revenueTarget > 0 ? Math.round((totalMonthly / revenueTarget) * 100) : 0;
+
+            document.getElementById('schoolDoneText').textContent = `Выполнено: ${done} (${planPercent}%)`;
+            document.getElementById('schoolPlanProgress').style.width = Math.min(planPercent, 100) + '%';
+            document.getElementById('schoolStudentPercent').textContent = planPercent + '%';
+            document.getElementById('schoolRevenuePercent').textContent = revenuePercent + '%';
+
+            const schoolStatus = revenuePercent >= 100 ? 'План выполнен' : revenuePercent >= 75 ? 'Хорошо' : 'Нужно подтянуть';
+            document.getElementById('schoolStatus').innerHTML = `<span class="status-badge ${revenuePercent >= 100 ? 'status-good' : revenuePercent >= 75 ? 'status-warning' : 'status-bad'}">${schoolStatus}</span>`;
+
+            updateStats();
+            updateGoals();
+        }
+
+        function updateProjectsPlan() {
+            const planProjects = parseInt(document.getElementById('projectsPlan').value) || 0;
+            const averagePlan = parseFloat(document.getElementById('projectsAveragePlan').value) || 0;
+            const calculatedRevenue = planProjects * averagePlan;
+            document.getElementById('projectsRevenueTarget').value = calculatedRevenue;
+            
+            // Сохраняем в monthData
+            const monthData = getCurrentMonthData();
+            monthData.projectsParams = { plan: planProjects, averagePlan: averagePlan };
+            
+            updateProjects();
+        }
+
+        function addProject() {
+            const name = document.getElementById('projectName').value.trim();
+            const check = parseFloat(document.getElementById('projectCheck').value);
+            const status = document.getElementById('projectStatus').value;
+
+            if (!name || !check || check <= 0) {
+                alert('Заполните все поля корректно');
+                return;
+            }
+
+            const monthData = getCurrentMonthData();
+            monthData.projects.push({
+                id: Date.now(),
+                name,
+                check,
+                status,
+                date: new Date()
+            });
+
+            document.getElementById('projectName').value = '';
+            document.getElementById('projectCheck').value = '';
+            updateProjects();
+        }
+
+        function deleteProject(id) {
+            const monthData = getCurrentMonthData();
+            const index = monthData.projects.findIndex(p => p.id === id);
+            if (index > -1) {
+                monthData.projects.splice(index, 1);
+                updateProjects();
+            }
+        }
+
+        function updateProjects() {
+            const monthData = getCurrentMonthData();
+            const listEl = document.getElementById('projectsList');
+
+            if (monthData.projects.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div>Проектов нет. Добавьте первый проект выше</div></div>';
+            } else {
+                listEl.innerHTML = monthData.projects.map(proj => `
+                    <div class="project-item">
+                        <div class="project-info">
+                            <div class="project-name">${proj.name}</div>
+                            <div class="project-details">
+                                <span>Добавлен: ${proj.date.toLocaleDateString('ru-RU')}</span>
+                            </div>
+                        </div>
+                        <div class="project-check">${formatCurrency(proj.check)}</div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span class="project-status ${proj.status === 'Завершено' ? 'status-completed' : 'status-in-progress'}">${proj.status}</span>
+                            <button class="btn btn-danger" onclick="deleteProject(${proj.id})">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const planProjects = parseInt(document.getElementById('projectsPlan').value) || 0;
+            const revenueTarget = parseFloat(document.getElementById('projectsRevenueTarget').value) || 0;
+
+            const totalProjects = monthData.projects.length;
+            const completedProjects = monthData.projects.filter(p => p.status === 'Завершено').length;
+            const totalRevenue = monthData.projects.filter(p => p.status === 'Завершено').reduce((sum, p) => sum + p.check, 0);
+            const averageCheck = totalProjects > 0 ? monthData.projects.reduce((sum, p) => sum + p.check, 0) / totalProjects : 0;
+
+            document.getElementById('projectsPlanValue').textContent = planProjects;
+            document.getElementById('projectsDoneText').textContent = `Выполнено: ${completedProjects} (${planProjects > 0 ? Math.round((completedProjects / planProjects) * 100) : 0}%)`;
+            document.getElementById('projectsPlanProgress').style.width = (planProjects > 0 ? Math.round((completedProjects / planProjects) * 100) : 0) + '%';
+
+            document.getElementById('projectsAverageValue').textContent = formatCurrency(averageCheck);
+            document.getElementById('projectsTotal').textContent = formatCurrency(totalRevenue);
+
+            const completionPercent = planProjects > 0 ? Math.round((completedProjects / planProjects) * 100) : 0;
+            const revenuePercent = revenueTarget > 0 ? Math.round((totalRevenue / revenueTarget) * 100) : 0;
+
+            document.getElementById('projectsCompletionPercent').textContent = completionPercent + '%';
+            document.getElementById('projectsRevenuePercent').textContent = revenuePercent + '%';
+            document.getElementById('projectsRevenuePercentSummary').textContent = revenuePercent + '%';
+
+            const projectsStatus = revenuePercent >= 100 ? 'План выполнен!' : revenuePercent >= 75 ? 'Близко к плану' : 'Нужно подтянуть';
+            document.getElementById('projectsStatus').innerHTML = `<span class="status-badge ${revenuePercent >= 100 ? 'status-good' : revenuePercent >= 75 ? 'status-warning' : 'status-bad'}">${projectsStatus}</span>`;
+
+            updateStats();
+            updateGoals();
+        }
+
+        function addExpense() {
+            const name = document.getElementById('expenseName').value.trim();
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const category = document.getElementById('expenseCategory').value;
+
+            if (!name || !amount || amount <= 0) {
+                alert('Заполните все поля корректно');
+                return;
+            }
+
+            const monthData = getCurrentMonthData();
+            monthData.expenses.push({
+                id: Date.now(),
+                name,
+                amount,
+                category,
+                date: new Date()
+            });
+
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+            updateExpenses();
+        }
+
+        function deleteExpense(id) {
+            const monthData = getCurrentMonthData();
+            const index = monthData.expenses.findIndex(e => e.id === id);
+            if (index > -1) {
+                monthData.expenses.splice(index, 1);
+                updateExpenses();
+            }
+        }
+
+        function getMonthlyBalance() {
+            const monthData = getCurrentMonthData();
+            
+            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
+            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
+            const totalIncome = schoolMonthly + projectsMonthly;
+
+            const monthExpenses = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
+
+            return {
+                income: totalIncome,
+                expenses: monthExpenses,
+                balance: totalIncome - monthExpenses
+            };
+        }
+
+        function updateExpenses() {
+            const monthData = getCurrentMonthData();
+            const listEl = document.getElementById('expensesList');
+
+            if (monthData.expenses.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div>Расходов нет. Добавьте первый расход выше</div></div>';
+            } else {
+                listEl.innerHTML = monthData.expenses.map(exp => `
+                    <div class="expense-item">
+                        <div class="expense-info">
+                            <div class="expense-name">${exp.name}</div>
+                            <div class="expense-category">${exp.category} • ${exp.date.toLocaleDateString('ru-RU')}</div>
+                        </div>
+                        <div class="expense-amount">${formatCurrency(exp.amount)}</div>
+                        <button class="btn btn-danger" onclick="deleteExpense(${exp.id})">✕</button>
+                    </div>
+                `).join('');
+            }
+
+            const total = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const monthBalance = getMonthlyBalance();
+
+            document.getElementById('totalExpenses').textContent = formatCurrency(total);
+            document.getElementById('monthExpenses').textContent = formatCurrency(monthBalance.expenses);
+            document.getElementById('totalProfit').textContent = formatCurrency(monthBalance.balance);
+            document.getElementById('avgExpense').textContent = monthData.expenses.length > 0 ? formatCurrency(total / monthData.expenses.length) : '0 ₽';
+
+            updateStats();
+            updateGoals();
+        }
+
+        function addGoal() {
+            const name = document.getElementById('goalName').value.trim();
+            const amount = parseFloat(document.getElementById('goalAmount').value);
+            const deadline = document.getElementById('goalDeadline').value;
+
+            if (!name || !amount || amount <= 0 || !deadline) {
+                alert('Заполните все поля корректно');
+                return;
+            }
+
+            const monthData = getCurrentMonthData();
+            monthData.goals.push({
+                id: Date.now(),
+                name,
+                amount,
+                deadline: new Date(deadline),
+                saved: 0,
+                completed: false,
+                date: new Date()
+            });
+
+            document.getElementById('goalName').value = '';
+            document.getElementById('goalAmount').value = '';
+            document.getElementById('goalDeadline').value = '';
+            updateGoals();
+        }
+
+        function deleteGoal(id) {
+            const monthData = getCurrentMonthData();
+            const index = monthData.goals.findIndex(g => g.id === id);
+            if (index > -1) {
+                monthData.goals.splice(index, 1);
+                updateGoals();
+            }
+        }
+
+        function toggleGoalComplete(id) {
+            const monthData = getCurrentMonthData();
+            const goal = monthData.goals.find(g => g.id === id);
+            if (goal) {
+                goal.completed = !goal.completed;
+                updateGoals();
+            }
+        }
+
+        function updateGoals() {
+            const monthData = getCurrentMonthData();
+            const monthBalance = getMonthlyBalance();
+            const availableBalance = Math.max(0, monthBalance.balance);
+
+            // Сортируем цели по убыванию цены
+            const sortedGoals = [...monthData.goals].sort((a, b) => b.amount - a.amount);
+
+            // Рассчитываем прогресс каждой цели на основе остатка
+            // без изменения сохраненных данных
+            const goalsWithProgress = sortedGoals.map(goal => {
+                let accumulatedAmount = 0;
+                
+                if (!goal.completed) {
+                    // Если цель не завершена, рассчитываем сколько она может получить из остатка
+                    let tempBalance = availableBalance;
+                    
+                    // Проходим по целям в порядке приоритета и рассчитываем накопление
+                    sortedGoals.forEach(g => {
+                        if (!g.completed && g.id === goal.id) {
+                            // Это текущая цель, даем ей сколько осталось от остатка
+                            accumulatedAmount = Math.min(tempBalance, g.amount);
+                        } else if (!g.completed && g.id !== goal.id) {
+                            // Это другие цели с более высоким приоритетом
+                            const needed = g.amount - g.saved;
+                            const toAdd = Math.min(tempBalance, needed);
+                            tempBalance -= toAdd;
+                        }
+                    });
+                } else {
+                    // Если цель завершена, она полностью заполнена
+                    accumulatedAmount = goal.amount;
+                }
+                
+                return {
+                    ...goal,
+                    displaySaved: accumulatedAmount
+                };
+            });
+
+            const listEl = document.getElementById('goalsList');
+
+            if (sortedGoals.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div>Целей нет. Добавьте первую цель выше</div></div>';
+            } else {
+                listEl.innerHTML = goalsWithProgress.map(goal => {
+                    const daysLeft = Math.ceil((goal.deadline - new Date()) / (1000 * 60 * 60 * 24));
+                    const percent = goal.amount > 0 ? Math.round((goal.displaySaved / goal.amount) * 100) : 0;
+                    const isOverdue = daysLeft < 0;
+
+                    return `
+                        <div class="goal-card">
+                            <div class="goal-header">
+                                <div>
+                                    <div class="goal-title">${goal.completed ? '✓ ' : ''}${goal.name}</div>
+                                    <div class="goal-deadline" style="color: ${isOverdue && !goal.completed ? '#991b1b' : 'var(--text-secondary)'}">
+                                        ${isOverdue && !goal.completed ? '⚠️ Просрочено на ' + Math.abs(daysLeft) + ' дн.' : 'Осталось: ' + daysLeft + ' дней'}
+                                    </div>
+                                </div>
+                                <div class="goal-price" style="color: ${percent === 100 ? '#10b981' : 'var(--primary)'}">${formatCurrency(goal.amount)}</div>
+                            </div>
+                            
+                            <div class="goal-progress-section">
+                                <div class="progress-label">
+                                    <span>Накоплено:</span>
+                                    <span class="progress-value">${formatCurrency(goal.displaySaved)} (${percent}%)</span>
+                                </div>
+                                <div class="goal-progress-bar">
+                                    <div class="goal-progress-fill" style="width: ${percent}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="goal-actions">
+                                <button class="btn ${goal.completed ? 'btn-success' : 'btn-primary'}" onclick="toggleGoalComplete(${goal.id})" style="flex: 1;">
+                                    ${goal.completed ? '✓ Готово' : '📌 Отметить готово'}
+                                </button>
+                                <button class="btn btn-danger" onclick="deleteGoal(${goal.id})">✕ Удалить</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const totalGoalsAmount = sortedGoals.reduce((sum, g) => sum + g.amount, 0);
+            const totalDisplaySaved = goalsWithProgress.reduce((sum, g) => sum + g.displaySaved, 0);
+
+            document.getElementById('availableBalance').textContent = formatCurrency(availableBalance);
+            document.getElementById('totalGoalsAmount').textContent = formatCurrency(totalGoalsAmount);
+            document.getElementById('totalSavedAmount').textContent = formatCurrency(totalDisplaySaved);
+        }
+
+        function updateStats() {
+            const monthData = getCurrentMonthData();
+            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
+            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
+            const schoolDone = parseInt(document.getElementById('schoolDone').value) || 0;
+            const schoolPlan = parseInt(document.getElementById('schoolPlan').value) || 0;
+            const projectsDone = monthData.projects.filter(p => p.status === 'Завершено').length;
+            const projectsPlan = parseInt(document.getElementById('projectsPlan').value) || 0;
+
+            const monthBalance = getMonthlyBalance();
+
+            // Расчет MRR (Monthly Recurring Revenue) - это просто месячная выручка
+            const schoolMRR = schoolMonthly;
+            const projectsMRR = projectsMonthly;
+            const totalMRR = schoolMRR + projectsMRR;
+
+            // Расчет ARR (Annual Recurring Revenue) - MRR × 12
+            const schoolARR = schoolMRR * 12;
+            const projectsARR = projectsMRR * 12;
+            const totalARR = totalMRR * 12;
+
+            // Оценка компании по мультипликатору x4 (ARR × 4)
+            const schoolValuation = schoolARR * 4;
+            const projectsValuation = projectsARR * 4;
+            const totalValuation = totalARR * 4;
+
+            // Цель MRR для каждого направления - 500 000 рублей в месяц
+            const mrrGoal = 500000;
+            const schoolMRRPerf = Math.round((schoolMRR / mrrGoal) * 100);
+            const projectsMRRPerf = Math.round((projectsMRR / mrrGoal) * 100);
+
+            // Обновляем страницу
+            document.getElementById('statSchoolStudents').textContent = `${schoolDone}/${schoolPlan}`;
+            document.getElementById('statSchoolMRR').textContent = formatCurrency(schoolMRR);
+            document.getElementById('statSchoolARR').textContent = formatCurrency(schoolARR);
+            document.getElementById('statSchoolValuation').textContent = formatCurrency(schoolValuation);
+            document.getElementById('statSchoolMRRPerf').textContent = schoolMRRPerf + '%';
+            document.getElementById('statSchoolMRRProgress').textContent = formatCurrency(schoolMRR) + ' / 500 000 ₽';
+            document.getElementById('statSchoolMRRBar').style.width = Math.min(schoolMRRPerf, 100) + '%';
+
+            document.getElementById('statProjectsProjects').textContent = `${projectsDone}/${projectsPlan}`;
+            document.getElementById('statProjectsMRR').textContent = formatCurrency(projectsMRR);
+            document.getElementById('statProjectsARR').textContent = formatCurrency(projectsARR);
+            document.getElementById('statProjectsValuation').textContent = formatCurrency(projectsValuation);
+            document.getElementById('statProjectsMRRPerf').textContent = projectsMRRPerf + '%';
+            document.getElementById('statProjectsMRRProgress').textContent = formatCurrency(projectsMRR) + ' / 500 000 ₽';
+            document.getElementById('statProjectsMRRBar').style.width = Math.min(projectsMRRPerf, 100) + '%';
+
+            document.getElementById('statTotalMRR').textContent = formatCurrency(totalMRR);
+            document.getElementById('statTotalARR').textContent = formatCurrency(totalARR);
+            document.getElementById('statTotalValuation').textContent = formatCurrency(totalValuation);
+            document.getElementById('statTotalExpenses').textContent = formatCurrency(monthBalance.expenses);
+            document.getElementById('statNetProfit').textContent = formatCurrency(monthBalance.balance);
+        }
+
+        function initCharts() {
+            const monthData = getCurrentMonthData();
+            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
+            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
+            const schoolDone = parseInt(document.getElementById('schoolDone').value) || 0;
+            const schoolPlan = parseInt(document.getElementById('schoolPlan').value) || 0;
+            const projectsDone = monthData.projects.filter(p => p.status === 'Завершено').length;
+            const projectsPlan = parseInt(document.getElementById('projectsPlan').value) || 0;
+
+            if (charts.revenue) charts.revenue.destroy();
+            if (charts.plan) charts.plan.destroy();
+            if (charts.expense) charts.expense.destroy();
+            if (charts.profit) charts.profit.destroy();
+            if (charts.monthlyRevenue) charts.monthlyRevenue.destroy();
+
+            const revenueCtx = document.getElementById('revenueChart');
+            charts.revenue = new Chart(revenueCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Школа', 'IT Проекты'],
+                    datasets: [{
+                        data: [schoolMonthly, projectsMonthly],
+                        backgroundColor: ['#3b82f6', '#fbbf24'],
+                        borderColor: '#ffffff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 14, weight: 600 },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.parsed;
+                                    const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${formatCurrency(value)} (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const planCtx = document.getElementById('planChart');
+            charts.plan = new Chart(planCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Школа (учеников)', 'IT Проекты'],
+                    datasets: [
+                        {
+                            label: 'Выполнено',
+                            data: [schoolDone, projectsDone],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#3b82f6'
+                        },
+                        {
+                            label: 'План',
+                            data: [schoolPlan, projectsPlan],
+                            borderColor: '#fbbf24',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#fbbf24'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 14, weight: 600 },
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            ticks: {
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const categoryTotals = {};
+            monthData.expenses.forEach(exp => {
+                categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+            });
+
+            const expenseCtx = document.getElementById('expenseChart');
+            charts.expense = new Chart(expenseCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(categoryTotals).length > 0 ? Object.keys(categoryTotals) : ['Нет расходов'],
+                    datasets: [{
+                        data: Object.values(categoryTotals).length > 0 ? Object.values(categoryTotals) : [1],
+                        backgroundColor: ['#ef4444', '#dc2626', '#991b1b', '#7f1d1d', '#fecaca'],
+                        borderColor: '#ffffff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 14, weight: 600 },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.parsed;
+                                    const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${formatCurrency(value)} (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const profitCtx = document.getElementById('profitChart');
+            charts.profit = new Chart(profitCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Неделя 1', 'Неделя 2', 'Неделя 3', 'Неделя 4'],
+                    datasets: [
+                        {
+                            label: 'Доход',
+                            data: [
+                                (schoolMonthly + projectsMonthly) / 4,
+                                (schoolMonthly + projectsMonthly) / 4,
+                                (schoolMonthly + projectsMonthly) / 4,
+                                (schoolMonthly + projectsMonthly) / 4
+                            ],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#10b981'
+                        },
+                        {
+                            label: 'Расходы',
+                            data: [
+                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0,
+                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0,
+                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0,
+                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0
+                            ],
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#ef4444'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 14, weight: 600 },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${formatCurrency(context.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                font: { size: 12 },
+                                callback: (value) => formatCurrency(value)
+                            }
+                        }
+                    }
+                }
+            });
+
+            // График выручки по месяцам
+            const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart');
+            const months = ['Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            const monthsKeys = ['06', '07', '08', '09', '10', '11', '12'];
+            const currentYear = new Date().getFullYear();
+            
+            const schoolMRRData = [];
+            const projectsMRRData = [];
+            
+            monthsKeys.forEach(monthNum => {
+                const monthKey = `${currentYear}-${monthNum}`;
+                const mData = monthlyData[monthKey] || initializeMonth(monthKey);
+                
+                // Школа MRR
+                const schoolPlan = mData.schoolParams.plan;
+                const schoolDone = mData.schoolParams.done;
+                const schoolLessonsPerWeek = mData.schoolParams.lessonsPerWeek;
+                const schoolPrice = mData.schoolParams.price;
+                
+                const weeklyPerStudent = schoolLessonsPerWeek * schoolPrice;
+                const monthlyPerStudent = weeklyPerStudent * 4.3;
+                const schoolMRR = monthlyPerStudent * schoolDone;
+                schoolMRRData.push(schoolMRR);
+                
+                // Проекты MRR
+                const projectsMRR = mData.projects
+                    .filter(p => p.status === 'Завершено')
+                    .reduce((sum, p) => sum + p.check, 0);
+                projectsMRRData.push(projectsMRR);
+            });
+
+            charts.monthlyRevenue = new Chart(monthlyRevenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Школа MRR',
+                            data: schoolMRRData,
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'IT Проекты MRR',
+                            data: projectsMRRData,
+                            backgroundColor: '#fbbf24',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 14, weight: 600 },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: false,
+                            ticks: {
+                                font: { size: 12 }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            stacked: false,
+                            ticks: {
+                                font: { size: 12 },
+                                callback: (value) => formatCurrency(value)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function downloadCSV() {
+            const monthData = getCurrentMonthData();
+            const monthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+            const [year, monthNum] = selectedMonth.split('-');
+            const monthName = monthNames[parseInt(monthNum) - 1];
+            
+            let csv = 'Статистика за ' + monthName + ' ' + year + '\n\n';
+            
+            // Заголовок
+            csv += '=== ДОХОД ===\n';
+            const schoolMonthly = parseFloat(document.getElementById('schoolTotal').textContent.replace(/\D/g, '')) || 0;
+            const projectsMonthly = parseFloat(document.getElementById('projectsTotal').textContent.replace(/\D/g, '')) || 0;
+            csv += 'Школа MRR,' + formatCurrency(schoolMonthly) + '\n';
+            csv += 'IT Проекты MRR,' + formatCurrency(projectsMonthly) + '\n';
+            csv += 'Всего MRR,' + formatCurrency(schoolMonthly + projectsMonthly) + '\n\n';
+            
+            // Расходы
+            csv += '=== РАСХОДЫ ===\n';
+            csv += 'Название,Категория,Сумма\n';
+            monthData.expenses.forEach(exp => {
+                csv += '"' + exp.name + '","' + exp.category + '",' + exp.amount + '\n';
+            });
+            const totalExpenses = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
+            csv += 'Всего расходов,,' + totalExpenses + '\n\n';
+            
+            // Проекты
+            csv += '=== ПРОЕКТЫ ===\n';
+            csv += 'Название,Статус,Чек\n';
+            monthData.projects.forEach(proj => {
+                csv += '"' + proj.name + '","' + proj.status + '",' + proj.check + '\n';
+            });
+            const completedProjects = monthData.projects.filter(p => p.status === 'Завершено');
+            const totalProjectsRevenue = completedProjects.reduce((sum, p) => sum + p.check, 0);
+            csv += 'Завершено проектов,' + completedProjects.length + ',' + totalProjectsRevenue + '\n\n';
+            
+            // Цели
+            csv += '=== ЦЕЛИ ===\n';
+            csv += 'Название,Статус,Сумма,Дедлайн\n';
+            monthData.goals.forEach(goal => {
+                csv += '"' + goal.name + '","' + (goal.completed ? 'Готово' : 'В процессе') + '",' + goal.amount + ',"' + goal.deadline.toLocaleDateString('ru-RU') + '"\n';
+            });
+            
+            // Прибыль
+            csv += '\n=== ИТОГИ ===\n';
+            const profit = (schoolMonthly + projectsMonthly) - totalExpenses;
+            csv += 'Доход,' + formatCurrency(schoolMonthly + projectsMonthly) + '\n';
+            csv += 'Расходы,' + formatCurrency(totalExpenses) + '\n';
+            csv += 'Чистая прибыль,' + formatCurrency(profit) + '\n';
+            
+            // Скачивание
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+            element.setAttribute('download', 'статистика_' + selectedMonth + '.csv');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        document.getElementById('currentDate').textContent = 
+            new Date().toLocaleDateString('ru-RU', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+        // Инициализация выбора месяца
+        const today = new Date();
+        selectedMonth = getMonthKey(today);
+        
+        // Создаем список доступных месяцев (только июнь и позже)
+        const months = ['Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        const monthsKeys = ['06', '07', '08', '09', '10', '11', '12'];
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        
+        const monthButtonsContainer = document.getElementById('monthButtons');
+        monthsKeys.forEach((monthNum, index) => {
+            const monthKey = `${currentYear}-${monthNum}`;
+            const btn = document.createElement('button');
+            btn.className = 'month-btn';
+            btn.textContent = months[index];
+            btn.dataset.month = monthKey;
+            
+            // Отключаем месяцы в будущем если год уже прошел
+            if (parseInt(monthNum) > currentMonth + 1 && currentYear === today.getFullYear()) {
+                // Будущие месяцы доступны
+            }
+            
+            if (monthKey === selectedMonth) {
+                btn.classList.add('active');
+            }
+            
+            btn.addEventListener('click', () => {
+                selectedMonth = monthKey;
+                initializeMonth(selectedMonth);
+                
+                // Обновляем активную кнопку
+                document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                updateSchool();
+                updateProjectsPlan();
+                updateExpenses();
+            });
+            
+            monthButtonsContainer.appendChild(btn);
+        });
+        
+        initializeMonth(selectedMonth);
+        updateSchool();
+        updateProjectsPlan();
+        updateExpenses();
+    </script>
+</body>
+</html>
