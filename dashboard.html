@@ -771,6 +771,104 @@
             min-height: 14px;
         }
 
+        /* ===== Красивый select ===== */
+        .input-field select {
+            padding-right: 40px;
+            appearance: none;
+            -webkit-appearance: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
+            cursor: pointer;
+        }
+
+        /* ===== Субвкладки Интегро ===== */
+        .sub-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: var(--light);
+            padding: 8px;
+            border-radius: 10px;
+        }
+        .sub-tab-btn {
+            padding: 10px 22px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sub-tab-btn:hover { background: var(--lighter); color: var(--text-primary); }
+        .sub-tab-btn.active {
+            background: var(--lighter);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .sub-content { display: none; animation: fadeIn 0.3s ease; }
+        .sub-content.active { display: block; }
+
+        /* ===== Статус проекта (кнопка) ===== */
+        .project-status-btn {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .project-status-btn.status-completed {
+            background: rgba(16,185,129,0.1); color: var(--success); border-color: rgba(16,185,129,0.25);
+        }
+        .project-status-btn.status-completed:hover { background: rgba(16,185,129,0.2); }
+        .project-status-btn.status-in-progress {
+            background: rgba(245,158,11,0.1); color: var(--warning); border-color: rgba(245,158,11,0.25);
+        }
+        .project-status-btn.status-in-progress:hover { background: rgba(245,158,11,0.2); }
+
+        /* ===== Заметки ===== */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .note-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 120px;
+        }
+        .note-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .note-title { font-weight: 700; font-size: 15px; color: var(--text-primary); margin-bottom: 8px; }
+        .note-body {
+            font-size: 14px; color: var(--text-secondary); line-height: 1.6;
+            flex: 1; margin-bottom: 12px; word-break: break-word; white-space: pre-wrap;
+        }
+        .note-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid rgba(0,0,0,0.06); padding-top: 10px; margin-top: auto;
+        }
+        .note-date { font-size: 11px; color: var(--text-tertiary); }
+        .note-edit-input, .note-edit-textarea, .note-add-textarea {
+            width: 100%; border: 2px solid var(--border); border-radius: 8px;
+            font-size: 14px; font-family: inherit; box-sizing: border-box;
+        }
+        .note-edit-input { padding: 8px 10px; margin-bottom: 8px; }
+        .note-edit-textarea { padding: 10px; resize: vertical; margin-bottom: 10px; line-height: 1.5; }
+        .note-add-textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.5; transition: all 0.3s ease; }
+        .note-edit-input:focus, .note-edit-textarea:focus, .note-add-textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+        }
+
         @media (max-width: 768px) {
             .charts-grid {
                 grid-template-columns: 1fr;
@@ -832,18 +930,25 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('school')">🎓 Школа</button>
-            <button class="tab-btn" onclick="switchTab('projects')">💻 IT Проекты</button>
-            <button class="tab-btn" onclick="switchTab('expenses')">💰 Расходы</button>
-            <button class="tab-btn" onclick="switchTab('goals')">🎯 Цели</button>
-            <button class="tab-btn" onclick="switchTab('stats')">📈 Статистика</button>
-            <button class="tab-btn" onclick="switchTab('calvix')">🚀 Calvix</button>
-            <button class="tab-btn" onclick="switchTab('1on1')">👥 1on1</button>
-            <button class="tab-btn" onclick="switchTab('investments')">💎 Инвестиции</button>
+            <button class="tab-btn active" onclick="switchTab('integro', this)">🏢 Интегро</button>
+            <button class="tab-btn" onclick="switchTab('expenses', this)">💰 Расходы</button>
+            <button class="tab-btn" onclick="switchTab('goals', this)">🎯 Цели</button>
+            <button class="tab-btn" onclick="switchTab('stats', this)">📈 Статистика</button>
+            <button class="tab-btn" onclick="switchTab('calvix', this)">🚀 Calvix</button>
+            <button class="tab-btn" onclick="switchTab('1on1', this)">👥 1on1</button>
+            <button class="tab-btn" onclick="switchTab('investments', this)">💎 Инвестиции</button>
+            <button class="tab-btn" onclick="switchTab('notes', this)">📝 Заметки</button>
         </div>
 
+        <!-- ИНТЕГРО -->
+        <div id="integro" class="content active">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="switchSubTab('school', this)">🎓 Школа</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('projects', this)">💻 IT Проекты</button>
+            </div>
+
         <!-- ШКОЛА -->
-        <div id="school" class="content active">
+        <div id="school" class="sub-content active">
             <div class="section">
                 <h2 class="section-title">⚙️ Параметры школы</h2>
                 <div class="input-grid">
@@ -915,7 +1020,7 @@
         </div>
 
         <!-- IT ПРОЕКТЫ -->
-        <div id="projects" class="content">
+        <div id="projects" class="sub-content">
             <div class="section">
                 <h2 class="section-title">⚙️ Плановые показатели</h2>
                 <div class="input-grid">
@@ -1010,6 +1115,8 @@
             </div>
         </div>
 
+        </div><!-- /integro -->
+
         <!-- РАСХОДЫ -->
         <div id="expenses" class="content">
             <div class="expenses-section">
@@ -1028,8 +1135,17 @@
                         <select id="expenseCategory">
                             <option>Зарплата</option>
                             <option>Маркетинг</option>
+                            <option>Реклама</option>
                             <option>Оборудование</option>
                             <option>Интернет/Сервис</option>
+                            <option>Программное обеспечение</option>
+                            <option>Аренда</option>
+                            <option>Коммунальные услуги</option>
+                            <option>Образование</option>
+                            <option>Налоги</option>
+                            <option>Транспорт</option>
+                            <option>Питание</option>
+                            <option>Подписки</option>
                             <option>Прочее</option>
                         </select>
                     </div>
@@ -1297,12 +1413,44 @@
                 </p>
             </div>
         </div>
+
+        <!-- ЗАМЕТКИ -->
+        <div id="notes" class="content">
+            <div class="section">
+                <h2 class="section-title">➕ Новая заметка</h2>
+                <div class="input-grid">
+                    <div class="input-field">
+                        <label>Заголовок</label>
+                        <input type="text" id="noteTitle" placeholder="Заголовок (необязательно)">
+                    </div>
+                    <div class="input-field" style="grid-column: 1 / -1;">
+                        <label>Содержание</label>
+                        <textarea id="noteContent" class="note-add-textarea" placeholder="Текст заметки..."></textarea>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">Цвет</label>
+                    <input type="color" id="noteColorInput" value="#ffffff" style="width: 40px; height: 32px; border: 2px solid var(--border); cursor: pointer; border-radius: 6px; padding: 2px;">
+                </div>
+                <button class="btn btn-primary" onclick="addNote()">➕ Добавить заметку</button>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title" style="display: flex; align-items: center; gap: 10px;">
+                    📋 Мои заметки
+                    <span id="notesCount" style="font-size: 13px; color: var(--text-secondary); font-weight: normal;"></span>
+                </h2>
+                <div id="notesList" class="notes-grid"></div>
+            </div>
+        </div>
     </div>
 
     <script>
         // ===== API / Авторизация =====
         let isAuthenticated = false;
         let saveTimer = null;
+        let notesData = [];
+        let editingNoteId = null;
 
         async function checkAuth() {
             try {
@@ -1344,6 +1492,8 @@
             await fetch('/api/auth/logout', { method: 'POST' });
             isAuthenticated = false;
             monthlyData = {};
+            notesData = [];
+            editingNoteId = null;
             document.getElementById('loginPassword').value = '';
             document.getElementById('loginError').textContent = '';
             showLogin();
@@ -1365,8 +1515,16 @@
         async function loadFromServer() {
             const res = await fetch('/api/data');
             if (res.ok) {
-                const data = await res.json();
-                monthlyData = deserializeMonthlyData(data);
+                const raw = await res.json();
+                // v2 format: { _v2: true, months: {...}, notes: [...] }
+                // backward compat: old format had monthlyData at root
+                if (raw._v2) {
+                    monthlyData = deserializeMonthlyData(raw.months || {});
+                    notesData = (raw.notes || []).map(n => ({ ...n, date: new Date(n.date) }));
+                } else {
+                    monthlyData = deserializeMonthlyData(raw);
+                    notesData = [];
+                }
             }
         }
 
@@ -1397,7 +1555,7 @@
                     const res = await fetch('/api/data', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(monthlyData)
+                        body: JSON.stringify({ _v2: true, months: monthlyData, notes: notesData })
                     });
                     if (statusEl) {
                         statusEl.textContent = res.ok ? 'Сохранено ✓' : 'Ошибка сохранения';
@@ -1427,12 +1585,99 @@
             }
         }
 
+        // ===== Заметки =====
+        function addNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+            const color = document.getElementById('noteColorInput').value || '#ffffff';
+            if (!content) { alert('Введите текст заметки'); return; }
+            notesData.unshift({ id: Date.now(), title, content, color, date: new Date() });
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('noteColorInput').value = '#ffffff';
+            updateNotes();
+            saveToServer();
+        }
+
+        function deleteNote(id) {
+            notesData = notesData.filter(n => n.id !== id);
+            if (editingNoteId === id) editingNoteId = null;
+            updateNotes();
+            saveToServer();
+        }
+
+        function startEditNote(id) {
+            editingNoteId = id;
+            updateNotes();
+        }
+
+        function cancelEditNote() {
+            editingNoteId = null;
+            updateNotes();
+        }
+
+        function saveNoteEdit(id) {
+            const note = notesData.find(n => n.id === id);
+            if (!note) return;
+            note.title   = document.getElementById(`editNoteTitle_${id}`).value.trim();
+            note.content = document.getElementById(`editNoteContent_${id}`).value.trim();
+            note.color   = document.getElementById(`editNoteColor_${id}`).value || note.color;
+            editingNoteId = null;
+            updateNotes();
+            saveToServer();
+        }
+
+        function updateNotes() {
+            const listEl = document.getElementById('notesList');
+            if (!listEl) return;
+            const countEl = document.getElementById('notesCount');
+            if (countEl) countEl.textContent = notesData.length ? `(${notesData.length})` : '';
+
+            if (notesData.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><div>Заметок нет. Добавьте первую заметку выше</div></div>';
+                return;
+            }
+
+            listEl.innerHTML = notesData.map(note => {
+                if (note.id === editingNoteId) {
+                    return `
+                        <div class="note-card" style="background:${note.color}; border:2px solid var(--primary);">
+                            <input type="text" id="editNoteTitle_${note.id}" class="note-edit-input"
+                                   value="${escapeHtml(note.title)}" placeholder="Заголовок (необязательно)">
+                            <textarea id="editNoteContent_${note.id}" class="note-edit-textarea" rows="5">${escapeHtml(note.content)}</textarea>
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                                <span style="font-size:12px;font-weight:600;color:var(--text-secondary);">Цвет:</span>
+                                <input type="color" id="editNoteColor_${note.id}" value="${note.color}"
+                                       style="width:36px;height:28px;border:2px solid var(--border);cursor:pointer;border-radius:4px;padding:2px;">
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="saveNoteEdit(${note.id})">✓ Сохранить</button>
+                                <button class="btn" style="background:var(--light);color:var(--text-secondary);" onclick="cancelEditNote()">Отмена</button>
+                            </div>
+                        </div>`;
+                }
+                return `
+                    <div class="note-card" style="background:${note.color};">
+                        ${note.title ? `<div class="note-title">${escapeHtml(note.title)}</div>` : ''}
+                        <div class="note-body">${escapeHtml(note.content).replace(/\n/g, '<br>')}</div>
+                        <div class="note-footer">
+                            <span class="note-date">${new Date(note.date).toLocaleDateString('ru-RU')}</span>
+                            <div style="display:flex;gap:6px;">
+                                <button class="btn btn-success" onclick="startEditNote(${note.id})" style="padding:5px 10px;font-size:12px;">✏️</button>
+                                <button class="btn btn-danger" onclick="deleteNote(${note.id})" style="padding:5px 10px;font-size:12px;">✕</button>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
         function initDashboard() {
             initializeMonth(selectedMonth);
             loadMonthUI(selectedMonth);
             updateSchool();
             updateProjectsPlan();
             updateExpenses();
+            updateNotes();
         }
 
         // ===== Анимация заголовка =====
@@ -1529,21 +1774,22 @@
             return initializeMonth(selectedMonth);
         }
 
-        function switchTab(tabName) {
+        function switchTab(tabName, btn) {
             document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            if (btn) btn.classList.add('active');
 
-            if (tabName === 'stats') {
-                setTimeout(() => {
-                    initCharts();
-                }, 100);
-            }
-            
-            if (tabName === 'goals') {
-                updateGoals();
-            }
+            if (tabName === 'stats') setTimeout(() => initCharts(), 100);
+            if (tabName === 'goals') updateGoals();
+            if (tabName === 'notes') updateNotes();
+        }
+
+        function switchSubTab(subTabName, btn) {
+            document.querySelectorAll('.sub-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(subTabName).classList.add('active');
+            if (btn) btn.classList.add('active');
         }
 
         function formatCurrency(value) {
@@ -1629,6 +1875,22 @@
             saveToServer();
         }
 
+        function toggleProjectStatus(id) {
+            const monthData = getCurrentMonthData();
+            const proj = monthData.projects.find(p => p.id === id);
+            if (proj) {
+                proj.status = proj.status === 'Завершено' ? 'В процессе' : 'Завершено';
+                updateProjects();
+                saveToServer();
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
         function deleteProject(id) {
             const monthData = getCurrentMonthData();
             const index = monthData.projects.findIndex(p => p.id === id);
@@ -1649,14 +1911,18 @@
                 listEl.innerHTML = monthData.projects.map(proj => `
                     <div class="project-item">
                         <div class="project-info">
-                            <div class="project-name">${proj.name}</div>
+                            <div class="project-name">${escapeHtml(proj.name)}</div>
                             <div class="project-details">
-                                <span>Добавлен: ${proj.date.toLocaleDateString('ru-RU')}</span>
+                                <span>Добавлен: ${new Date(proj.date).toLocaleDateString('ru-RU')}</span>
                             </div>
                         </div>
                         <div class="project-check">${formatCurrency(proj.check)}</div>
                         <div style="display: flex; gap: 10px; align-items: center;">
-                            <span class="project-status ${proj.status === 'Завершено' ? 'status-completed' : 'status-in-progress'}">${proj.status}</span>
+                            <button class="project-status-btn ${proj.status === 'Завершено' ? 'status-completed' : 'status-in-progress'}"
+                                    onclick="toggleProjectStatus(${proj.id})"
+                                    title="Нажмите для смены статуса">
+                                ${proj.status === 'Завершено' ? '✓ Завершено' : '⏳ В процессе'}
+                            </button>
                             <button class="btn btn-danger" onclick="deleteProject(${proj.id})">✕</button>
                         </div>
                     </div>
