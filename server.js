@@ -94,4 +94,8 @@ app.post('/api/data', requireAuth, (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
+
 app.listen(PORT, () => console.log(`Dashboard running on port ${PORT}`));
