@@ -134,4 +134,17 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
+// Proxy: 1on1 admin stats — set ONE_ON_ONE_API_URL in Railway env vars
+app.get('/api/1on1/stats', requireAuth, async (req, res) => {
+    const baseUrl = (process.env.ONE_ON_ONE_API_URL || '').replace(/\/$/, '');
+    if (!baseUrl) return res.json({ _not_configured: true });
+    try {
+        const r = await fetch(`${baseUrl}/api/users/admin/stats`, { signal: AbortSignal.timeout(10000) });
+        if (!r.ok) return res.status(502).json({ error: `1on1 API returned ${r.status}` });
+        res.json(await r.json());
+    } catch (e) {
+        res.status(502).json({ error: 'Cannot reach 1on1 API: ' + e.message });
+    }
+});
+
 app.listen(PORT, () => console.log(`Dashboard running on port ${PORT}${pgPool ? ' [PostgreSQL]' : ' [file storage]'}`));

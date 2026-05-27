@@ -1408,11 +1408,47 @@
 
         <!-- 1ON1 -->
         <div id="1on1" class="content">
-            <div class="section">
-                <h2 class="section-title">👥 1on1</h2>
-                <p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">
-                    Раздел в разработке...
-                </p>
+            <div id="oo-loading" class="section" style="text-align:center;padding:40px 20px;color:var(--text-secondary);">
+                Загрузка статистики 1on1...
+            </div>
+            <div id="oo-not-configured" class="section" style="display:none;text-align:center;padding:40px 20px;">
+                <div style="font-size:40px;margin-bottom:16px;">⚙️</div>
+                <p style="color:var(--text-secondary);font-size:15px;">Укажи <code style="background:var(--light);padding:2px 6px;border-radius:4px;">ONE_ON_ONE_API_URL</code> в Railway env vars,<br>чтобы подключить статистику 1on1.</p>
+            </div>
+            <div id="oo-error" class="section" style="display:none;text-align:center;padding:40px 20px;">
+                <div style="font-size:40px;margin-bottom:16px;">⚠️</div>
+                <p id="oo-error-msg" style="color:var(--danger);font-size:14px;"></p>
+            </div>
+            <div id="oo-content" style="display:none;">
+                <!-- Overview -->
+                <div class="stats-grid" id="oo-overview" style="margin-bottom:24px;"></div>
+
+                <!-- Mood -->
+                <div class="section" id="oo-mood-section" style="display:none;">
+                    <h2 class="section-title">😊 Настроение команды</h2>
+                    <div class="stats-grid" id="oo-mood-cards"></div>
+                    <div id="oo-mood-trend" style="margin-top:16px;display:flex;gap:8px;align-items:flex-end;height:60px;"></div>
+                </div>
+
+                <!-- Teams -->
+                <div class="section">
+                    <h2 class="section-title">🏢 Команды</h2>
+                    <div id="oo-teams-list"></div>
+                </div>
+
+                <!-- Users -->
+                <div class="section">
+                    <h2 class="section-title" style="display:flex;align-items:center;gap:10px;">
+                        👤 Участники
+                        <span id="oo-inactive-badge" style="display:none;font-size:12px;background:var(--danger);color:#fff;padding:2px 8px;border-radius:12px;font-weight:600;"></span>
+                    </h2>
+                    <div id="oo-users-list"></div>
+                </div>
+
+                <div style="text-align:right;margin-top:8px;">
+                    <span id="oo-last-updated" style="font-size:12px;color:var(--text-secondary);"></span>
+                    <button class="btn" style="margin-left:12px;padding:6px 14px;font-size:13px;" onclick="load1on1Stats()">🔄 Обновить</button>
+                </div>
             </div>
         </div>
 
@@ -1795,6 +1831,7 @@
             if (tabName === 'stats') setTimeout(() => initCharts(), 100);
             if (tabName === 'goals') updateGoals();
             if (tabName === 'notes') updateNotes();
+            if (tabName === '1on1') load1on1Stats();
         }
 
         function switchSubTab(subTabName, btn) {
@@ -2655,6 +2692,133 @@
         });
         
         checkAuth();
+
+        // ===== 1on1 статистика =====
+        let oo1Loaded = false;
+
+        async function load1on1Stats() {
+            const elLoad = document.getElementById('oo-loading');
+            const elCfg  = document.getElementById('oo-not-configured');
+            const elErr  = document.getElementById('oo-error');
+            const elCont = document.getElementById('oo-content');
+
+            elLoad.style.display = 'block';
+            elCfg.style.display = elErr.style.display = elCont.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/1on1/stats');
+                const data = await res.json();
+
+                elLoad.style.display = 'none';
+
+                if (data._not_configured) { elCfg.style.display = 'block'; return; }
+                if (!res.ok || data.error) {
+                    document.getElementById('oo-error-msg').textContent = data.error || 'Ошибка';
+                    elErr.style.display = 'block';
+                    return;
+                }
+
+                render1on1(data);
+                elCont.style.display = 'block';
+                document.getElementById('oo-last-updated').textContent =
+                    'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
+            } catch (e) {
+                elLoad.style.display = 'none';
+                document.getElementById('oo-error-msg').textContent = 'Сеть: ' + e.message;
+                elErr.style.display = 'block';
+            }
+        }
+
+        function render1on1(d) {
+            // Overview cards
+            const taskPct = d.total_tasks ? Math.round(d.tasks_done / d.total_tasks * 100) : 0;
+            document.getElementById('oo-overview').innerHTML = [
+                { label: 'Пользователи', value: d.total_users, sub: `${d.total_leads} лид · ${d.total_members} участник`, icon: '👤' },
+                { label: 'Команды',       value: d.total_teams,    sub: '',                                     icon: '🏢' },
+                { label: 'Встречи',       value: d.total_meetings, sub: `за 30 дней: ${d.meetings_30d}`,        icon: '🤝' },
+                { label: 'Задачи',        value: `${d.tasks_done}/${d.total_tasks}`, sub: `выполнено ${taskPct}%`, icon: '✅' },
+                { label: 'Звонки',        value: d.total_calls,    sub: '',                                     icon: '📞' },
+                { label: 'Настроение',    value: d.mood?.overall_avg ? d.mood.overall_avg.toFixed(1) : '—', sub: '(avg score)', icon: '😊' },
+            ].map(c => `
+                <div class="stat-card">
+                    <div style="font-size:28px;margin-bottom:6px;">${c.icon}</div>
+                    <div class="stat-value">${c.value}</div>
+                    <div class="stat-label">${c.label}</div>
+                    ${c.sub ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">${escapeHtml(c.sub)}</div>` : ''}
+                </div>`).join('');
+
+            // Mood
+            if (d.mood && (d.mood.submissions_7d > 0 || d.mood.daily_trend?.length)) {
+                document.getElementById('oo-mood-section').style.display = '';
+                document.getElementById('oo-mood-cards').innerHTML = [
+                    { label: 'Avg всё время', value: d.mood.overall_avg?.toFixed(2) || '—' },
+                    { label: 'Avg 7 дней',    value: d.mood.avg_7d?.toFixed(2) || '—' },
+                    { label: 'Записей 7 дней',value: d.mood.submissions_7d },
+                ].map(c => `<div class="stat-card"><div class="stat-value">${escapeHtml(String(c.value))}</div><div class="stat-label">${c.label}</div></div>`).join('');
+
+                const trend = d.mood.daily_trend || [];
+                const maxScore = Math.max(...trend.map(t => t.avg), 0.1);
+                document.getElementById('oo-mood-trend').innerHTML = trend.map(t => {
+                    const h = Math.round((t.avg / maxScore) * 52);
+                    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                        <div style="background:var(--primary);width:100%;height:${h}px;border-radius:4px 4px 0 0;min-height:4px;"></div>
+                        <span style="font-size:10px;color:var(--text-secondary);">${escapeHtml(t.date)}</span>
+                    </div>`;
+                }).join('');
+            }
+
+            // Teams
+            document.getElementById('oo-teams-list').innerHTML = d.teams?.length
+                ? `<table style="width:100%;border-collapse:collapse;font-size:14px;">
+                    <thead><tr style="border-bottom:2px solid var(--border);">
+                        <th style="text-align:left;padding:8px;">Команда</th>
+                        <th style="text-align:center;padding:8px;">Участники</th>
+                        <th style="text-align:center;padding:8px;">Встречи</th>
+                        <th style="text-align:left;padding:8px;">Последняя встреча</th>
+                    </tr></thead>
+                    <tbody>${d.teams.map(t => `
+                        <tr style="border-bottom:1px solid var(--border);">
+                            <td style="padding:10px 8px;font-weight:600;">${escapeHtml(t.name)}</td>
+                            <td style="padding:10px 8px;text-align:center;">${t.member_count}</td>
+                            <td style="padding:10px 8px;text-align:center;">${t.meetings_count}</td>
+                            <td style="padding:10px 8px;color:var(--text-secondary);">${t.last_meeting ? new Date(t.last_meeting).toLocaleDateString('ru-RU') : '—'}</td>
+                        </tr>`).join('')}
+                    </tbody></table>`
+                : '<p style="color:var(--text-secondary);padding:16px 0;">Нет команд</p>';
+
+            // Users
+            const inactive = (d.users || []).filter(u => u.inactive);
+            const badge = document.getElementById('oo-inactive-badge');
+            if (inactive.length) {
+                badge.style.display = '';
+                badge.textContent = `${inactive.length} неактивных`;
+            } else { badge.style.display = 'none'; }
+
+            document.getElementById('oo-users-list').innerHTML = d.users?.length
+                ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+                    <thead><tr style="border-bottom:2px solid var(--border);">
+                        <th style="text-align:left;padding:8px;">Имя</th>
+                        <th style="text-align:left;padding:8px;">Роль</th>
+                        <th style="text-align:center;padding:8px;">Встречи</th>
+                        <th style="text-align:center;padding:8px;">Задачи</th>
+                        <th style="text-align:left;padding:8px;">Последняя встреча</th>
+                        <th style="text-align:center;padding:8px;">Статус</th>
+                    </tr></thead>
+                    <tbody>${d.users.map(u => `
+                        <tr style="border-bottom:1px solid var(--border);${u.inactive ? 'opacity:0.6;' : ''}">
+                            <td style="padding:8px;font-weight:500;">${escapeHtml(u.name)}</td>
+                            <td style="padding:8px;color:var(--text-secondary);">${escapeHtml(u.role)}</td>
+                            <td style="padding:8px;text-align:center;">${u.meetings_count}</td>
+                            <td style="padding:8px;text-align:center;">${u.tasks_count}</td>
+                            <td style="padding:8px;color:var(--text-secondary);">${u.last_meeting ? new Date(u.last_meeting).toLocaleDateString('ru-RU') : '—'}</td>
+                            <td style="padding:8px;text-align:center;">${u.inactive
+                                ? '<span style="background:#fee2e2;color:var(--danger);padding:2px 8px;border-radius:12px;font-size:11px;">неактивен</span>'
+                                : '<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:12px;font-size:11px;">активен</span>'
+                            }</td>
+                        </tr>`).join('')}
+                    </tbody></table>`
+                : '<p style="color:var(--text-secondary);padding:16px 0;">Нет участников</p>';
+        }
     </script>
 </body>
 </html>
