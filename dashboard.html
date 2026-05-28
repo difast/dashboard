@@ -2041,6 +2041,21 @@
         let saveTimer = null;
         let notesData = [];
         let editingNoteId = null;
+        let invPollInterval = null;
+        let cryPollInterval = null;
+
+        function startInvPolling() {
+            stopBotPolling();
+            invPollInterval = setInterval(invLoadAll, 30000);
+        }
+        function startCryPolling() {
+            stopBotPolling();
+            cryPollInterval = setInterval(cryLoadAll, 30000);
+        }
+        function stopBotPolling() {
+            if (invPollInterval) { clearInterval(invPollInterval); invPollInterval = null; }
+            if (cryPollInterval) { clearInterval(cryPollInterval); cryPollInterval = null; }
+        }
 
         async function checkAuth() {
             try {
@@ -2082,6 +2097,7 @@
         }
 
         async function logout() {
+            stopBotPolling();
             await fetch('/api/auth/logout', { method: 'POST' });
             isAuthenticated = false;
             userRole = null;
@@ -2118,6 +2134,7 @@
                     if (b.getAttribute('onclick')?.includes('investments')) b.classList.add('active');
                 });
                 invLoadAll();
+                startInvPolling();
             }
             initHeaderAnimation();
             if (userRole !== 'trader') initDashboard();
@@ -2395,8 +2412,9 @@
             if (tabName === 'goals') updateGoals();
             if (tabName === 'notes') updateNotes();
             if (tabName === '1on1') load1on1Stats();
-            if (tabName === 'investments') invLoadAll();
-            if (tabName === 'crypto') cryLoadAll();
+            if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
+            else if (tabName === 'crypto') { cryLoadAll(); startCryPolling(); }
+            else stopBotPolling();
         }
 
         function switchSubTab(subTabName, btn) {
