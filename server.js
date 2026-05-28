@@ -7,7 +7,8 @@ const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const PASSWORD = process.env.DASHBOARD_PASSWORD || 'Assassins2552';
+const PASSWORD        = process.env.DASHBOARD_PASSWORD || 'Assassins2552';
+const TRADER_PASSWORD = process.env.TRADER_PASSWORD    || 'Ludik';
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'dashboard.json');
 // Set SESSION_SECRET env var in Railway for persistence across restarts
@@ -86,21 +87,30 @@ function requireAuth(req, res, next) {
 }
 
 app.get('/api/auth/check', (req, res) => {
-    res.json({ authenticated: !!(req.session && req.session.authenticated) });
+    res.json({
+        authenticated: !!(req.session && req.session.authenticated),
+        role: req.session?.role || null,
+    });
 });
+
+function timingSafeMatch(input, target) {
+    const a = Buffer.alloc(128, 0); const b = Buffer.alloc(128, 0);
+    a.write(input.slice(0, 128)); b.write(target.slice(0, 128));
+    return crypto.timingSafeEqual(a, b);
+}
 
 app.post('/api/auth/login', (req, res) => {
     const { password = '' } = req.body;
-    // Timing-safe comparison to prevent timing attacks
-    const a = Buffer.alloc(128, 0);
-    const b = Buffer.alloc(128, 0);
-    a.write(password.slice(0, 128));
-    b.write(PASSWORD.slice(0, 128));
-    if (crypto.timingSafeEqual(a, b)) {
+    let role = null;
+    if (timingSafeMatch(password, PASSWORD))        role = 'admin';
+    else if (timingSafeMatch(password, TRADER_PASSWORD)) role = 'trader';
+
+    if (role) {
         req.session.authenticated = true;
+        req.session.role = role;
         req.session.save(err => {
             if (err) return res.status(500).json({ error: 'Session error' });
-            res.json({ success: true });
+            res.json({ success: true, role });
         });
     } else {
         res.status(401).json({ error: 'Неверный пароль' });

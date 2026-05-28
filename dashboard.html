@@ -1615,7 +1615,7 @@
                 <div class="section">
                     <h2 class="section-title">🔑 Tinkoff API</h2>
                     <div id="inv-token-saved-banner" style="display:none;background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#15803d;">
-                        ✅ Токен установлен
+                        ✅ Токен установлен: <span id="inv-token-preview" style="font-family:monospace;"></span>
                     </div>
                     <div class="input-grid" style="grid-template-columns:1fr;">
                         <div class="input-field">
@@ -1651,8 +1651,25 @@
 
                 <div class="section">
                     <h2 class="section-title">📊 Параметры стратегий</h2>
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                        <div class="input-field" style="flex-direction:row;align-items:center;gap:8px;">
+                            <label style="margin:0;white-space:nowrap;">Таймфрейм</label>
+                            <select id="inv-candle-interval" style="padding:7px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
+                                <option value="1min">1 мин</option>
+                                <option value="5min">5 мин</option>
+                                <option value="15min">15 мин</option>
+                                <option value="1hour">1 час</option>
+                                <option value="1day">День</option>
+                            </select>
+                        </div>
+                        <div class="input-field" style="flex-direction:row;align-items:center;gap:8px;">
+                            <label style="margin:0;white-space:nowrap;">Интервал тика (сек)</label>
+                            <input type="number" id="inv-tick-interval" style="width:80px;padding:7px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" value="60">
+                        </div>
+                    </div>
                     <div id="inv-strategy-params"></div>
                     <button class="btn btn-primary" onclick="invSaveStrategyParams()" style="margin-top:12px;">💾 Сохранить параметры</button>
+                    <span id="inv-params-saved" style="margin-left:10px;font-size:13px;color:#15803d;display:none;">✅ Сохранено</span>
                 </div>
 
                 <div class="section">
@@ -1864,16 +1881,18 @@
     <script>
         // ===== API / Авторизация =====
         let isAuthenticated = false;
+        let userRole = null;
         let saveTimer = null;
         let notesData = [];
         let editingNoteId = null;
 
         async function checkAuth() {
             try {
-                const res = await fetch('/api/auth/check');
+                const res  = await fetch('/api/auth/check');
                 const data = await res.json();
                 if (data.authenticated) {
-                    await loadFromServer();
+                    userRole = data.role;
+                    if (userRole !== 'trader') await loadFromServer();
                     showDashboard();
                 } else {
                     showLogin();
@@ -1893,7 +1912,9 @@
                     body: JSON.stringify({ password })
                 });
                 if (res.ok) {
-                    await loadFromServer();
+                    const data = await res.json();
+                    userRole = data.role;
+                    if (userRole !== 'trader') await loadFromServer();
                     showDashboard();
                 } else {
                     const data = await res.json();
@@ -1907,6 +1928,7 @@
         async function logout() {
             await fetch('/api/auth/logout', { method: 'POST' });
             isAuthenticated = false;
+            userRole = null;
             monthlyData = {};
             notesData = [];
             editingNoteId = null;
@@ -1924,6 +1946,23 @@
             document.getElementById('loginOverlay').style.display = 'none';
             document.querySelector('.container').style.display = 'block';
             isAuthenticated = true;
+            // Trader role: show only investments + crypto tabs
+            if (userRole === 'trader') {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    const tab = btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+                    const visible = ['investments', 'crypto'].includes(tab);
+                    btn.style.display = visible ? '' : 'none';
+                });
+                // Activate investments tab
+                const firstVisible = document.querySelector('.tab-btn[style=""]') || document.querySelector('.tab-btn:not([style*="none"])');
+                document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+                document.getElementById('investments').classList.add('active');
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    if (b.getAttribute('onclick')?.includes('investments')) b.classList.add('active');
+                });
+                invLoadAll();
+            }
             initHeaderAnimation();
             initDashboard();
         }
@@ -3660,9 +3699,16 @@
                 invInstruments = cfg.instruments || [];
                 invRenderInstruments();
                 invRenderStrategyParams();
-                // Show persistent token banner
-                const banner = document.getElementById('inv-token-saved-banner');
-                if (banner) banner.style.display = cfg.has_token ? 'block' : 'none';
+                // Show persistent token banner with preview
+                const banner  = document.getElementById('inv-token-saved-banner');
+                const preview = document.getElementById('inv-token-preview');
+                if (banner)  banner.style.display  = cfg.has_token ? 'block' : 'none';
+                if (preview) preview.textContent    = cfg.token_preview || '';
+                // Set timeframe
+                const intSel = document.getElementById('inv-candle-interval');
+                const tickEl = document.getElementById('inv-tick-interval');
+                if (intSel) intSel.value = cfg.candle_interval || '1min';
+                if (tickEl) tickEl.value = cfg.tick_interval_sec || 60;
             }
             invLoadAccounts();
         }
@@ -3676,10 +3722,13 @@
                 body: JSON.stringify({ api_token: token }),
             });
             document.getElementById('inv-api-token').value = '';
-            const banner = document.getElementById('inv-token-saved-banner');
-            if (banner) banner.style.display = 'block';
-            document.getElementById('inv-token-status').textContent = '✅ Токен обновлён';
-            setTimeout(() => { document.getElementById('inv-token-status').textContent = ''; }, 3000);
+            // Re-fetch config to get token_preview
+            const cfg = await invFetch('/api/bot/config');
+            const banner  = document.getElementById('inv-token-saved-banner');
+            const preview = document.getElementById('inv-token-preview');
+            if (banner)  banner.style.display = 'block';
+            if (preview) preview.textContent  = cfg.token_preview || '';
+            invShowGreen('inv-token-status', '✅ Токен сохранён');
             await invLoadAccounts();
         }
 
@@ -3692,11 +3741,9 @@
                 sel.innerHTML = data.accounts.map(a =>
                     `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name || a.id.slice(0,16))}</option>`
                 ).join('');
-                // Auto-select saved account
                 const savedId = data.saved_account_id || invConfig?.account_id;
                 if (savedId) sel.value = savedId;
-                // Show topup only in sandbox
-                if (topupBlock) topupBlock.style.display = (invConfig?.mode === 'sandbox' || data.accounts.length) ? 'flex' : 'none';
+                if (topupBlock) topupBlock.style.display = 'flex';
             } else {
                 sel.innerHTML = `<option value="">${data.error || 'Нет счетов'}</option>`;
                 if (topupBlock) topupBlock.style.display = 'none';
@@ -3712,10 +3759,11 @@
                 body: JSON.stringify({ account_id: sel.value }),
             });
             if (invConfig) invConfig.account_id = sel.value;
+            invShowGreen('inv-account-select', null, sel.closest('div'));
         }
 
         async function invSandboxTopup() {
-            const amount = document.getElementById('inv-topup-amount')?.value || 100000;
+            const amount   = document.getElementById('inv-topup-amount')?.value || 100000;
             const statusEl = document.getElementById('inv-topup-status');
             statusEl.textContent = '...';
             const data = await invFetch(`/api/bot/sandbox/topup?amount=${amount}`, { method: 'POST' });
@@ -3723,11 +3771,22 @@
             setTimeout(() => { statusEl.textContent = ''; }, 4000);
         }
 
+        // Generic green flash for any status element
+        function invShowGreen(elId, msg, parentEl) {
+            const el = elId ? document.getElementById(elId) : null;
+            if (el && msg) {
+                el.textContent = msg;
+                el.style.color = '#15803d';
+                setTimeout(() => { el.textContent = ''; el.style.color = ''; }, 3000);
+            }
+        }
+
         function invRenderStrategyParams() {
             if (!invConfig) return;
-            const el = document.getElementById('inv-strategy-params');
+            const el     = document.getElementById('inv-strategy-params');
             const params = invConfig.strategy_params || {};
-            const labels = { period: 'Период', overbought: 'Перекупленность', oversold: 'Перепроданность', quantity: 'Кол-во лотов', fast: 'Быстрая', slow: 'Медленная', signal: 'Сигнал', std_dev: 'Отклонение σ' };
+            const labels = { period: 'Период', overbought: 'Перекупленность', oversold: 'Перепроданность',
+                quantity: 'Кол-во лотов', fast: 'Быстрая', slow: 'Медленная', signal: 'Сигнал', std_dev: 'Откл. σ' };
             el.innerHTML = Object.entries(params).map(([strat, p]) => `
                 <div style="margin-bottom:16px;">
                     <div style="font-weight:600;margin-bottom:8px;text-transform:uppercase;font-size:13px;">${escapeHtml(strat)}</div>
@@ -3751,11 +3810,15 @@
                     if (el) params[strat][k] = parseFloat(el.value) || 0;
                 });
             });
+            const interval = document.getElementById('inv-candle-interval')?.value;
+            const tick     = parseInt(document.getElementById('inv-tick-interval')?.value) || 60;
             await invFetch('/api/bot/config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ strategy_params: params }),
+                body: JSON.stringify({ strategy_params: params, candle_interval: interval, tick_interval_sec: tick }),
             });
+            const saved = document.getElementById('inv-params-saved');
+            if (saved) { saved.style.display = 'inline'; setTimeout(() => { saved.style.display = 'none'; }, 3000); }
         }
 
         async function invSearchInstruments() {
