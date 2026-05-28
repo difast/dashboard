@@ -1792,7 +1792,7 @@
                         <button class="btn" onclick="invLoadAccounts()">🔄 Обновить</button>
                         <button class="btn btn-primary" onclick="invSaveAccount()">✅ Выбрать</button>
                     </div>
-                    <div id="inv-sandbox-topup" style="display:none;margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div id="inv-sandbox-topup" style="display:none;margin-top:12px;align-items:center;gap:10px;flex-wrap:wrap;">
                         <span style="font-size:13px;color:var(--text-secondary);">Пополнить sandbox счёт:</span>
                         <select id="inv-topup-amount" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
                             <option value="50000">50 000 ₽</option>
@@ -3937,10 +3937,16 @@
         }
 
         async function invSandboxTopup() {
-            const amount   = document.getElementById('inv-topup-amount')?.value || 100000;
-            const statusEl = document.getElementById('inv-topup-status');
+            const amount    = document.getElementById('inv-topup-amount')?.value || 100000;
+            const accountId = document.getElementById('inv-account-select')?.value || invConfig?.account_id;
+            const statusEl  = document.getElementById('inv-topup-status');
+            if (!accountId) {
+                statusEl.textContent = '❌ Выберите счёт';
+                setTimeout(() => { statusEl.textContent = ''; }, 4000);
+                return;
+            }
             statusEl.textContent = '...';
-            const data = await invFetch(`/api/bot/sandbox/topup?amount=${amount}`, { method: 'POST' });
+            const data = await invFetch(`/api/bot/sandbox/topup?amount=${amount}&account_id=${encodeURIComponent(accountId)}`, { method: 'POST' });
             statusEl.textContent = data.ok ? '✅ Пополнено' : '❌ ' + (data.error || 'Ошибка');
             setTimeout(() => { statusEl.textContent = ''; }, 4000);
         }
