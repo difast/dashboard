@@ -1614,10 +1614,13 @@
             <div id="inv-settings" class="sub-content">
                 <div class="section">
                     <h2 class="section-title">🔑 Tinkoff API</h2>
+                    <div id="inv-token-saved-banner" style="display:none;background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#15803d;">
+                        ✅ Токен установлен
+                    </div>
                     <div class="input-grid" style="grid-template-columns:1fr;">
                         <div class="input-field">
-                            <label>API Token (Tinkoff Invest)</label>
-                            <input type="password" id="inv-api-token" placeholder="Вставь токен из T-Invest...">
+                            <label>Новый API Token (Tinkoff Invest)</label>
+                            <input type="password" id="inv-api-token" placeholder="Вставь токен для замены...">
                         </div>
                     </div>
                     <button class="btn btn-primary" onclick="invSaveToken()" style="margin-top:8px;">💾 Сохранить токен</button>
@@ -1632,6 +1635,17 @@
                         </select>
                         <button class="btn" onclick="invLoadAccounts()">🔄 Обновить</button>
                         <button class="btn btn-primary" onclick="invSaveAccount()">✅ Выбрать</button>
+                    </div>
+                    <div id="inv-sandbox-topup" style="display:none;margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span style="font-size:13px;color:var(--text-secondary);">Пополнить sandbox счёт:</span>
+                        <select id="inv-topup-amount" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
+                            <option value="50000">50 000 ₽</option>
+                            <option value="100000" selected>100 000 ₽</option>
+                            <option value="500000">500 000 ₽</option>
+                            <option value="1000000">1 000 000 ₽</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="invSandboxTopup()">💳 Пополнить</button>
+                        <span id="inv-topup-status" style="font-size:13px;"></span>
                     </div>
                 </div>
 
@@ -3640,14 +3654,15 @@
 
         // ---- Settings tab ----
         async function invLoadSettings() {
-            if (!invConfig) {
-                const cfg = await invFetch('/api/bot/config');
-                if (!cfg._not_configured) invConfig = cfg;
-            }
-            if (invConfig) {
-                invInstruments = invConfig.instruments || [];
+            const cfg = await invFetch('/api/bot/config');
+            if (!cfg._not_configured) {
+                invConfig = cfg;
+                invInstruments = cfg.instruments || [];
                 invRenderInstruments();
                 invRenderStrategyParams();
+                // Show persistent token banner
+                const banner = document.getElementById('inv-token-saved-banner');
+                if (banner) banner.style.display = cfg.has_token ? 'block' : 'none';
             }
             invLoadAccounts();
         }
@@ -3661,20 +3676,30 @@
                 body: JSON.stringify({ api_token: token }),
             });
             document.getElementById('inv-api-token').value = '';
-            document.getElementById('inv-token-status').textContent = '✅ Токен сохранён';
+            const banner = document.getElementById('inv-token-saved-banner');
+            if (banner) banner.style.display = 'block';
+            document.getElementById('inv-token-status').textContent = '✅ Токен обновлён';
             setTimeout(() => { document.getElementById('inv-token-status').textContent = ''; }, 3000);
-            invLoadAccounts();
+            await invLoadAccounts();
         }
 
         async function invLoadAccounts() {
             const data = await invFetch('/api/bot/accounts');
-            const sel = document.getElementById('inv-account-select');
+            const sel  = document.getElementById('inv-account-select');
+            const topupBlock = document.getElementById('inv-sandbox-topup');
             if (!sel) return;
             if (data.accounts?.length) {
-                sel.innerHTML = data.accounts.map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name || a.id)}</option>`).join('');
-                if (invConfig?.account_id) sel.value = invConfig.account_id;
+                sel.innerHTML = data.accounts.map(a =>
+                    `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name || a.id.slice(0,16))}</option>`
+                ).join('');
+                // Auto-select saved account
+                const savedId = data.saved_account_id || invConfig?.account_id;
+                if (savedId) sel.value = savedId;
+                // Show topup only in sandbox
+                if (topupBlock) topupBlock.style.display = (invConfig?.mode === 'sandbox' || data.accounts.length) ? 'flex' : 'none';
             } else {
                 sel.innerHTML = `<option value="">${data.error || 'Нет счетов'}</option>`;
+                if (topupBlock) topupBlock.style.display = 'none';
             }
         }
 
@@ -3686,6 +3711,16 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ account_id: sel.value }),
             });
+            if (invConfig) invConfig.account_id = sel.value;
+        }
+
+        async function invSandboxTopup() {
+            const amount = document.getElementById('inv-topup-amount')?.value || 100000;
+            const statusEl = document.getElementById('inv-topup-status');
+            statusEl.textContent = '...';
+            const data = await invFetch(`/api/bot/sandbox/topup?amount=${amount}`, { method: 'POST' });
+            statusEl.textContent = data.ok ? '✅ Пополнено' : '❌ ' + (data.error || 'Ошибка');
+            setTimeout(() => { statusEl.textContent = ''; }, 4000);
         }
 
         function invRenderStrategyParams() {

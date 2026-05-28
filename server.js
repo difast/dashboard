@@ -177,6 +177,7 @@ app.get('/api/bot/portfolio',           requireAuth, (req, res) => botProxy(req,
 app.get('/api/bot/accounts',            requireAuth, (req, res) => botProxy(req, res, 'GET', '/api/portfolio/accounts'));
 app.get('/api/bot/candles',             requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/portfolio/candles?${new URLSearchParams(req.query)}`));
 app.get('/api/bot/instruments/search',  requireAuth, (req, res) => botProxy(req, res, 'GET', `/api/portfolio/instruments/search?${new URLSearchParams(req.query)}`))
+app.post('/api/bot/sandbox/topup',      requireAuth, (req, res) => botProxy(req, res, 'POST', `/api/portfolio/sandbox/topup?amount=${req.query.amount||100000}`))
 
 // Proxy: Crypto (Binance) bot — set CRYPTO_BOT_URL in Railway env vars
 const CRYPTO_URL = () => (process.env.CRYPTO_BOT_URL || '').replace(/\/$/, '');
