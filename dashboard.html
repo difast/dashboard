@@ -1646,6 +1646,7 @@
                                 <option value="rsi">RSI</option>
                                 <option value="macd">MACD</option>
                                 <option value="bollinger">Bollinger Bands</option>
+                                <option value="scalping">Scalping (EMA)</option>
                             </select>
                         </div>
                         <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
@@ -2041,20 +2042,41 @@
         let saveTimer = null;
         let notesData = [];
         let editingNoteId = null;
-        let invPollInterval = null;
-        let cryPollInterval = null;
+        let invPollInterval  = null;
+        let cryPollInterval  = null;
+        let dataPollInterval = null;
+        let activePollTab    = null;
 
         function startInvPolling() {
-            stopBotPolling();
+            stopAllPolling();
             invPollInterval = setInterval(invLoadAll, 30000);
         }
         function startCryPolling() {
-            stopBotPolling();
+            stopAllPolling();
             cryPollInterval = setInterval(cryLoadAll, 30000);
         }
-        function stopBotPolling() {
-            if (invPollInterval) { clearInterval(invPollInterval); invPollInterval = null; }
-            if (cryPollInterval) { clearInterval(cryPollInterval); cryPollInterval = null; }
+        function startDataPolling(tabName) {
+            stopAllPolling();
+            activePollTab = tabName;
+            dataPollInterval = setInterval(async () => {
+                if (userRole === 'trader') return;
+                await loadFromServer();
+                refreshActiveTab(activePollTab);
+            }, 30000);
+        }
+        function stopAllPolling() {
+            if (invPollInterval)  { clearInterval(invPollInterval);  invPollInterval  = null; }
+            if (cryPollInterval)  { clearInterval(cryPollInterval);  cryPollInterval  = null; }
+            if (dataPollInterval) { clearInterval(dataPollInterval); dataPollInterval = null; }
+            activePollTab = null;
+        }
+        function refreshActiveTab(tabName) {
+            if (tabName === 'integro')    { updateSchool(); updateProjects(); }
+            else if (tabName === 'expenses') updateExpenses();
+            else if (tabName === 'goals')    updateGoals();
+            else if (tabName === 'stats')    updateStats();
+            else if (tabName === '1on1')     load1on1Stats();
+            else if (tabName === 'notes')    updateNotes();
         }
 
         async function checkAuth() {
@@ -2414,7 +2436,8 @@
             if (tabName === '1on1') load1on1Stats();
             if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
             else if (tabName === 'crypto') { cryLoadAll(); startCryPolling(); }
-            else stopBotPolling();
+            else if (['integro','expenses','goals','stats','1on1','notes'].includes(tabName)) startDataPolling(tabName);
+            else stopAllPolling();
         }
 
         function switchSubTab(subTabName, btn) {
