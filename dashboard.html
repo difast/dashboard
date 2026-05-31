@@ -1100,6 +1100,7 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('integro', this)">🏢 Интегро</button>
             <button class="tab-btn" onclick="switchTab('expenses', this)">💰 Расходы</button>
+            <button class="tab-btn" onclick="switchTab('extra-income', this)">➕ Доп. доходы</button>
             <button class="tab-btn" onclick="switchTab('goals', this)">🎯 Цели</button>
             <button class="tab-btn" onclick="switchTab('stats', this)">📈 Статистика</button>
             <button class="tab-btn" onclick="switchTab('calvix', this)">🚀 Calvix</button>
@@ -1348,6 +1349,96 @@
                 <div class="summary-card">
                     <div class="summary-label">Средний расход</div>
                     <div class="summary-value" id="avgExpense">0 ₽</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ДОП. ДОХОДЫ -->
+        <div id="extra-income" class="content">
+            <div class="expenses-section">
+                <h2 class="section-title">➕ Добавить доход</h2>
+                <div class="expense-controls">
+                    <div class="input-field">
+                        <label>Источник дохода</label>
+                        <input type="text" id="extraIncomeName" placeholder="Например: фриланс проект">
+                    </div>
+                    <div class="input-field">
+                        <label>Сумма (₽)</label>
+                        <input type="number" id="extraIncomeAmount" placeholder="0">
+                    </div>
+                    <div class="input-field">
+                        <label>Категория</label>
+                        <select id="extraIncomeCategory">
+                            <option>💼 Фриланс</option>
+                            <option>🏠 Аренда</option>
+                            <option>📈 Дивиденды</option>
+                            <option>🎁 Подарок</option>
+                            <option>🛒 Продажа</option>
+                            <option>🤝 Партнёрство</option>
+                            <option>💡 Консультация</option>
+                            <option>📦 Прочее</option>
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label>Дата</label>
+                        <input type="date" id="extraIncomeDate">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addExtraIncome()">➕ Добавить доход</button>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📊 Показатели месяца</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Доп. доходы за месяц</div>
+                        <div class="stat-value" id="extraIncomeMonthTotal">0 ₽</div>
+                        <div class="stat-subtext" id="extraIncomeMonthCount">0 записей</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Средний доход</div>
+                        <div class="stat-value" id="extraIncomeAvg">0 ₽</div>
+                        <div class="stat-subtext">за запись в месяце</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Общий доход (все источники)</div>
+                        <div class="stat-value" id="extraIncomeTotalIncome">0 ₽</div>
+                        <div class="stat-subtext">Школа + Проекты + Доп.</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Чистая прибыль</div>
+                        <div class="stat-value" id="extraIncomeNetProfit">0 ₽</div>
+                        <div class="stat-subtext">Все доходы − Расходы</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📋 История доп. доходов</h2>
+                <div id="extraIncomeList" class="expenses-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💸</div>
+                        <div>Доходов нет. Добавьте первый выше</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">💼 Школа</div>
+                    <div class="summary-value" id="extraIncomeSchool">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">💻 IT Проекты</div>
+                    <div class="summary-value" id="extraIncomeProjects">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">➕ Доп. доходы</div>
+                    <div class="summary-value" id="extraIncomeExtra">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">💰 Чистая прибыль</div>
+                    <div class="summary-value" id="extraIncomeNet">0 ₽</div>
                 </div>
             </div>
         </div>
@@ -2071,12 +2162,13 @@
             activePollTab = null;
         }
         function refreshActiveTab(tabName) {
-            if (tabName === 'integro')    { updateSchool(); updateProjects(); }
-            else if (tabName === 'expenses') updateExpenses();
-            else if (tabName === 'goals')    updateGoals();
-            else if (tabName === 'stats')    updateStats();
-            else if (tabName === '1on1')     load1on1Stats();
-            else if (tabName === 'notes')    updateNotes();
+            if (tabName === 'integro')         { updateSchool(); updateProjects(); }
+            else if (tabName === 'expenses')    updateExpenses();
+            else if (tabName === 'extra-income') updateExtraIncomes();
+            else if (tabName === 'goals')       updateGoals();
+            else if (tabName === 'stats')       updateStats();
+            else if (tabName === '1on1')        load1on1Stats();
+            else if (tabName === 'notes')       updateNotes();
         }
 
         async function checkAuth() {
@@ -2189,7 +2281,8 @@
                         ...g,
                         date: new Date(g.date),
                         deadline: new Date(g.deadline)
-                    }))
+                    })),
+                    extraIncomes: (md.extraIncomes || []).map(e => ({ ...e, date: new Date(e.date) }))
                 };
             }
             return result;
@@ -2413,6 +2506,7 @@
                     expenses: [],
                     projects: [],
                     goals: [],
+                    extraIncomes: [],
                     schoolParams: { plan: 0, done: 0, lessonsPerWeek: 0, price: 0, revenueTarget: 0 },
                     projectsParams: { plan: 0, averagePlan: 0 }
                 };
@@ -2434,9 +2528,10 @@
             if (tabName === 'goals') updateGoals();
             if (tabName === 'notes') updateNotes();
             if (tabName === '1on1') load1on1Stats();
+            if (tabName === 'extra-income') updateExtraIncomes();
             if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
             else if (tabName === 'crypto') { cryLoadAll(); startCryPolling(); }
-            else if (['integro','expenses','goals','stats','1on1','notes'].includes(tabName)) startDataPolling(tabName);
+            else if (['integro','expenses','extra-income','goals','stats','1on1','notes'].includes(tabName)) startDataPolling(tabName);
             else stopAllPolling();
         }
 
@@ -2664,16 +2759,100 @@
                 .reduce((sum, p) => sum + (p.check || 0), 0);
         }
 
+        function calcExtraIncome(monthKey) {
+            const md = monthlyData[monthKey];
+            if (!md || !md.extraIncomes) return 0;
+            return md.extraIncomes.reduce((sum, e) => sum + e.amount, 0);
+        }
+
         function getMonthlyBalance() {
             const monthData = getCurrentMonthData();
-            const schoolMonthly = calcSchoolRevenue(selectedMonth);
+            const schoolMonthly   = calcSchoolRevenue(selectedMonth);
             const projectsMonthly = calcProjectsRevenue(selectedMonth);
-            const monthExpenses = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const extraMonthly    = calcExtraIncome(selectedMonth);
+            const monthExpenses   = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
             return {
-                income: schoolMonthly + projectsMonthly,
+                income:   schoolMonthly + projectsMonthly + extraMonthly,
+                school:   schoolMonthly,
+                projects: projectsMonthly,
+                extra:    extraMonthly,
                 expenses: monthExpenses,
-                balance: schoolMonthly + projectsMonthly - monthExpenses
+                balance:  schoolMonthly + projectsMonthly + extraMonthly - monthExpenses
             };
+        }
+
+        function addExtraIncome() {
+            const name     = document.getElementById('extraIncomeName').value.trim();
+            const amount   = parseFloat(document.getElementById('extraIncomeAmount').value);
+            const category = document.getElementById('extraIncomeCategory').value;
+            const dateVal  = document.getElementById('extraIncomeDate').value;
+            if (!name || !amount || amount <= 0) return;
+            const monthData = getCurrentMonthData();
+            if (!monthData.extraIncomes) monthData.extraIncomes = [];
+            monthData.extraIncomes.push({
+                id: Date.now(),
+                name, amount, category,
+                date: dateVal ? new Date(dateVal) : new Date()
+            });
+            document.getElementById('extraIncomeName').value  = '';
+            document.getElementById('extraIncomeAmount').value = '';
+            saveToServer();
+            updateExtraIncomes();
+            updateGoals();
+            updateStats();
+        }
+
+        function deleteExtraIncome(id) {
+            const monthData = getCurrentMonthData();
+            monthData.extraIncomes = (monthData.extraIncomes || []).filter(e => e.id !== id);
+            saveToServer();
+            updateExtraIncomes();
+            updateGoals();
+            updateStats();
+        }
+
+        function updateExtraIncomes() {
+            const monthData = getCurrentMonthData();
+            const items     = monthData.extraIncomes || [];
+            const listEl    = document.getElementById('extraIncomeList');
+            if (!listEl) return;
+
+            // Устанавливаем сегодня в поле даты если пустое
+            const dateInput = document.getElementById('extraIncomeDate');
+            if (dateInput && !dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            if (items.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💸</div><div>Доходов нет. Добавьте первый выше</div></div>';
+            } else {
+                const sorted = [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
+                listEl.innerHTML = sorted.map(e => `
+                    <div class="expense-item">
+                        <div class="expense-info">
+                            <div class="expense-name">${escapeHtml(e.name)}</div>
+                            <div class="expense-category">${escapeHtml(e.category)} • ${new Date(e.date).toLocaleDateString('ru-RU')}</div>
+                        </div>
+                        <div class="expense-amount" style="color:var(--success);">+${formatCurrency(e.amount)}</div>
+                        <button class="btn btn-danger" onclick="deleteExtraIncome(${e.id})">✕</button>
+                    </div>
+                `).join('');
+            }
+
+            const monthBalance = getMonthlyBalance();
+            const monthTotal   = items.reduce((s, e) => s + e.amount, 0);
+            const avg          = items.length > 0 ? monthTotal / items.length : 0;
+
+            document.getElementById('extraIncomeMonthTotal').textContent = formatCurrency(monthTotal);
+            document.getElementById('extraIncomeMonthCount').textContent = `${items.length} записей`;
+            document.getElementById('extraIncomeAvg').textContent        = formatCurrency(avg);
+            document.getElementById('extraIncomeTotalIncome').textContent = formatCurrency(monthBalance.income);
+            document.getElementById('extraIncomeNetProfit').textContent   = formatCurrency(monthBalance.balance);
+
+            document.getElementById('extraIncomeSchool').textContent   = formatCurrency(monthBalance.school);
+            document.getElementById('extraIncomeProjects').textContent  = formatCurrency(monthBalance.projects);
+            document.getElementById('extraIncomeExtra').textContent     = formatCurrency(monthBalance.extra);
+            document.getElementById('extraIncomeNet').textContent       = formatCurrency(monthBalance.balance);
         }
 
         function updateExpenses() {
@@ -2890,7 +3069,8 @@
             document.getElementById('statProjectsMRRProgress').textContent = formatCurrency(projectsMRR) + ' / 500 000 ₽';
             document.getElementById('statProjectsMRRBar').style.width = Math.min(projectsMRRPerf, 100) + '%';
 
-            document.getElementById('statTotalMRR').textContent = formatCurrency(totalMRR);
+            const extraMRR = calcExtraIncome(selectedMonth);
+            document.getElementById('statTotalMRR').textContent = formatCurrency(totalMRR + extraMRR);
             document.getElementById('statTotalARR').textContent = formatCurrency(totalARR);
             document.getElementById('statTotalValuation').textContent = formatCurrency(totalValuation);
             document.getElementById('statTotalExpenses').textContent = formatCurrency(monthBalance.expenses);
