@@ -17,28 +17,38 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'dashboard-session-secret-p
 // PostgreSQL support — used when DATABASE_URL is set (e.g. Railway Postgres addon)
 let pgPool = null;
 let pgReady = false;
-if (process.env.DATABASE_URL) {
+
+async function initPostgres() {
+    const url = process.env.DATABASE_URL;
+    if (!url) { console.log('DATABASE_URL not set — using file storage'); return; }
     const { Pool } = require('pg');
-    const isInternal = process.env.DATABASE_URL.includes('.railway.internal');
-    pgPool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: isInternal ? false : { rejectUnauthorized: false }
+    const isInternal = url.includes('.railway.internal');
+    console.log(`Connecting to PostgreSQL (${isInternal ? 'internal' : 'external'})...`);
+    const pool = new Pool({
+        connectionString: url,
+        ssl: isInternal ? false : { rejectUnauthorized: false },
+        connectionTimeoutMillis: 10000,
     });
-    pgPool.query(
-        `CREATE TABLE IF NOT EXISTS dashboard_kv (key TEXT PRIMARY KEY, value TEXT NOT NULL)`
-    ).then(() => {
-        pgReady = true;
-        console.log('PostgreSQL connected ✓');
-    }).catch(e => {
-        console.error('PG connect error:', e.message);
-        pgPool = null;
-        pgReady = false;
-    });
+    for (let attempt = 1; attempt <= 5; attempt++) {
+        try {
+            await pool.query(`CREATE TABLE IF NOT EXISTS dashboard_kv (key TEXT PRIMARY KEY, value TEXT NOT NULL)`);
+            pgPool  = pool;
+            pgReady = true;
+            console.log('PostgreSQL connected ✓');
+            return;
+        } catch (e) {
+            console.error(`PG attempt ${attempt}/5: ${e.message}`);
+            if (attempt < 5) await new Promise(r => setTimeout(r, 2000 * attempt));
+        }
+    }
+    console.error('PostgreSQL unavailable — falling back to file storage');
 }
 
-if (!pgPool && !fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+initPostgres().then(() => {
+    if (!pgPool && !fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(session({
@@ -150,7 +160,7 @@ app.post('/api/data', requireAuth, async (req, res) => {
 });
 
 app.get('/api/storage/status', requireAuth, (req, res) => {
-    res.json({ persistent: pgReady, type: pgReady ? 'postgresql' : 'file' });
+    res.json({ persistent: pgReady, type: pgReady ? 'postgresql' : 'file', db_url_set: !!process.env.DATABASE_URL });
 });
 
 app.get('/', (req, res) => {
