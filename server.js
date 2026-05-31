@@ -140,6 +140,10 @@ app.post('/api/data', requireAuth, async (req, res) => {
     }
 });
 
+app.get('/api/storage/status', requireAuth, (req, res) => {
+    res.json({ persistent: !!pgPool, type: pgPool ? 'postgresql' : 'file' });
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });

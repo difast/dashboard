@@ -1082,6 +1082,9 @@
     </div>
 
     <div class="container" style="display: none;">
+        <div id="storage-warning" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:12px 18px;margin-bottom:16px;font-size:13px;color:#92400e;gap:10px;align-items:center;">
+            ⚠️ <strong>Данные не сохраняются между деплоями.</strong>&nbsp;Подключи PostgreSQL в Railway: Dashboard → твой проект → <em>+ New</em> → <em>Database → PostgreSQL</em>. После подключения данные будут постоянными.
+        </div>
         <div class="header">
             <div style="flex: 1; min-width: 180px; max-width: 520px;">
                 <canvas id="headerShapes" height="52" style="width: 100%; display: block; border-radius: 8px;"></canvas>
@@ -2160,6 +2163,19 @@
             }
             initHeaderAnimation();
             if (userRole !== 'trader') initDashboard();
+            checkStorageStatus();
+        }
+
+        async function checkStorageStatus() {
+            try {
+                const res = await fetch('/api/storage/status');
+                if (!res.ok) return;
+                const d = await res.json();
+                if (!d.persistent) {
+                    const el = document.getElementById('storage-warning');
+                    if (el) el.style.display = 'flex';
+                }
+            } catch (_) {}
         }
 
         async function loadFromServer() {
