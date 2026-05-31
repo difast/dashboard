@@ -16,15 +16,24 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'dashboard-session-secret-p
 
 // PostgreSQL support — used when DATABASE_URL is set (e.g. Railway Postgres addon)
 let pgPool = null;
+let pgReady = false;
 if (process.env.DATABASE_URL) {
     const { Pool } = require('pg');
+    const isInternal = process.env.DATABASE_URL.includes('.railway.internal');
     pgPool = new Pool({
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
+        ssl: isInternal ? false : { rejectUnauthorized: false }
     });
     pgPool.query(
         `CREATE TABLE IF NOT EXISTS dashboard_kv (key TEXT PRIMARY KEY, value TEXT NOT NULL)`
-    ).catch(e => console.error('PG table init error:', e.message));
+    ).then(() => {
+        pgReady = true;
+        console.log('PostgreSQL connected ✓');
+    }).catch(e => {
+        console.error('PG connect error:', e.message);
+        pgPool = null;
+        pgReady = false;
+    });
 }
 
 if (!pgPool && !fs.existsSync(DATA_DIR)) {
@@ -141,7 +150,7 @@ app.post('/api/data', requireAuth, async (req, res) => {
 });
 
 app.get('/api/storage/status', requireAuth, (req, res) => {
-    res.json({ persistent: !!pgPool, type: pgPool ? 'postgresql' : 'file' });
+    res.json({ persistent: pgReady, type: pgReady ? 'postgresql' : 'file' });
 });
 
 app.get('/', (req, res) => {
