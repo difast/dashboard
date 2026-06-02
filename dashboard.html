@@ -664,6 +664,60 @@
             100% { transform: translateX(100%); }
         }
 
+        .goal-drag-handle {
+            cursor: grab;
+            color: var(--text-tertiary);
+            font-size: 20px;
+            padding: 0 6px;
+            user-select: none;
+            line-height: 1;
+        }
+        .goal-drag-handle:active { cursor: grabbing; }
+        .goal-priority-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .goal-card.drag-over {
+            border: 2px dashed var(--primary);
+            background: rgba(239,68,68,0.04);
+        }
+        .goal-card.dragging { opacity: 0.4; }
+        .goal-card-header-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+        }
+        .goal-move-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .goal-move-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 22px;
+            height: 18px;
+            font-size: 10px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .goal-move-btn:hover { background: var(--light); color: var(--primary); border-color: var(--primary); }
+
         .goal-actions {
             display: flex;
             gap: 8px;
@@ -2934,95 +2988,118 @@
             }
         }
 
-        function updateGoals() {
+        function moveGoal(id, direction) {
             const monthData = getCurrentMonthData();
-            const monthBalance = getMonthlyBalance();
+            const idx = monthData.goals.findIndex(g => g.id === id);
+            if (idx < 0) return;
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= monthData.goals.length) return;
+            const tmp = monthData.goals[idx];
+            monthData.goals[idx]    = monthData.goals[newIdx];
+            monthData.goals[newIdx] = tmp;
+            saveToServer();
+            updateGoals();
+        }
+
+        let _dragGoalId = null;
+
+        function updateGoals() {
+            const monthData       = getCurrentMonthData();
+            const monthBalance    = getMonthlyBalance();
             const availableBalance = Math.max(0, monthBalance.balance);
+            const goals           = monthData.goals; // порядок = приоритет
 
-            // Сортируем цели по убыванию цены
-            const sortedGoals = [...monthData.goals].sort((a, b) => b.amount - a.amount);
-
-            // Рассчитываем прогресс каждой цели на основе остатка
-            // без изменения сохраненных данных
-            const goalsWithProgress = sortedGoals.map(goal => {
-                let accumulatedAmount = 0;
-                
-                if (!goal.completed) {
-                    // Если цель не завершена, рассчитываем сколько она может получить из остатка
-                    let tempBalance = availableBalance;
-                    
-                    // Проходим по целям в порядке приоритета и рассчитываем накопление
-                    sortedGoals.forEach(g => {
-                        if (!g.completed && g.id === goal.id) {
-                            // Это текущая цель, даем ей сколько осталось от остатка
-                            accumulatedAmount = Math.min(tempBalance, g.amount);
-                        } else if (!g.completed && g.id !== goal.id) {
-                            // Это другие цели с более высоким приоритетом
-                            const needed = g.amount - g.saved;
-                            const toAdd = Math.min(tempBalance, needed);
-                            tempBalance -= toAdd;
-                        }
-                    });
+            // Распределяем баланс строго по порядку списка
+            let tempBalance = availableBalance;
+            const goalsWithProgress = goals.map(goal => {
+                let displaySaved = 0;
+                if (goal.completed) {
+                    displaySaved = goal.amount;
                 } else {
-                    // Если цель завершена, она полностью заполнена
-                    accumulatedAmount = goal.amount;
+                    displaySaved = Math.min(tempBalance, goal.amount);
+                    tempBalance  = Math.max(0, tempBalance - displaySaved);
                 }
-                
-                return {
-                    ...goal,
-                    displaySaved: accumulatedAmount
-                };
+                return { ...goal, displaySaved };
             });
 
             const listEl = document.getElementById('goalsList');
-
-            if (sortedGoals.length === 0) {
+            if (goals.length === 0) {
                 listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div>Целей нет. Добавьте первую цель выше</div></div>';
             } else {
-                listEl.innerHTML = goalsWithProgress.map(goal => {
-                    const daysLeft = Math.ceil((goal.deadline - new Date()) / (1000 * 60 * 60 * 24));
-                    const percent = goal.amount > 0 ? Math.round((goal.displaySaved / goal.amount) * 100) : 0;
-                    const isOverdue = daysLeft < 0;
-
+                listEl.innerHTML = goalsWithProgress.map((goal, idx) => {
+                    const daysLeft  = Math.ceil((new Date(goal.deadline) - new Date()) / 86400000);
+                    const percent   = goal.amount > 0 ? Math.min(100, Math.round((goal.displaySaved / goal.amount) * 100)) : 0;
+                    const isOverdue = daysLeft < 0 && !goal.completed;
                     return `
-                        <div class="goal-card">
-                            <div class="goal-header">
-                                <div>
-                                    <div class="goal-title">${goal.completed ? '✓ ' : ''}${goal.name}</div>
-                                    <div class="goal-deadline" style="color: ${isOverdue && !goal.completed ? '#991b1b' : 'var(--text-secondary)'}">
-                                        ${isOverdue && !goal.completed ? '⚠️ Просрочено на ' + Math.abs(daysLeft) + ' дн.' : 'Осталось: ' + daysLeft + ' дней'}
+                        <div class="goal-card" draggable="true"
+                            ondragstart="goalDragStart(event,${goal.id})"
+                            ondragover="goalDragOver(event)"
+                            ondragleave="goalDragLeave(event)"
+                            ondrop="goalDrop(event,${goal.id})">
+                            <div class="goal-card-header-row">
+                                <span class="goal-drag-handle" title="Перетащи для изменения приоритета">⠿</span>
+                                <span class="goal-priority-badge">${idx + 1}</span>
+                                <div style="flex:1;">
+                                    <div class="goal-title">${goal.completed ? '✅ ' : ''}${escapeHtml(goal.name)}</div>
+                                    <div class="goal-deadline" style="color:${isOverdue ? '#991b1b' : 'var(--text-secondary)'}">
+                                        ${isOverdue ? '⚠️ Просрочено на ' + Math.abs(daysLeft) + ' дн.' : goal.completed ? '✓ Выполнено' : 'До дедлайна: ' + daysLeft + ' дн.'}
                                     </div>
                                 </div>
-                                <div class="goal-price" style="color: ${percent === 100 ? '#10b981' : 'var(--primary)'}">${formatCurrency(goal.amount)}</div>
+                                <div class="goal-move-btns">
+                                    <button class="goal-move-btn" onclick="moveGoal(${goal.id},-1)" title="Выше" ${idx===0?'disabled':''}>▲</button>
+                                    <button class="goal-move-btn" onclick="moveGoal(${goal.id},1)"  title="Ниже" ${idx===goals.length-1?'disabled':''}>▼</button>
+                                </div>
+                                <div class="goal-price" style="color:${percent===100?'#10b981':'var(--primary)'};">${formatCurrency(goal.amount)}</div>
                             </div>
-                            
                             <div class="goal-progress-section">
                                 <div class="progress-label">
-                                    <span>Накоплено:</span>
+                                    <span>Накоплено из баланса:</span>
                                     <span class="progress-value">${formatCurrency(goal.displaySaved)} (${percent}%)</span>
                                 </div>
                                 <div class="goal-progress-bar">
-                                    <div class="goal-progress-fill" style="width: ${percent}%"></div>
+                                    <div class="goal-progress-fill" style="width:${percent}%"></div>
                                 </div>
                             </div>
-
                             <div class="goal-actions">
-                                <button class="btn ${goal.completed ? 'btn-success' : 'btn-primary'}" onclick="toggleGoalComplete(${goal.id})" style="flex: 1;">
+                                <button class="btn ${goal.completed?'btn-success':'btn-primary'}" onclick="toggleGoalComplete(${goal.id})" style="flex:1;">
                                     ${goal.completed ? '✓ Готово' : '📌 Отметить готово'}
                                 </button>
                                 <button class="btn btn-danger" onclick="deleteGoal(${goal.id})">✕ Удалить</button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }).join('');
             }
 
-            const totalGoalsAmount = sortedGoals.reduce((sum, g) => sum + g.amount, 0);
-            const totalDisplaySaved = goalsWithProgress.reduce((sum, g) => sum + g.displaySaved, 0);
+            document.getElementById('availableBalance').textContent  = formatCurrency(availableBalance);
+            document.getElementById('totalGoalsAmount').textContent   = formatCurrency(goals.reduce((s,g) => s+g.amount, 0));
+            document.getElementById('totalSavedAmount').textContent   = formatCurrency(goalsWithProgress.reduce((s,g) => s+g.displaySaved, 0));
+        }
 
-            document.getElementById('availableBalance').textContent = formatCurrency(availableBalance);
-            document.getElementById('totalGoalsAmount').textContent = formatCurrency(totalGoalsAmount);
-            document.getElementById('totalSavedAmount').textContent = formatCurrency(totalDisplaySaved);
+        function goalDragStart(e, id) {
+            _dragGoalId = id;
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function goalDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+        function goalDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+        function goalDrop(e, targetId) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            if (_dragGoalId === null || _dragGoalId === targetId) return;
+            const monthData = getCurrentMonthData();
+            const fromIdx   = monthData.goals.findIndex(g => g.id === _dragGoalId);
+            const toIdx     = monthData.goals.findIndex(g => g.id === targetId);
+            if (fromIdx < 0 || toIdx < 0) return;
+            const [item] = monthData.goals.splice(fromIdx, 1);
+            monthData.goals.splice(toIdx, 0, item);
+            _dragGoalId = null;
+            saveToServer();
+            updateGoals();
         }
 
         function updateStats() {
