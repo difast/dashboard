@@ -6,6 +6,8 @@
     <title>Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -13,24 +15,25 @@
         }
 
         :root {
-            --primary: #ef4444;
-            --secondary: #dc2626;
-            --success: #10b981;
+            --primary: #c9a84c;
+            --secondary: #a67c3a;
+            --success: #22c55e;
             --warning: #f59e0b;
-            --danger: #991b1b;
-            --dark: #1f2937;
-            --darker: #111827;
-            --light: #f3f4f6;
-            --lighter: #ffffff;
-            --border: #e5e7eb;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
+            --danger: #e05252;
+            --dark: #0b0d14;
+            --darker: #07090e;
+            --light: #1e2235;
+            --lighter: #161929;
+            --border: rgba(255,255,255,0.07);
+            --border-gold: rgba(201,168,76,0.25);
+            --text-primary: #e8eaf2;
+            --text-secondary: #7d8699;
+            --text-tertiary: #4a5168;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #0b0d14;
             color: var(--text-primary);
             min-height: 100vh;
             padding: 20px;
@@ -90,14 +93,14 @@
         .month-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
-            background: rgba(239, 68, 68, 0.05);
+            background: rgba(201, 168, 76, 0.05);
         }
 
         .month-btn.active {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border-color: var(--secondary);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
         }
 
         .month-btn:disabled {
@@ -157,7 +160,7 @@
         .tab-btn.active {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.4);
         }
 
         .content {
@@ -225,13 +228,15 @@
             font-size: 14px;
             transition: all 0.3s ease;
             font-family: inherit;
+            background: var(--light);
+            color: var(--text-primary);
         }
 
         .input-field input:focus,
         .input-field select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
         }
 
         .stats-grid {
@@ -241,7 +246,7 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            background: var(--light);
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border);
@@ -312,7 +317,7 @@
             color: white;
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 8px 16px rgba(201, 168, 76, 0.25);
         }
 
         .summary-label {
@@ -385,12 +390,12 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.25);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 6px 20px rgba(201, 168, 76, 0.35);
         }
 
         .btn-danger {
@@ -401,7 +406,7 @@
         }
 
         .btn-danger:hover {
-            background: #7f1d1d;
+            background: #c0392b;
         }
 
         .btn-success {
@@ -430,7 +435,7 @@
             gap: 15px;
             align-items: center;
             padding: 15px;
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            background: var(--light);
             border: 1px solid var(--border);
             border-radius: 8px;
             transition: all 0.3s ease;
@@ -439,7 +444,7 @@
         .expense-item:hover,
         .project-item:hover,
         .goal-item:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transform: translateX(4px);
         }
 
@@ -564,7 +569,7 @@
         }
 
         .status-bad {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(224, 82, 82, 0.12);
             color: var(--danger);
         }
 
@@ -582,7 +587,7 @@
 
         /* Стили для целей */
         .goal-card {
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            background: var(--light);
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border);
@@ -734,7 +739,7 @@
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: #ef4444;
+            background: #07090e;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -749,64 +754,109 @@
             animation-timing-function: ease-in-out;
             animation-iteration-count: infinite;
         }
-        .ls-s1 { width: 130px; height: 130px; background: #dc2626; border-radius: 50%; opacity: .18; top: -40px; left: -30px; animation: lsFloat1 4.2s infinite ease-in-out, lsRotate 9s infinite linear; }
-        .ls-s2 { width: 85px;  height: 85px;  background: #991b1b; opacity: .22; top: 12%; left: 7%;  transform: rotate(45deg); animation: lsFloat2 5s   infinite ease-in-out; }
-        .ls-s3 { width: 55px;  height: 55px;  background: #f87171; border-radius: 50%; opacity: .25; top: 62%; left: 4%;  animation: lsFloat3 3.6s infinite ease-in-out; }
-        .ls-s4 { width: 150px; height: 150px; background: #b91c1c; border-radius: 28px; opacity: .15; bottom: -55px; left: 14%; animation: lsFloat1 6.5s infinite ease-in-out; }
-        .ls-s5 { width: 95px;  height: 95px;  background: #dc2626; border-radius: 50%; opacity: .2;  top: 8%;  right: 9%;  animation: lsFloat2 4.8s infinite ease-in-out; }
-        .ls-s6 { width: 52px;  height: 52px;  background: #991b1b; opacity: .22; top: 43%; right: 6%; transform: rotate(30deg); animation: lsFloat3 5.6s infinite ease-in-out; }
-        .ls-s7 { width: 110px; height: 110px; background: #c91c1c; border-radius: 20px; opacity: .18; bottom: -25px; right: -20px; animation: lsFloat1 7s   infinite ease-in-out, lsRotate 11s infinite linear; }
-        .ls-s8 { width: 42px;  height: 42px;  background: #fca5a5; border-radius: 50%; opacity: .3;  top: 74%; right: 22%; animation: lsFloat2 3.2s infinite ease-in-out; }
-        .ls-s9 { width: 68px;  height: 68px;  background: #b91c1c; opacity: .2;  top: 28%; left: 20%; transform: rotate(15deg); animation: lsFloat3 4.4s infinite ease-in-out; }
-        .ls-s10{ width: 38px;  height: 38px;  background: #f87171; border-radius: 50%; opacity: .25; top: 50%; left: 40%; animation: lsFloat1 2.8s infinite ease-in-out; }
-        .ls-s11{ width: 75px;  height: 75px;  background: #dc2626; border-radius: 12px; opacity: .16; bottom: 12%; left: 42%; animation: lsFloat2 6s   infinite ease-in-out; }
-        .ls-s12{ width: 48px;  height: 48px;  background: #fecaca; opacity: .2;  top: 20%; right: 28%; transform: rotate(60deg); animation: lsFloat3 3.9s infinite ease-in-out; }
+        .ls-s1 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%); border-radius: 50%; top: -80px; left: -80px; animation: lsFloat1 8s infinite ease-in-out; }
+        .ls-s2 { width: 200px; height: 200px; background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%); border-radius: 50%; top: 10%; right: 5%; animation: lsFloat2 10s infinite ease-in-out; }
+        .ls-s3 { width: 150px; height: 150px; background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%); border-radius: 50%; bottom: 10%; left: 10%; animation: lsFloat3 7s infinite ease-in-out; }
+        .ls-s4 { width: 1px; height: 100%; background: linear-gradient(180deg, transparent, rgba(201,168,76,0.08), transparent); left: 25%; top: 0; }
+        .ls-s5 { width: 1px; height: 100%; background: linear-gradient(180deg, transparent, rgba(201,168,76,0.05), transparent); right: 30%; top: 0; }
+        .ls-s6 { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.08), transparent); top: 30%; }
+        .ls-s7 { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.05), transparent); bottom: 35%; }
+        .ls-s8  { display: none; }
+        .ls-s9  { display: none; }
+        .ls-s10 { display: none; }
+        .ls-s11 { display: none; }
+        .ls-s12 { display: none; }
 
-        @keyframes lsFloat1 { 0%,100% { transform: translateY(0);     } 50% { transform: translateY(-22px); } }
-        @keyframes lsFloat2 { 0%,100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(-16px) rotate(45deg); } }
-        @keyframes lsFloat3 { 0%,100% { transform: translateY(0) scale(1);   } 50% { transform: translateY(-26px) scale(1.08); } }
-        @keyframes lsRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .login-card {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .login-logo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            opacity: 0.7;
+        }
+
+        .login-title {
+            font-size: 36px;
+            font-weight: 300;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+
+        .login-title span {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .login-divider {
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            margin: 0 auto 48px;
+        }
+
+        @keyframes lsFloat1 { 0%,100% { transform: translateY(0);     } 50% { transform: translateY(-30px); } }
+        @keyframes lsFloat2 { 0%,100% { transform: translateY(0);     } 50% { transform: translateY(-20px); } }
+        @keyframes lsFloat3 { 0%,100% { transform: translateY(0);     } 50% { transform: translateY(-40px); } }
 
         .login-password-field {
             position: relative;
             z-index: 2;
-            width: 180px;
-            padding: 15px 24px;
-            border: 2.5px solid rgba(255, 255, 255, 0.35);
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.12);
-            color: white;
-            font-size: 24px;
+            width: 320px;
+            padding: 20px 32px;
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 4px;
+            background: rgba(201, 168, 76, 0.04);
+            color: var(--text-primary);
+            font-size: 28px;
             text-align: center;
-            letter-spacing: 10px;
+            letter-spacing: 12px;
             outline: none;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
             transition: all 0.4s ease;
             font-family: monospace;
         }
+        .login-password-field::placeholder {
+            letter-spacing: 2px;
+            font-size: 14px;
+            color: rgba(201, 168, 76, 0.3);
+            font-family: 'Inter', sans-serif;
+        }
         .login-password-field:focus {
-            width: 220px;
-            border-color: rgba(255, 255, 255, 0.65);
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+            border-color: rgba(201, 168, 76, 0.7);
+            background: rgba(201, 168, 76, 0.07);
+            box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.2), 0 20px 60px rgba(201, 168, 76, 0.08);
         }
         .login-error-msg {
             position: relative;
             z-index: 2;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--danger);
             font-size: 12px;
-            margin-top: 12px;
+            margin-top: 16px;
             min-height: 16px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-weight: 500;
+            letter-spacing: 1px;
             text-align: center;
+            text-transform: uppercase;
         }
 
         /* ===== Кнопка выхода ===== */
         .logout-btn {
             padding: 8px 16px;
             border: 2px solid var(--border);
-            background: white;
+            background: var(--light);
             color: var(--text-secondary);
             border-radius: 8px;
             font-size: 13px;
@@ -831,7 +881,8 @@
             padding-right: 36px;
             appearance: none;
             -webkit-appearance: none;
-            background: #fff;
+            background: var(--light);
+            color: var(--text-primary);
             cursor: pointer;
         }
         .input-field:has(select)::after {
@@ -932,7 +983,7 @@
         .note-edit-textarea { padding: 10px; resize: vertical; margin-bottom: 10px; line-height: 1.5; }
         .note-add-textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.5; transition: all 0.3s ease; }
         .note-edit-input:focus, .note-edit-textarea:focus, .note-add-textarea:focus {
-            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
         }
 
         /* ===== MOBILE ===== */
@@ -1130,9 +1181,15 @@
         <div class="ls-shape ls-s10"></div>
         <div class="ls-shape ls-s11"></div>
         <div class="ls-shape ls-s12"></div>
-        <input type="password" id="loginPassword" class="login-password-field"
-               onkeydown="if(event.key==='Enter') login()">
-        <div id="loginError" class="login-error-msg"></div>
+        <div class="login-card">
+            <div class="login-logo">Private</div>
+            <div class="login-title">Dash<span>board</span></div>
+            <div class="login-divider"></div>
+            <input type="password" id="loginPassword" class="login-password-field"
+                   placeholder="••••••••"
+                   onkeydown="if(event.key==='Enter') login()">
+            <div id="loginError" class="login-error-msg"></div>
+        </div>
     </div>
 
     <div class="container" style="display: none;">
@@ -1152,29 +1209,29 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('integro', this)">🏢 Интегро</button>
-            <button class="tab-btn" onclick="switchTab('expenses', this)">💰 Расходы</button>
-            <button class="tab-btn" onclick="switchTab('extra-income', this)">➕ Доп. доходы</button>
-            <button class="tab-btn" onclick="switchTab('goals', this)">🎯 Цели</button>
-            <button class="tab-btn" onclick="switchTab('stats', this)">📈 Статистика</button>
-            <button class="tab-btn" onclick="switchTab('calvix', this)">🚀 Calvix</button>
-            <button class="tab-btn" onclick="switchTab('1on1', this)">👥 1on1</button>
-            <button class="tab-btn" onclick="switchTab('investments', this)">💎 Инвестиции</button>
-            <button class="tab-btn" onclick="switchTab('crypto', this)">₿ Крипто</button>
-            <button class="tab-btn" onclick="switchTab('notes', this)">📝 Заметки</button>
+            <button class="tab-btn active" onclick="switchTab('integro', this)">Интегро</button>
+            <button class="tab-btn" onclick="switchTab('expenses', this)">Расходы</button>
+            <button class="tab-btn" onclick="switchTab('extra-income', this)">Доп. доходы</button>
+            <button class="tab-btn" onclick="switchTab('goals', this)">Цели</button>
+            <button class="tab-btn" onclick="switchTab('stats', this)">Статистика</button>
+            <button class="tab-btn" onclick="switchTab('calvix', this)">Calvix</button>
+            <button class="tab-btn" onclick="switchTab('1on1', this)">1on1</button>
+            <button class="tab-btn" onclick="switchTab('investments', this)">Инвестиции</button>
+            <button class="tab-btn" onclick="switchTab('crypto', this)">Крипто</button>
+            <button class="tab-btn" onclick="switchTab('notes', this)">Заметки</button>
         </div>
 
         <!-- ИНТЕГРО -->
         <div id="integro" class="content active">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" onclick="switchSubTab('school', this)">🎓 Школа</button>
-                <button class="sub-tab-btn" onclick="switchSubTab('projects', this)">💻 IT Проекты</button>
+                <button class="sub-tab-btn active" onclick="switchSubTab('school', this)">Школа</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('projects', this)">IT Проекты</button>
             </div>
 
         <!-- ШКОЛА -->
         <div id="school" class="sub-content active">
             <div class="section">
-                <h2 class="section-title">⚙️ Параметры школы</h2>
+                <h2 class="section-title">Параметры школы</h2>
                 <div class="input-grid">
                     <div class="input-field">
                         <label>План учеников</label>
@@ -1200,7 +1257,7 @@
             </div>
 
             <div class="section">
-                <h2 class="section-title">📊 Показатели</h2>
+                <h2 class="section-title">Показатели</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">План / Выполнено</div>
@@ -1246,7 +1303,7 @@
         <!-- IT ПРОЕКТЫ -->
         <div id="projects" class="sub-content">
             <div class="section">
-                <h2 class="section-title">⚙️ Плановые показатели</h2>
+                <h2 class="section-title">Плановые показатели</h2>
                 <div class="input-grid">
                     <div class="input-field">
                         <label>План проектов</label>
@@ -1264,7 +1321,7 @@
             </div>
 
             <div class="section">
-                <h2 class="section-title">➕ Добавить новый проект</h2>
+                <h2 class="section-title">Добавить новый проект</h2>
                 <div class="input-grid">
                     <div class="input-field">
                         <label>Название проекта</label>
@@ -1282,7 +1339,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="addProject()">➕ Добавить проект</button>
+                <button class="btn btn-primary" onclick="addProject()">Добавить проект</button>
             </div>
 
             <div class="section">
@@ -1296,7 +1353,7 @@
             </div>
 
             <div class="section">
-                <h2 class="section-title">📊 Показатели</h2>
+                <h2 class="section-title">Показатели</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">План / Выполнено</div>
@@ -1374,7 +1431,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="addExpense()">➕ Добавить расход</button>
+                <button class="btn btn-primary" onclick="addExpense()">Добавить расход</button>
             </div>
 
             <div class="section">
@@ -1500,7 +1557,7 @@
         <!-- ЦЕЛИ -->
         <div id="goals" class="content">
             <div class="expenses-section">
-                <h2 class="section-title">🎯 Добавить новую цель</h2>
+                <h2 class="section-title">Добавить новую цель</h2>
                 <div class="expense-controls">
                     <div class="input-field">
                         <label>Название цели</label>
@@ -1515,7 +1572,7 @@
                         <input type="date" id="goalDeadline">
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="addGoal()">➕ Добавить цель</button>
+                <button class="btn btn-primary" onclick="addGoal()">Добавить цель</button>
             </div>
 
             <div class="section">
@@ -1539,7 +1596,7 @@
                 </div>
                 <div id="goalsList" class="goals-list">
                     <div class="empty-state">
-                        <div class="empty-state-icon">🎯</div>
+                        <div class="empty-state-icon"></div>
                         <div>Целей нет. Добавьте первую цель выше</div>
                     </div>
                 </div>
@@ -1549,14 +1606,14 @@
         <!-- СТАТИСТИКА -->
         <div id="stats" class="content">
             <div class="section">
-                <h2 class="section-title">📊 Динамика выручки</h2>
+                <h2 class="section-title">Динамика выручки</h2>
                 <div class="charts-grid">
                     <div class="chart-container">
-                        <div class="chart-title">📈 Выручка по направлениям</div>
+                        <div class="chart-title">Выручка по направлениям</div>
                         <canvas id="revenueChart"></canvas>
                     </div>
                     <div class="chart-container">
-                        <div class="chart-title">📊 План vs Выполнено</div>
+                        <div class="chart-title">План vs Выполнено</div>
                         <canvas id="planChart"></canvas>
                     </div>
                 </div>
@@ -1566,7 +1623,7 @@
                 <h2 class="section-title">💹 Выручка по месяцам</h2>
                 <div class="charts-grid">
                     <div class="chart-container" style="grid-column: 1 / -1;">
-                        <div class="chart-title">📈 MRR по месяцам (Школа и IT Проекты)</div>
+                        <div class="chart-title">MRR по месяцам (Школа и IT Проекты)</div>
                         <canvas id="monthlyRevenueChart" style="height: 300px;"></canvas>
                     </div>
                 </div>
@@ -1580,17 +1637,17 @@
                         <canvas id="expenseChart"></canvas>
                     </div>
                     <div class="chart-container">
-                        <div class="chart-title">💰 Доход vs Расходы</div>
+                        <div class="chart-title">Доход vs Расходы</div>
                         <canvas id="profitChart"></canvas>
                     </div>
                 </div>
             </div>
 
             <div class="section">
-                <h2 class="section-title">📈 Метрики по направлениям</h2>
+                <h2 class="section-title">Метрики по направлениям</h2>
                 <div class="stats-comparison">
                     <div class="comparison-card">
-                        <div class="comparison-title">🎓 Школа</div>
+                        <div class="comparison-title">Школа</div>
                         <div class="comparison-row">
                             <span class="comparison-label">Студентов:</span>
                             <span class="comparison-value" id="statSchoolStudents">0/0</span>
@@ -1691,7 +1748,7 @@
 
             <div class="section">
                 <h2 class="section-title">📥 Экспорт данных</h2>
-                <button class="btn btn-primary" onclick="downloadCSV()">📊 Скачать CSV за выбранный месяц</button>
+                <button class="btn btn-primary" onclick="downloadCSV()">Скачать CSV за выбранный месяц</button>
                 <p style="color: var(--text-secondary); font-size: 12px; margin-top: 15px;">
                     Выгружает все данные (доход, расходы, проекты, цели) за выбранный месяц в формате CSV
                 </p>
@@ -1714,11 +1771,11 @@
                 Загрузка статистики 1on1...
             </div>
             <div id="oo-not-configured" class="section" style="display:none;text-align:center;padding:40px 20px;">
-                <div style="font-size:40px;margin-bottom:16px;">⚙️</div>
+                <div style="font-size:14px;font-weight:600;letter-spacing:3px;margin-bottom:16px;color:var(--primary);opacity:0.5;">CONFIG</div>
                 <p style="color:var(--text-secondary);font-size:15px;">Укажи <code style="background:var(--light);padding:2px 6px;border-radius:4px;">ONE_ON_ONE_API_URL</code> в Railway env vars,<br>чтобы подключить статистику 1on1.</p>
             </div>
             <div id="oo-error" class="section" style="display:none;text-align:center;padding:40px 20px;">
-                <div style="font-size:40px;margin-bottom:16px;">⚠️</div>
+                <div style="font-size:14px;font-weight:600;letter-spacing:3px;margin-bottom:16px;color:var(--warning);opacity:0.7;">!</div>
                 <p id="oo-error-msg" style="color:var(--danger);font-size:14px;"></p>
             </div>
             <div id="oo-content" style="display:none;">
@@ -1734,7 +1791,7 @@
 
                 <!-- Teams -->
                 <div class="section">
-                    <h2 class="section-title">🏢 Команды</h2>
+                    <h2 class="section-title">Команды</h2>
                     <div id="oo-teams-list"></div>
                 </div>
 
@@ -1749,7 +1806,7 @@
 
                 <div style="text-align:right;margin-top:8px;">
                     <span id="oo-last-updated" style="font-size:12px;color:var(--text-secondary);"></span>
-                    <button class="btn" style="margin-left:12px;padding:6px 14px;font-size:13px;" onclick="load1on1Stats()">🔄 Обновить</button>
+                    <button class="btn" style="margin-left:12px;padding:6px 14px;font-size:13px;" onclick="load1on1Stats()">Обновить</button>
                 </div>
             </div>
         </div>
@@ -1758,17 +1815,17 @@
         <div id="investments" class="content">
             <!-- Sub-tabs -->
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" onclick="invTab('inv-overview', this)">📊 Обзор</button>
-                <button class="sub-tab-btn" onclick="invTab('inv-trades', this)">📋 Сделки</button>
-                <button class="sub-tab-btn" onclick="invTab('inv-portfolio', this)">💼 Портфель</button>
-                <button class="sub-tab-btn" onclick="invTab('inv-pnl', this)">📈 P&amp;L</button>
-                <button class="sub-tab-btn" onclick="invTab('inv-settings', this)">⚙️ Настройки</button>
+                <button class="sub-tab-btn active" onclick="invTab('inv-overview', this)">Обзор</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-trades', this)">Сделки</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-portfolio', this)">Портфель</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-pnl', this)">P&amp;L</button>
+                <button class="sub-tab-btn" onclick="invTab('inv-settings', this)">Настройки</button>
             </div>
 
             <!-- ОБЗОР -->
             <div id="inv-overview" class="sub-content active">
                 <div id="inv-not-configured" class="section" style="display:none;text-align:center;padding:40px 20px;">
-                    <div style="font-size:40px;margin-bottom:16px;">⚙️</div>
+                    <div style="font-size:14px;font-weight:600;letter-spacing:3px;margin-bottom:16px;color:var(--primary);opacity:0.5;">CONFIG</div>
                     <p style="color:var(--text-secondary);">Укажи <code style="background:var(--light);padding:2px 6px;border-radius:4px;">TRADING_BOT_URL</code> в Railway,<br>затем введи API-ключ Tinkoff в разделе Настройки.</p>
                 </div>
                 <div id="inv-main" style="display:none;">
@@ -1797,7 +1854,7 @@
                         <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
                             <span id="inv-status-dot" style="width:10px;height:10px;border-radius:50%;background:#d1d5db;display:inline-block;"></span>
                             <span id="inv-status-text" style="font-size:13px;color:var(--text-secondary);">—</span>
-                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="invLoadAll()">🔄</button>
+                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="invLoadAll()">↻</button>
                         </div>
                     </div>
 
@@ -1807,7 +1864,7 @@
                     <!-- Candle chart -->
                     <div class="section">
                         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-                            <h2 class="section-title" style="margin:0;">📉 График</h2>
+                            <h2 class="section-title" style="margin:0;">График</h2>
                             <select id="inv-chart-figi" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="invLoadCandles()">
                                 <option value="">Выбери инструмент</option>
                             </select>
@@ -1883,7 +1940,7 @@
             <!-- ПОРТФЕЛЬ -->
             <div id="inv-portfolio" class="sub-content">
                 <div class="section">
-                    <h2 class="section-title">💼 Текущий портфель</h2>
+                    <h2 class="section-title">Текущий портфель</h2>
                     <div id="inv-portfolio-table"></div>
                 </div>
             </div>
@@ -1892,7 +1949,7 @@
             <div id="inv-pnl" class="sub-content">
                 <div class="section">
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-                        <h2 class="section-title" style="margin:0;">📈 P&amp;L по периодам</h2>
+                        <h2 class="section-title" style="margin:0;">P&amp;L по периодам</h2>
                         <select id="pnl-period" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="invLoadPnl()">
                             <option value="day">По дням (30 дн)</option>
                             <option value="week">По неделям (12 нед)</option>
@@ -1917,7 +1974,7 @@
                 <div class="section">
                     <h2 class="section-title">🔑 Tinkoff API</h2>
                     <div id="inv-token-saved-banner" style="display:none;background:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#15803d;">
-                        ✅ Токен установлен: <span id="inv-token-preview" style="font-family:monospace;"></span>
+                        Токен установлен: <span id="inv-token-preview" style="font-family:monospace;"></span>
                     </div>
                     <div class="input-grid" style="grid-template-columns:1fr;">
                         <div class="input-field">
@@ -1925,18 +1982,18 @@
                             <input type="password" id="inv-api-token" placeholder="Вставь токен для замены...">
                         </div>
                     </div>
-                    <button class="btn btn-primary" onclick="invSaveToken()" style="margin-top:8px;">💾 Сохранить токен</button>
+                    <button class="btn btn-primary" onclick="invSaveToken()" style="margin-top:8px;">Сохранить токен</button>
                     <div id="inv-token-status" style="margin-top:8px;font-size:13px;"></div>
                 </div>
 
                 <div class="section">
-                    <h2 class="section-title">🏦 Счёт</h2>
+                    <h2 class="section-title">Счёт</h2>
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
                         <select id="inv-account-select" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;min-width:200px;">
                             <option value="">Загрузка счетов...</option>
                         </select>
-                        <button class="btn" onclick="invLoadAccounts()">🔄 Обновить</button>
-                        <button class="btn btn-primary" onclick="invSaveAccount()">✅ Выбрать</button>
+                        <button class="btn" onclick="invLoadAccounts()">Обновить</button>
+                        <button class="btn btn-primary" onclick="invSaveAccount()">Выбрать</button>
                     </div>
                     <div id="inv-sandbox-topup" style="display:none;margin-top:12px;align-items:center;gap:10px;flex-wrap:wrap;">
                         <span style="font-size:13px;color:var(--text-secondary);">Пополнить sandbox счёт:</span>
@@ -1952,7 +2009,7 @@
                 </div>
 
                 <div class="section">
-                    <h2 class="section-title">📊 Параметры стратегий</h2>
+                    <h2 class="section-title">Параметры стратегий</h2>
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
                         <div class="input-field" style="flex-direction:row;align-items:center;gap:8px;">
                             <label style="margin:0;white-space:nowrap;">Таймфрейм</label>
@@ -1970,8 +2027,8 @@
                         </div>
                     </div>
                     <div id="inv-strategy-params"></div>
-                    <button class="btn btn-primary" onclick="invSaveStrategyParams()" style="margin-top:12px;">💾 Сохранить параметры</button>
-                    <span id="inv-params-saved" style="margin-left:10px;font-size:13px;color:#15803d;display:none;">✅ Сохранено</span>
+                    <button class="btn btn-primary" onclick="invSaveStrategyParams()" style="margin-top:12px;">Сохранить параметры</button>
+                    <span id="inv-params-saved" style="margin-left:10px;font-size:13px;color:var(--success);display:none;">Сохранено</span>
                 </div>
 
                 <div class="section">
@@ -1994,17 +2051,17 @@
         <!-- КРИПТО -->
         <div id="crypto" class="content">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" onclick="crypTab('cry-overview',this)">📊 Обзор</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-trades',this)">📋 Сделки</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-portfolio',this)">💼 Портфель</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-pnl',this)">📈 P&amp;L</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-settings',this)">⚙️ Настройки</button>
+                <button class="sub-tab-btn active" onclick="crypTab('cry-overview',this)">Обзор</button>
+                <button class="sub-tab-btn" onclick="crypTab('cry-trades',this)">Сделки</button>
+                <button class="sub-tab-btn" onclick="crypTab('cry-portfolio',this)">Портфель</button>
+                <button class="sub-tab-btn" onclick="crypTab('cry-pnl',this)">P&amp;L</button>
+                <button class="sub-tab-btn" onclick="crypTab('cry-settings',this)">Настройки</button>
             </div>
 
             <!-- ОБЗОР -->
             <div id="cry-overview" class="sub-content active">
                 <div id="cry-not-configured" class="section" style="display:none;text-align:center;padding:40px 20px;">
-                    <div style="font-size:40px;margin-bottom:16px;">⚙️</div>
+                    <div style="font-size:14px;font-weight:600;letter-spacing:3px;margin-bottom:16px;color:var(--primary);opacity:0.5;">CONFIG</div>
                     <p style="color:var(--text-secondary);">Укажи <code style="background:var(--light);padding:2px 6px;border-radius:4px;">CRYPTO_BOT_URL</code> в Railway,<br>затем введи Binance API ключи в разделе Настройки.</p>
                 </div>
                 <div id="cry-main" style="display:none;">
@@ -2032,13 +2089,13 @@
                         <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
                             <span id="cry-status-dot" style="width:10px;height:10px;border-radius:50%;background:#d1d5db;display:inline-block;"></span>
                             <span id="cry-status-text" style="font-size:13px;color:var(--text-secondary);">—</span>
-                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="cryLoadAll()">🔄</button>
+                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="cryLoadAll()">↻</button>
                         </div>
                     </div>
                     <div class="stats-grid" id="cry-summary-cards" style="margin-bottom:24px;"></div>
                     <div class="section">
                         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-                            <h2 class="section-title" style="margin:0;">📉 График</h2>
+                            <h2 class="section-title" style="margin:0;">График</h2>
                             <select id="cry-chart-pair" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="cryLoadCandles()">
                                 <option value="">Выбери пару</option>
                             </select>
@@ -2085,7 +2142,7 @@
             <!-- ПОРТФЕЛЬ -->
             <div id="cry-portfolio" class="sub-content">
                 <div class="section">
-                    <h2 class="section-title">💼 Баланс Binance</h2>
+                    <h2 class="section-title">Баланс Binance</h2>
                     <div id="cry-portfolio-table"></div>
                 </div>
             </div>
@@ -2094,7 +2151,7 @@
             <div id="cry-pnl" class="sub-content">
                 <div class="section">
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-                        <h2 class="section-title" style="margin:0;">📈 P&amp;L по периодам</h2>
+                        <h2 class="section-title" style="margin:0;">P&amp;L по периодам</h2>
                         <select id="cry-pnl-period" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="cryLoadPnl()">
                             <option value="day">По дням (30 дн)</option>
                             <option value="week">По неделям (12 нед)</option>
@@ -2122,14 +2179,14 @@
                         <div class="input-field"><label>API Key</label><input type="password" id="cry-api-key" placeholder="Binance API Key..."></div>
                         <div class="input-field"><label>API Secret</label><input type="password" id="cry-api-secret" placeholder="Binance API Secret..."></div>
                     </div>
-                    <button class="btn btn-primary" onclick="crySaveCredentials()" style="margin-top:8px;">💾 Сохранить</button>
+                    <button class="btn btn-primary" onclick="crySaveCredentials()" style="margin-top:8px;">Сохранить</button>
                     <div id="cry-cred-status" style="margin-top:8px;font-size:13px;"></div>
                 </div>
 
                 <div class="section">
-                    <h2 class="section-title">📊 Параметры стратегий</h2>
+                    <h2 class="section-title">Параметры стратегий</h2>
                     <div id="cry-strategy-params"></div>
-                    <button class="btn btn-primary" onclick="crySaveStrategyParams()" style="margin-top:12px;">💾 Сохранить параметры</button>
+                    <button class="btn btn-primary" onclick="crySaveStrategyParams()" style="margin-top:12px;">Сохранить параметры</button>
                 </div>
 
                 <div class="section">
@@ -2152,7 +2209,7 @@
         <!-- ЗАМЕТКИ -->
         <div id="notes" class="content">
             <div class="section">
-                <h2 class="section-title">➕ Новая заметка</h2>
+                <h2 class="section-title">Новая заметка</h2>
                 <div class="input-grid">
                     <div class="input-field">
                         <label>Заголовок</label>
@@ -2167,7 +2224,7 @@
                     <label style="font-size: 13px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">Цвет</label>
                     <input type="color" id="noteColorInput" value="#ffffff" style="width: 40px; height: 32px; border: 2px solid var(--border); cursor: pointer; border-radius: 6px; padding: 2px;">
                 </div>
-                <button class="btn btn-primary" onclick="addNote()">➕ Добавить заметку</button>
+                <button class="btn btn-primary" onclick="addNote()">Добавить заметку</button>
             </div>
 
             <div class="section">
@@ -2431,7 +2488,7 @@
             if (countEl) countEl.textContent = notesData.length ? `(${notesData.length})` : '';
 
             if (notesData.length === 0) {
-                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><div>Заметок нет. Добавьте первую заметку выше</div></div>';
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><div>Заметок нет. Добавьте первую заметку выше</div></div>';
                 return;
             }
 
@@ -2486,7 +2543,7 @@
             const W = canvas.width;
             const H = canvas.height;
 
-            const colors = ['#ef4444','#dc2626','#b91c1c','#f87171','#fca5a5','#991b1b','#c91c1c'];
+            const colors = ['#c9a84c','#a67c3a','#d4b96a','#8a6430','#e8cc96','#6b4d22','#f0ddb0'];
             const types  = ['circle','square','triangle','diamond'];
 
             const shapes = Array.from({ length: 14 }, (_, i) => ({
@@ -3024,7 +3081,7 @@
 
             const listEl = document.getElementById('goalsList');
             if (goals.length === 0) {
-                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div>Целей нет. Добавьте первую цель выше</div></div>';
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><div>Целей нет. Добавьте первую цель выше</div></div>';
             } else {
                 listEl.innerHTML = goalsWithProgress.map((goal, idx) => {
                     const daysLeft  = Math.ceil((new Date(goal.deadline) - new Date()) / 86400000);
@@ -3040,9 +3097,9 @@
                                 <span class="goal-drag-handle" title="Перетащи для изменения приоритета">⠿</span>
                                 <span class="goal-priority-badge">${idx + 1}</span>
                                 <div style="flex:1;">
-                                    <div class="goal-title">${goal.completed ? '✅ ' : ''}${escapeHtml(goal.name)}</div>
-                                    <div class="goal-deadline" style="color:${isOverdue ? '#991b1b' : 'var(--text-secondary)'}">
-                                        ${isOverdue ? '⚠️ Просрочено на ' + Math.abs(daysLeft) + ' дн.' : goal.completed ? '✓ Выполнено' : 'До дедлайна: ' + daysLeft + ' дн.'}
+                                    <div class="goal-title">${goal.completed ? '✓ ' : ''}${escapeHtml(goal.name)}</div>
+                                    <div class="goal-deadline" style="color:${isOverdue ? 'var(--danger)' : 'var(--text-secondary)'}">
+                                        ${isOverdue ? 'Просрочено на ' + Math.abs(daysLeft) + ' дн.' : goal.completed ? 'Выполнено' : 'До дедлайна: ' + daysLeft + ' дн.'}
                                     </div>
                                 </div>
                                 <div class="goal-move-btns">
@@ -3269,7 +3326,7 @@
                     labels: Object.keys(categoryTotals).length > 0 ? Object.keys(categoryTotals) : ['Нет расходов'],
                     datasets: [{
                         data: Object.values(categoryTotals).length > 0 ? Object.values(categoryTotals) : [1],
-                        backgroundColor: ['#ef4444', '#dc2626', '#991b1b', '#7f1d1d', '#fecaca'],
+                        backgroundColor: ['#c9a84c', '#a67c3a', '#d4b96a', '#8a6430', '#f0ddb0'],
                         borderColor: '#ffffff',
                         borderWidth: 3
                     }]
@@ -3330,13 +3387,13 @@
                                 monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0,
                                 monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0
                             ],
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderColor: '#c9a84c',
+                            backgroundColor: 'rgba(201, 168, 76, 0.1)',
                             borderWidth: 3,
                             fill: true,
                             tension: 0.4,
                             pointRadius: 6,
-                            pointBackgroundColor: '#ef4444'
+                            pointBackgroundColor: '#c9a84c'
                         }
                     ]
                 },
@@ -3605,23 +3662,23 @@
             const btn = document.getElementById('cry-toggle-btn');
             dot.style.background = s.active ? (s.last_error ? '#f59e0b' : '#22c55e') : '#d1d5db';
             txt.textContent = s.active
-                ? `Активен · ${s.strategy?.toUpperCase()} · ${s.mode}${s.uptime_sec ? ' · ' + Math.round(s.uptime_sec/60) + 'мин' : ''}${s.last_error ? ' · ⚠️ ' + s.last_error.slice(0, 80) : ''}`
-                : `Остановлен · ${s.last_error ? '⚠️ ' + s.last_error.slice(0, 80) : s.mode}`;
-            btn.textContent = s.active ? '⏹ Стоп' : '▶ Старт';
-            btn.style.background = s.active ? '#ef4444' : '';
+                ? `Активен · ${s.strategy?.toUpperCase()} · ${s.mode}${s.uptime_sec ? ' · ' + Math.round(s.uptime_sec/60) + 'мин' : ''}${s.last_error ? ' · ' + s.last_error.slice(0, 80) : ''}`
+                : `Остановлен · ${s.last_error ? s.last_error.slice(0, 80) : s.mode}`;
+            btn.textContent = s.active ? 'Стоп' : 'Старт';
+            btn.style.background = s.active ? 'var(--success)' : '';
         }
 
         function cryRenderSummaryCards(s) {
             const fmt = v => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(4) + ' $';
             const col = v => v == null ? '' : v > 0 ? 'color:#16a34a' : v < 0 ? 'color:var(--danger)' : '';
             document.getElementById('cry-summary-cards').innerHTML = [
-                { icon: '🔄', label: 'Сделок всего',  value: s.total_trades ?? '—' },
-                { icon: '📅', label: 'Сегодня',        value: s.trades_today ?? 0 },
-                { icon: '📆', label: 'Неделя',         value: s.trades_week ?? 0 },
-                { icon: '💰', label: 'P&L сегодня',    value: fmt(s.pnl_today),  style: col(s.pnl_today) },
-                { icon: '📊', label: 'P&L неделя',     value: fmt(s.pnl_week),   style: col(s.pnl_week) },
-                { icon: '📈', label: 'P&L месяц',      value: fmt(s.pnl_month),  style: col(s.pnl_month) },
-                { icon: '💎', label: 'P&L всего',      value: fmt(s.pnl_total),  style: col(s.pnl_total) },
+                { icon: '', label: 'Сделок всего',  value: s.total_trades ?? '—' },
+                { icon: '', label: 'Сегодня',        value: s.trades_today ?? 0 },
+                { icon: '', label: 'Неделя',         value: s.trades_week ?? 0 },
+                { icon: '', label: 'P&L сегодня',    value: fmt(s.pnl_today),  style: col(s.pnl_today) },
+                { icon: '', label: 'P&L неделя',     value: fmt(s.pnl_week),   style: col(s.pnl_week) },
+                { icon: '', label: 'P&L месяц',      value: fmt(s.pnl_month),  style: col(s.pnl_month) },
+                { icon: '', label: 'P&L всего',      value: fmt(s.pnl_total),  style: col(s.pnl_total) },
             ].map(c => `<div class="stat-card">
                 <div style="font-size:26px;margin-bottom:6px;">${c.icon}</div>
                 <div class="stat-value" style="${c.style||''}">${c.value}</div>
@@ -3660,7 +3717,7 @@
             const values = data.entries.map(e => e.pnl);
             cryPnlMiniChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: data.entries.map(e => e.label), datasets: [{ data: values, backgroundColor: values.map(v => v >= 0 ? '#22c55e' : '#ef4444') }] },
+                data: { labels: data.entries.map(e => e.label), datasets: [{ data: values, backgroundColor: values.map(v => v >= 0 ? '#22c55e' : '#e05252') }] },
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 15 } } } },
             });
         }
@@ -3766,7 +3823,7 @@
                 if (cryPnlPeriodChart) cryPnlPeriodChart.destroy();
                 cryPnlPeriodChart = new Chart(ctx, {
                     type: 'bar',
-                    data: { labels: entries.map(e => e.label), datasets: [{ data: entries.map(e => e.pnl), backgroundColor: entries.map(e => e.pnl >= 0 ? '#22c55e' : '#ef4444') }] },
+                    data: { labels: entries.map(e => e.label), datasets: [{ data: entries.map(e => e.pnl), backgroundColor: entries.map(e => e.pnl >= 0 ? '#22c55e' : '#e05252') }] },
                     options: { responsive: true, plugins: { legend: { display: false } } },
                 });
             }
@@ -3803,7 +3860,7 @@
             });
             document.getElementById('cry-api-key').value = '';
             document.getElementById('cry-api-secret').value = '';
-            document.getElementById('cry-cred-status').textContent = '✅ Ключи сохранены';
+            document.getElementById('cry-cred-status').textContent = 'Ключи сохранены';
             setTimeout(() => { document.getElementById('cry-cred-status').textContent = ''; }, 3000);
         }
 
@@ -3950,23 +4007,23 @@
             const btn  = document.getElementById('inv-toggle-btn');
             dot.style.background = s.active ? (s.last_error ? '#f59e0b' : '#22c55e') : '#d1d5db';
             txt.textContent = s.active
-                ? `Активен · ${s.strategy?.toUpperCase()} · ${s.mode} · ${s.uptime_sec ? Math.round(s.uptime_sec/60)+'мин' : ''}${s.last_error ? ' · ⚠️ ' + s.last_error.slice(0, 80) : ''}`
-                : `Остановлен · ${s.last_error ? '⚠️ ' + s.last_error.slice(0, 80) : s.mode}`;
-            btn.textContent = s.active ? '⏹ Стоп' : '▶ Старт';
-            btn.style.background = s.active ? '#ef4444' : '';
+                ? `Активен · ${s.strategy?.toUpperCase()} · ${s.mode} · ${s.uptime_sec ? Math.round(s.uptime_sec/60)+'мин' : ''}${s.last_error ? ' · ' + s.last_error.slice(0, 80) : ''}`
+                : `Остановлен · ${s.last_error ? s.last_error.slice(0, 80) : s.mode}`;
+            btn.textContent = s.active ? 'Стоп' : 'Старт';
+            btn.style.background = s.active ? 'var(--success)' : '';
         }
 
         function invRenderSummaryCards(s) {
             const fmt = v => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(2) + ' ₽';
             const col = v => v == null ? '' : v > 0 ? 'color:#16a34a' : v < 0 ? 'color:var(--danger)' : '';
             document.getElementById('inv-summary-cards').innerHTML = [
-                { icon: '🔄', label: 'Сделок всего',    value: s.total_trades ?? '—' },
-                { icon: '📅', label: 'Сегодня',          value: s.trades_today ?? 0 },
-                { icon: '📆', label: 'Неделя',           value: s.trades_week ?? 0 },
-                { icon: '💰', label: 'P&L сегодня',      value: fmt(s.pnl_today),   style: col(s.pnl_today) },
-                { icon: '📊', label: 'P&L неделя',       value: fmt(s.pnl_week),    style: col(s.pnl_week) },
-                { icon: '📈', label: 'P&L месяц',        value: fmt(s.pnl_month),   style: col(s.pnl_month) },
-                { icon: '💎', label: 'P&L всего',        value: fmt(s.pnl_total),   style: col(s.pnl_total) },
+                { icon: '', label: 'Сделок всего',    value: s.total_trades ?? '—' },
+                { icon: '', label: 'Сегодня',          value: s.trades_today ?? 0 },
+                { icon: '', label: 'Неделя',           value: s.trades_week ?? 0 },
+                { icon: '', label: 'P&L сегодня',      value: fmt(s.pnl_today),   style: col(s.pnl_today) },
+                { icon: '', label: 'P&L неделя',       value: fmt(s.pnl_week),    style: col(s.pnl_week) },
+                { icon: '', label: 'P&L месяц',        value: fmt(s.pnl_month),   style: col(s.pnl_month) },
+                { icon: '', label: 'P&L всего',        value: fmt(s.pnl_total),   style: col(s.pnl_total) },
             ].map(c => `<div class="stat-card">
                 <div style="font-size:26px;margin-bottom:6px;">${c.icon}</div>
                 <div class="stat-value" style="${c.style||''}">${c.value}</div>
@@ -3992,7 +4049,7 @@
             if (invCandleChart) invCandleChart.destroy();
             invCandleChart = new Chart(ctx, {
                 type: 'line',
-                data: { labels, datasets: [{ label: figi, data: closes, borderColor: '#ef4444', borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(239,68,68,0.08)' }] },
+                data: { labels, datasets: [{ label: figi, data: closes, borderColor: '#c9a84c', borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(201,168,76,0.08)' }] },
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 10 } } } },
             });
         }
@@ -4006,7 +4063,7 @@
             if (invPnlChart) invPnlChart.destroy();
             invPnlChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels, datasets: [{ data: values, backgroundColor: values.map(v => v >= 0 ? '#22c55e' : '#ef4444') }] },
+                data: { labels, datasets: [{ data: values, backgroundColor: values.map(v => v >= 0 ? '#22c55e' : '#e05252') }] },
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 15 } } } },
             });
         }
@@ -4130,7 +4187,7 @@
                 if (invPnlPeriodChart) invPnlPeriodChart.destroy();
                 invPnlPeriodChart = new Chart(ctx, {
                     type: 'bar',
-                    data: { labels: entries.map(e => e.label), datasets: [{ data: entries.map(e => e.pnl), backgroundColor: entries.map(e => e.pnl >= 0 ? '#22c55e' : '#ef4444') }] },
+                    data: { labels: entries.map(e => e.label), datasets: [{ data: entries.map(e => e.pnl), backgroundColor: entries.map(e => e.pnl >= 0 ? '#22c55e' : '#e05252') }] },
                     options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 20 } } } },
                 });
             }
@@ -4182,7 +4239,7 @@
             const preview = document.getElementById('inv-token-preview');
             if (banner)  banner.style.display = 'block';
             if (preview) preview.textContent  = cfg.token_preview || '';
-            invShowGreen('inv-token-status', '✅ Токен сохранён');
+            invShowGreen('inv-token-status', 'Токен сохранён');
             await invLoadAccounts();
         }
 
@@ -4221,13 +4278,13 @@
             const accountId = document.getElementById('inv-account-select')?.value || invConfig?.account_id;
             const statusEl  = document.getElementById('inv-topup-status');
             if (!accountId) {
-                statusEl.textContent = '❌ Выберите счёт';
+                statusEl.textContent = 'Выберите счёт';
                 setTimeout(() => { statusEl.textContent = ''; }, 4000);
                 return;
             }
             statusEl.textContent = '...';
             const data = await invFetch(`/api/bot/sandbox/topup?amount=${amount}&account_id=${encodeURIComponent(accountId)}`, { method: 'POST' });
-            statusEl.textContent = data.ok ? '✅ Пополнено' : '❌ ' + (data.error || 'Ошибка');
+            statusEl.textContent = data.ok ? 'Пополнено' : (data.error || 'Ошибка');
             setTimeout(() => { statusEl.textContent = ''; }, 4000);
         }
 
@@ -4375,9 +4432,9 @@
             const taskPct = d.total_tasks ? Math.round(d.tasks_done / d.total_tasks * 100) : 0;
             document.getElementById('oo-overview').innerHTML = [
                 { label: 'Пользователи', value: d.total_users, sub: `${d.total_leads} лид · ${d.total_members} участник`, icon: '👤' },
-                { label: 'Команды',       value: d.total_teams,    sub: '',                                     icon: '🏢' },
+                { label: 'Команды',       value: d.total_teams,    sub: '',                                     icon: '' },
                 { label: 'Встречи',       value: d.total_meetings, sub: `за 30 дней: ${d.meetings_30d}`,        icon: '🤝' },
-                { label: 'Задачи',        value: `${d.tasks_done}/${d.total_tasks}`, sub: `выполнено ${taskPct}%`, icon: '✅' },
+                { label: 'Задачи',        value: `${d.tasks_done}/${d.total_tasks}`, sub: `выполнено ${taskPct}%`, icon: '' },
                 { label: 'Звонки',        value: d.total_calls,    sub: '',                                     icon: '📞' },
                 { label: 'Настроение',    value: d.mood?.overall_avg ? d.mood.overall_avg.toFixed(1) : '—', sub: '(avg score)', icon: '😊' },
             ].map(c => `
