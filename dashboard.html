@@ -986,6 +986,125 @@
             outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
         }
 
+        /* ===== CALENDAR ===== */
+        .calendar-wrapper { display: flex; gap: 20px; align-items: flex-start; }
+        .calendar-main { flex: 1; min-width: 0; }
+        .calendar-nav {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .calendar-nav-title {
+            font-size: 20px; font-weight: 700; color: var(--text-primary);
+            text-transform: capitalize; letter-spacing: 0.5px;
+        }
+        .calendar-nav-btn {
+            background: var(--light); border: 1px solid var(--border);
+            color: var(--text-primary); border-radius: 8px;
+            padding: 8px 16px; cursor: pointer; font-size: 18px; line-height: 1;
+            transition: all 0.2s;
+        }
+        .calendar-nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+        }
+        .calendar-dow {
+            text-align: center; font-size: 11px; font-weight: 700;
+            color: var(--text-tertiary); text-transform: uppercase;
+            letter-spacing: 0.8px; padding: 8px 0;
+        }
+        .calendar-dow.weekend { color: var(--primary); }
+        .calendar-cell {
+            min-height: 90px; background: var(--light); border: 1px solid var(--border);
+            border-radius: 8px; padding: 6px; cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .calendar-cell:hover { border-color: var(--border-gold); background: rgba(201,168,76,0.04); }
+        .calendar-cell.today { border-color: var(--primary); background: rgba(201,168,76,0.07); }
+        .calendar-cell.other-month { opacity: 0.35; }
+        .calendar-cell.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(201,168,76,0.3); }
+        .calendar-day-num {
+            font-size: 13px; font-weight: 600; color: var(--text-secondary);
+            margin-bottom: 4px; line-height: 1;
+        }
+        .calendar-cell.today .calendar-day-num {
+            color: var(--primary); font-weight: 700;
+        }
+        .calendar-cell.weekend-cell .calendar-day-num { color: var(--text-secondary); }
+        .cal-event {
+            font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-bottom: 2px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-weight: 500; line-height: 1.4;
+        }
+        .cal-event.task { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .cal-event.event { background: rgba(201,168,76,0.18); color: var(--primary); }
+        .cal-event.reminder { background: rgba(96,165,250,0.15); color: #93c5fd; }
+        .cal-more { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+
+        /* Side panel */
+        .calendar-side {
+            width: 300px; flex-shrink: 0;
+            background: var(--light); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px;
+            position: sticky; top: 20px;
+        }
+        .cal-side-date {
+            font-size: 15px; font-weight: 700; color: var(--primary);
+            margin-bottom: 16px; padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cal-side-empty { font-size: 13px; color: var(--text-tertiary); text-align: center; padding: 20px 0; }
+        .cal-entry {
+            background: var(--darker); border: 1px solid var(--border);
+            border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
+            position: relative;
+        }
+        .cal-entry-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+        .cal-entry-meta { font-size: 11px; color: var(--text-tertiary); }
+        .cal-entry-type {
+            display: inline-block; font-size: 10px; padding: 1px 6px;
+            border-radius: 4px; margin-bottom: 4px; font-weight: 600; text-transform: uppercase;
+        }
+        .cal-entry-type.task { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .cal-entry-type.event { background: rgba(201,168,76,0.18); color: var(--primary); }
+        .cal-entry-type.reminder { background: rgba(96,165,250,0.15); color: #93c5fd; }
+        .cal-entry-del {
+            position: absolute; top: 8px; right: 8px;
+            background: none; border: none; color: var(--text-tertiary);
+            cursor: pointer; font-size: 14px; line-height: 1; padding: 2px 4px;
+            border-radius: 4px; transition: color 0.2s;
+        }
+        .cal-entry-del:hover { color: var(--danger); }
+
+        /* Add form */
+        .cal-add-form { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+        .cal-add-form input, .cal-add-form select, .cal-add-form textarea {
+            width: 100%; box-sizing: border-box;
+            background: var(--darker); border: 1px solid var(--border);
+            color: var(--text-primary); border-radius: 8px; font-family: inherit;
+            font-size: 13px; padding: 8px 10px; margin-bottom: 8px;
+            transition: border-color 0.2s;
+        }
+        .cal-add-form input:focus, .cal-add-form select:focus, .cal-add-form textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+        }
+        .cal-add-form select option { background: var(--darker); }
+        .cal-add-form textarea { resize: vertical; min-height: 60px; }
+        .cal-add-form label { font-size: 11px; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+
+        @media (max-width: 900px) {
+            .calendar-wrapper { flex-direction: column; }
+            .calendar-side { width: 100%; position: static; }
+            .calendar-cell { min-height: 60px; }
+        }
+        @media (max-width: 600px) {
+            .calendar-cell { min-height: 44px; padding: 3px; }
+            .calendar-day-num { font-size: 11px; }
+            .cal-event { display: none; }
+            .cal-more { display: none; }
+        }
+
         /* ===== MOBILE ===== */
         @media (max-width: 768px) {
             body {
@@ -1219,6 +1338,7 @@
             <button class="tab-btn" onclick="switchTab('investments', this)">Инвестиции</button>
             <button class="tab-btn" onclick="switchTab('crypto', this)">Крипто</button>
             <button class="tab-btn" onclick="switchTab('notes', this)">Заметки</button>
+            <button class="tab-btn" onclick="switchTab('calendar', this)">Календарь</button>
         </div>
 
         <!-- ИНТЕГРО -->
@@ -2206,6 +2326,47 @@
             </div>
         </div>
 
+        <!-- КАЛЕНДАРЬ -->
+        <div id="calendar" class="content">
+            <div class="section">
+                <div class="calendar-nav">
+                    <button class="calendar-nav-btn" onclick="calPrevMonth()">&#8249;</button>
+                    <div class="calendar-nav-title" id="calNavTitle"></div>
+                    <button class="calendar-nav-btn" onclick="calNextMonth()">&#8250;</button>
+                </div>
+                <div class="calendar-wrapper">
+                    <div class="calendar-main">
+                        <div class="calendar-grid" id="calGrid"></div>
+                    </div>
+                    <div class="calendar-side" id="calSide">
+                        <div class="cal-side-date" id="calSideDate">Выберите дату</div>
+                        <div id="calSideEntries"><div class="cal-side-empty">Нет записей</div></div>
+                        <div class="cal-add-form" id="calAddForm" style="display:none;">
+                            <label>Тип</label>
+                            <select id="calEntryType">
+                                <option value="task">Задача</option>
+                                <option value="event">Мероприятие</option>
+                                <option value="reminder">Напоминание</option>
+                            </select>
+                            <label>Название</label>
+                            <input type="text" id="calEntryTitle" placeholder="Название...">
+                            <label>Время (необязательно)</label>
+                            <input type="time" id="calEntryTime">
+                            <label>Описание (необязательно)</label>
+                            <textarea id="calEntryDesc" placeholder="Описание..."></textarea>
+                            <button class="btn btn-primary" onclick="calAddEntry()" style="width:100%;">Добавить</button>
+                        </div>
+                        <div id="calAddToggle" style="margin-top:12px; display:none;">
+                            <button class="btn" onclick="calToggleForm()" id="calToggleBtn"
+                                style="width:100%; background:var(--lighter); border:1px solid var(--border-gold); color:var(--primary);">
+                                + Добавить запись
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ЗАМЕТКИ -->
         <div id="notes" class="content">
             <div class="section">
@@ -2243,6 +2404,10 @@
         let userRole = null;
         let saveTimer = null;
         let notesData = [];
+        let calendarEvents = {}; // { 'YYYY-MM-DD': [{id, type, title, time, desc}] }
+        let calViewYear = new Date().getFullYear();
+        let calViewMonth = new Date().getMonth(); // 0-based
+        let calSelectedDate = null;
         let editingNoteId = null;
         let invPollInterval  = null;
         let cryPollInterval  = null;
@@ -2374,9 +2539,11 @@
                 if (raw._v2) {
                     monthlyData = deserializeMonthlyData(raw.months || {});
                     notesData = (raw.notes || []).map(n => ({ ...n, date: new Date(n.date) }));
+                    calendarEvents = raw.calendarEvents || {};
                 } else {
                     monthlyData = deserializeMonthlyData(raw);
                     notesData = [];
+                    calendarEvents = {};
                 }
             }
         }
@@ -2409,7 +2576,7 @@
                     const res = await fetch('/api/data', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ _v2: true, months: monthlyData, notes: notesData })
+                        body: JSON.stringify({ _v2: true, months: monthlyData, notes: notesData, calendarEvents })
                     });
                     if (statusEl) {
                         statusEl.textContent = res.ok ? 'Сохранено ✓' : 'Ошибка сохранения';
@@ -2437,6 +2604,192 @@
                 document.getElementById('projectsPlan').value = pp.plan;
                 document.getElementById('projectsAveragePlan').value = pp.averagePlan;
             }
+        }
+
+        // ===== Календарь =====
+        const CAL_MONTHS_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                               'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+        const CAL_DOW_SHORT = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+        const CAL_TYPE_LABELS = { task: 'Задача', event: 'Мероприятие', reminder: 'Напоминание' };
+
+        function calDateKey(y, m, d) {
+            return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        }
+
+        function calRenderGrid() {
+            const title = document.getElementById('calNavTitle');
+            if (title) title.textContent = `${CAL_MONTHS_RU[calViewMonth]} ${calViewYear}`;
+
+            const grid = document.getElementById('calGrid');
+            if (!grid) return;
+
+            // Day-of-week headers (Mon first)
+            let html = CAL_DOW_SHORT.map((d, i) =>
+                `<div class="calendar-dow${i >= 5 ? ' weekend' : ''}">${d}</div>`
+            ).join('');
+
+            const firstDay = new Date(calViewYear, calViewMonth, 1);
+            // Monday=0 offset
+            let startOffset = (firstDay.getDay() + 6) % 7;
+            const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+            const prevDays = new Date(calViewYear, calViewMonth, 0).getDate();
+
+            const today = new Date();
+            const todayKey = calDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+            let cells = [];
+            // Prev month cells
+            for (let i = startOffset - 1; i >= 0; i--) {
+                const d = prevDays - i;
+                const m = calViewMonth - 1;
+                const y = m < 0 ? calViewYear - 1 : calViewYear;
+                const realM = m < 0 ? 11 : m;
+                cells.push({ d, m: realM, y, other: true });
+            }
+            // Current month cells
+            for (let d = 1; d <= daysInMonth; d++) {
+                cells.push({ d, m: calViewMonth, y: calViewYear, other: false });
+            }
+            // Next month cells to fill 6 rows
+            const totalCells = Math.ceil(cells.length / 7) * 7;
+            let nd = 1;
+            while (cells.length < totalCells) {
+                const m = calViewMonth + 1;
+                const y = m > 11 ? calViewYear + 1 : calViewYear;
+                const realM = m > 11 ? 0 : m;
+                cells.push({ d: nd++, m: realM, y, other: true });
+            }
+
+            cells.forEach(({ d, m, y, other }) => {
+                const key = calDateKey(y, m, d);
+                const isToday = key === todayKey;
+                const isSelected = key === calSelectedDate;
+                const isWeekend = (() => {
+                    const dow = new Date(y, m, d).getDay();
+                    return dow === 0 || dow === 6;
+                })();
+                const entries = calendarEvents[key] || [];
+                const MAX_SHOW = 3;
+                const shown = entries.slice(0, MAX_SHOW);
+                const extra = entries.length - MAX_SHOW;
+
+                let cls = 'calendar-cell';
+                if (other) cls += ' other-month';
+                if (isToday) cls += ' today';
+                if (isSelected) cls += ' selected';
+                if (isWeekend) cls += ' weekend-cell';
+
+                const evHtml = shown.map(e =>
+                    `<div class="cal-event ${e.type}">${e.title}</div>`
+                ).join('');
+                const moreHtml = extra > 0 ? `<div class="cal-more">+${extra} ещё</div>` : '';
+
+                html += `<div class="${cls}" onclick="calSelectDate('${key}')">
+                    <div class="calendar-day-num">${d}</div>
+                    ${evHtml}${moreHtml}
+                </div>`;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function calSelectDate(key) {
+            calSelectedDate = key;
+            calRenderGrid();
+            calRenderSide();
+        }
+
+        function calRenderSide() {
+            const dateEl = document.getElementById('calSideDate');
+            const entriesEl = document.getElementById('calSideEntries');
+            const addToggle = document.getElementById('calAddToggle');
+
+            if (!calSelectedDate) {
+                dateEl.textContent = 'Выберите дату';
+                entriesEl.innerHTML = '<div class="cal-side-empty">Нет записей</div>';
+                if (addToggle) addToggle.style.display = 'none';
+                return;
+            }
+
+            // Format date nicely
+            const [y, mo, d] = calSelectedDate.split('-').map(Number);
+            const dateObj = new Date(y, mo - 1, d);
+            const days = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+            const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+            dateEl.textContent = `${d} ${months[mo-1]} ${y}, ${days[dateObj.getDay()]}`;
+
+            const entries = calendarEvents[calSelectedDate] || [];
+            if (entries.length === 0) {
+                entriesEl.innerHTML = '<div class="cal-side-empty">Нет записей на этот день</div>';
+            } else {
+                entriesEl.innerHTML = entries.map(e => `
+                    <div class="cal-entry">
+                        <span class="cal-entry-type ${e.type}">${CAL_TYPE_LABELS[e.type]}</span>
+                        <div class="cal-entry-title">${escapeHtml(e.title)}</div>
+                        ${e.time ? `<div class="cal-entry-meta">🕐 ${e.time}</div>` : ''}
+                        ${e.desc ? `<div class="cal-entry-meta" style="margin-top:4px;">${escapeHtml(e.desc)}</div>` : ''}
+                        <button class="cal-entry-del" onclick="calDeleteEntry('${calSelectedDate}','${e.id}')" title="Удалить">×</button>
+                    </div>
+                `).join('');
+            }
+            if (addToggle) addToggle.style.display = 'block';
+        }
+
+        function calToggleForm() {
+            const form = document.getElementById('calAddForm');
+            const btn = document.getElementById('calToggleBtn');
+            if (!form) return;
+            const visible = form.style.display !== 'none';
+            form.style.display = visible ? 'none' : 'block';
+            if (btn) btn.textContent = visible ? '+ Добавить запись' : '— Скрыть форму';
+        }
+
+        function calAddEntry() {
+            if (!calSelectedDate) return;
+            const type = document.getElementById('calEntryType').value;
+            const title = document.getElementById('calEntryTitle').value.trim();
+            const time = document.getElementById('calEntryTime').value;
+            const desc = document.getElementById('calEntryDesc').value.trim();
+            if (!title) { alert('Введите название'); return; }
+
+            const entry = { id: Date.now().toString(), type, title, time, desc };
+            if (!calendarEvents[calSelectedDate]) calendarEvents[calSelectedDate] = [];
+            calendarEvents[calSelectedDate].push(entry);
+
+            // Reset form
+            document.getElementById('calEntryTitle').value = '';
+            document.getElementById('calEntryTime').value = '';
+            document.getElementById('calEntryDesc').value = '';
+
+            calRenderGrid();
+            calRenderSide();
+            saveToServer();
+        }
+
+        function calDeleteEntry(dateKey, id) {
+            if (!calendarEvents[dateKey]) return;
+            calendarEvents[dateKey] = calendarEvents[dateKey].filter(e => e.id !== id);
+            if (calendarEvents[dateKey].length === 0) delete calendarEvents[dateKey];
+            calRenderGrid();
+            calRenderSide();
+            saveToServer();
+        }
+
+        function calPrevMonth() {
+            calViewMonth--;
+            if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+            calRenderGrid();
+        }
+
+        function calNextMonth() {
+            calViewMonth++;
+            if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+            calRenderGrid();
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
         }
 
         // ===== Заметки =====
@@ -2640,9 +2993,10 @@
             if (tabName === 'notes') updateNotes();
             if (tabName === '1on1') load1on1Stats();
             if (tabName === 'extra-income') updateExtraIncomes();
+            if (tabName === 'calendar') { calRenderGrid(); calRenderSide(); }
             if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
             else if (tabName === 'crypto') { cryLoadAll(); startCryPolling(); }
-            else if (['integro','expenses','extra-income','goals','stats','1on1','notes'].includes(tabName)) startDataPolling(tabName);
+            else if (['integro','expenses','extra-income','goals','stats','1on1','notes','calendar'].includes(tabName)) startDataPolling(tabName);
             else stopAllPolling();
         }
 
