@@ -987,8 +987,8 @@
         }
 
         /* ===== CALENDAR ===== */
-        .calendar-wrapper { display: flex; gap: 20px; align-items: flex-start; }
-        .calendar-main { flex: 1; min-width: 0; }
+        .calendar-wrapper { display: flex; gap: 20px; align-items: flex-start; width: 100%; box-sizing: border-box; }
+        .calendar-main { flex: 1; min-width: 0; width: 100%; }
         .calendar-nav {
             display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 20px;
@@ -1108,6 +1108,8 @@
 
         @media (max-width: 900px) {
             .calendar-wrapper { flex-direction: column; }
+            .calendar-main { width: 100%; box-sizing: border-box; }
+            .calendar-grid { width: 100%; box-sizing: border-box; }
             .calendar-side { width: 100%; box-sizing: border-box; position: static; }
             .calendar-cell { min-height: 62px; }
         }
@@ -1116,7 +1118,7 @@
             .calendar-nav { margin-bottom: 12px; }
             .calendar-nav-title { font-size: 16px; }
             .calendar-nav-btn { padding: 8px 14px; font-size: 20px; }
-            .calendar-grid { gap: 2px; }
+            .calendar-grid { gap: 2px; width: 100%; }
             .calendar-dow { font-size: 10px; padding: 6px 0; letter-spacing: 0; }
             .calendar-cell { min-height: 46px; padding: 4px 3px; border-radius: 6px; }
             .calendar-cell.today::after { top: 3px; right: 3px; width: 5px; height: 5px; }
@@ -1128,7 +1130,7 @@
             .cal-side-date { font-size: 14px; margin-bottom: 12px; padding-bottom: 10px; }
             .cal-entry { padding: 8px 10px; }
             .cal-add-form input, .cal-add-form select, .cal-add-form textarea {
-                font-size: 16px; /* предотвращает зум на iOS */
+                font-size: 16px;
             }
         }
 
