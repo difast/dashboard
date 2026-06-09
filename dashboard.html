@@ -1099,16 +1099,37 @@
         .cal-add-form label { font-size: 11px; font-weight: 600; color: var(--text-secondary);
             text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
 
+        /* Цветные точки — индикаторы событий на мобильных */
+        .cal-dots { display: none; gap: 2px; flex-wrap: wrap; margin-top: 3px; }
+        .cal-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .cal-dot.task { background: #4ade80; }
+        .cal-dot.event { background: var(--primary); }
+        .cal-dot.reminder { background: #93c5fd; }
+
         @media (max-width: 900px) {
             .calendar-wrapper { flex-direction: column; }
-            .calendar-side { width: 100%; position: static; }
-            .calendar-cell { min-height: 60px; }
+            .calendar-side { width: 100%; box-sizing: border-box; position: static; }
+            .calendar-cell { min-height: 62px; }
         }
         @media (max-width: 600px) {
-            .calendar-cell { min-height: 44px; padding: 3px; }
-            .calendar-day-num { font-size: 11px; }
+            #calendar .section { padding: 10px 8px; }
+            .calendar-nav { margin-bottom: 12px; }
+            .calendar-nav-title { font-size: 16px; }
+            .calendar-nav-btn { padding: 8px 14px; font-size: 20px; }
+            .calendar-grid { gap: 2px; }
+            .calendar-dow { font-size: 10px; padding: 6px 0; letter-spacing: 0; }
+            .calendar-cell { min-height: 46px; padding: 4px 3px; border-radius: 6px; }
+            .calendar-cell.today::after { top: 3px; right: 3px; width: 5px; height: 5px; }
+            .calendar-day-num { font-size: 12px; margin-bottom: 2px; }
             .cal-event { display: none; }
             .cal-more { display: none; }
+            .cal-dots { display: flex; }
+            .calendar-side { padding: 14px 12px; border-radius: 10px; margin-top: 4px; }
+            .cal-side-date { font-size: 14px; margin-bottom: 12px; padding-bottom: 10px; }
+            .cal-entry { padding: 8px 10px; }
+            .cal-add-form input, .cal-add-form select, .cal-add-form textarea {
+                font-size: 16px; /* предотвращает зум на iOS */
+            }
         }
 
         /* ===== MOBILE ===== */
@@ -2451,6 +2472,7 @@
             else if (tabName === 'stats')       updateStats();
             else if (tabName === '1on1')        load1on1Stats();
             else if (tabName === 'notes')       updateNotes();
+            else if (tabName === 'calendar')    { calRenderGrid(); calRenderSide(); }
         }
 
         async function checkAuth() {
@@ -2689,10 +2711,14 @@
                     `<div class="cal-event ${e.type}">${e.title}</div>`
                 ).join('');
                 const moreHtml = extra > 0 ? `<div class="cal-more">+${extra} ещё</div>` : '';
+                // Точки для мобильных (показываются вместо текста через CSS)
+                const dotsHtml = entries.length > 0
+                    ? `<div class="cal-dots">${entries.slice(0,5).map(e => `<div class="cal-dot ${e.type}"></div>`).join('')}</div>`
+                    : '';
 
                 html += `<div class="${cls}" onclick="calSelectDate('${key}')">
                     <div class="calendar-day-num">${d}</div>
-                    ${evHtml}${moreHtml}
+                    ${evHtml}${moreHtml}${dotsHtml}
                 </div>`;
             });
 
@@ -2703,6 +2729,11 @@
             calSelectedDate = key;
             calRenderGrid();
             calRenderSide();
+            // На мобильных прокрутить к боковой панели
+            if (window.innerWidth <= 900) {
+                const side = document.getElementById('calSide');
+                if (side) setTimeout(() => side.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+            }
         }
 
         function calRenderSide() {
