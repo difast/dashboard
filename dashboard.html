@@ -2294,7 +2294,6 @@
     <script>
         // ===== API / Авторизация =====
         let isAuthenticated = false;
-        let userRole = null;
         let saveTimer = null;
         let notesData = [];
         let companiesData = []; // [{id, name, sphere, valuation, share, website, status, note}]
@@ -2316,7 +2315,6 @@
             stopAllPolling();
             activePollTab = tabName;
             dataPollInterval = setInterval(async () => {
-                if (userRole === 'trader') return;
                 await loadFromServer();
                 refreshActiveTab(activePollTab);
             }, 30000);
@@ -2341,8 +2339,7 @@
                 const res  = await fetch('/api/auth/check');
                 const data = await res.json();
                 if (data.authenticated) {
-                    userRole = data.role;
-                    if (userRole !== 'trader') await loadFromServer();
+                    await loadFromServer();
                     showDashboard();
                 } else {
                     showLogin();
@@ -2362,9 +2359,7 @@
                     body: JSON.stringify({ password })
                 });
                 if (res.ok) {
-                    const data = await res.json();
-                    userRole = data.role;
-                    if (userRole !== 'trader') await loadFromServer();
+                    await loadFromServer();
                     showDashboard();
                 } else {
                     const data = await res.json();
@@ -2379,7 +2374,6 @@
             stopAllPolling();
             await fetch('/api/auth/logout', { method: 'POST' });
             isAuthenticated = false;
-            userRole = null;
             monthlyData = {};
             notesData = [];
             companiesData = [];
@@ -2399,26 +2393,8 @@
             document.getElementById('loginOverlay').style.display = 'none';
             document.querySelector('.container').style.display = 'block';
             isAuthenticated = true;
-            // Trader role: show only investments tab
-            if (userRole === 'trader') {
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    const tab = btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
-                    const visible = ['investments'].includes(tab);
-                    btn.style.display = visible ? '' : 'none';
-                });
-                // Activate investments tab
-                const firstVisible = document.querySelector('.tab-btn[style=""]') || document.querySelector('.tab-btn:not([style*="none"])');
-                document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
-                document.getElementById('investments').classList.add('active');
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-btn').forEach(b => {
-                    if (b.getAttribute('onclick')?.includes('investments')) b.classList.add('active');
-                });
-                invLoadAll();
-                startInvPolling();
-            }
             initHeaderAnimation();
-            if (userRole !== 'trader') initDashboard();
+            initDashboard();
         }
 
         async function loadFromServer() {
@@ -2459,7 +2435,7 @@
         }
 
         function saveToServer() {
-            if (!isAuthenticated || userRole === 'trader') return;
+            if (!isAuthenticated) return;
             clearTimeout(saveTimer);
             const statusEl = document.getElementById('saveStatus');
             if (statusEl) statusEl.textContent = '...';

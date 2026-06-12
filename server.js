@@ -1,18 +1,20 @@
 'use strict';
 const express = require('express');
-const session = require('express-session');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const PASSWORD        = process.env.DASHBOARD_PASSWORD || 'Assassins2552';
-const TRADER_PASSWORD = process.env.TRADER_PASSWORD    || 'Ludik';
+const PASSWORD = process.env.DASHBOARD_PASSWORD || '11111111';
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'dashboard.json');
-// Set SESSION_SECRET env var in Railway for persistence across restarts
-const SESSION_SECRET = process.env.SESSION_SECRET || 'dashboard-session-secret-please-override-in-railway';
+// Стабильный секрет → токен авторизации переживает перезапуски сервера,
+// поэтому входить нужно только один раз (обновление страницы не сбрасывает вход).
+const AUTH_SECRET = process.env.SESSION_SECRET || 'dashboard-auth-secret-please-override-in-railway';
+const AUTH_TOKEN = crypto.createHmac('sha256', AUTH_SECRET).update('dashboard-auth-v1').digest('hex');
+const AUTH_COOKIE = 'dash_auth';
+const COOKIE_MAX_AGE = 365 * 24 * 60 * 60 * 1000; // 1 год
 
 // PostgreSQL support — used when DATABASE_URL is set (e.g. Railway Postgres addon)
 let pgPool = null;
@@ -51,16 +53,30 @@ initPostgres().then(() => {
 });
 
 app.use(express.json({ limit: '10mb' }));
-app.use(session({
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: 'strict'
+
+// Лёгкий парсер cookie (без внешних зависимостей)
+function parseCookies(req) {
+    const header = req.headers.cookie || '';
+    const out = {};
+    header.split(';').forEach(part => {
+        const idx = part.indexOf('=');
+        if (idx === -1) return;
+        const k = part.slice(0, idx).trim();
+        const v = part.slice(idx + 1).trim();
+        if (k) out[k] = decodeURIComponent(v);
+    });
+    return out;
+}
+
+function isAuthed(req) {
+    const token = parseCookies(req)[AUTH_COOKIE];
+    if (!token || token.length !== AUTH_TOKEN.length) return false;
+    try {
+        return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(AUTH_TOKEN));
+    } catch (e) {
+        return false;
     }
-}));
+}
 
 app.use(express.static(path.join(__dirname)));
 
@@ -101,15 +117,12 @@ async function saveData(data) {
 }
 
 function requireAuth(req, res, next) {
-    if (req.session && req.session.authenticated) return next();
+    if (isAuthed(req)) return next();
     res.status(401).json({ error: 'Unauthorized' });
 }
 
 app.get('/api/auth/check', (req, res) => {
-    res.json({
-        authenticated: !!(req.session && req.session.authenticated),
-        role: req.session?.role || null,
-    });
+    res.json({ authenticated: isAuthed(req) });
 });
 
 function timingSafeMatch(input, target) {
@@ -120,24 +133,21 @@ function timingSafeMatch(input, target) {
 
 app.post('/api/auth/login', (req, res) => {
     const { password = '' } = req.body;
-    let role = null;
-    if (timingSafeMatch(password, PASSWORD))        role = 'admin';
-    else if (timingSafeMatch(password, TRADER_PASSWORD)) role = 'trader';
-
-    if (role) {
-        req.session.authenticated = true;
-        req.session.role = role;
-        req.session.save(err => {
-            if (err) return res.status(500).json({ error: 'Session error' });
-            res.json({ success: true, role });
+    if (timingSafeMatch(password, PASSWORD)) {
+        res.cookie(AUTH_COOKIE, AUTH_TOKEN, {
+            httpOnly: true,
+            sameSite: 'lax',
+            maxAge: COOKIE_MAX_AGE,
         });
+        res.json({ success: true });
     } else {
         res.status(401).json({ error: 'Неверный пароль' });
     }
 });
 
 app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy(() => res.json({ success: true }));
+    res.clearCookie(AUTH_COOKIE);
+    res.json({ success: true });
 });
 
 app.get('/api/data', requireAuth, async (req, res) => {
