@@ -1848,35 +1848,22 @@
             </div>
         </div>
 
-        <!-- ONEONONE — План по продажам -->
+        <!-- ONEONONE — План по продажам по тарифам -->
         <div id="oneonone" class="content">
             <div class="section">
-                <h2 class="section-title">📈 План по продажам</h2>
-                <div class="input-grid">
-                    <div class="input-field">
-                        <label>План продаж (₽/мес)</label>
-                        <input type="number" id="ooSalesPlan" value="0" onchange="updateOneOnOne()">
-                    </div>
-                    <div class="input-field">
-                        <label>Факт продаж (₽)</label>
-                        <input type="number" id="ooSalesActual" value="0" onchange="updateOneOnOne()">
-                    </div>
-                    <div class="input-field">
-                        <label>План сделок</label>
-                        <input type="number" id="ooDealsPlan" value="0" onchange="updateOneOnOne()">
-                    </div>
-                    <div class="input-field">
-                        <label>Закрыто сделок</label>
-                        <input type="number" id="ooDealsDone" value="0" onchange="updateOneOnOne()">
-                    </div>
-                </div>
+                <h2 class="section-title">📈 План по продажам по тарифам</h2>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 14px;">
+                    Добавьте тарифы вашего продукта: укажите цену и план/факт продаж по каждому. Выручка считается автоматически.
+                </p>
+                <div id="ooTariffsTable"></div>
+                <button class="btn btn-primary" onclick="addTariff()" style="margin-top: 12px;">➕ Добавить тариф</button>
             </div>
 
             <div class="section">
                 <h2 class="section-title">Показатели</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">План / Факт продаж</div>
+                        <div class="stat-label">План / Факт продаж (₽)</div>
                         <div class="stat-value" id="ooSalesValue">0 ₽</div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="ooSalesProgress" style="width: 0%;"></div>
@@ -1884,22 +1871,22 @@
                         <div class="stat-subtext" id="ooSalesText">Факт: 0 ₽ (0%)</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Сделки (план / факт)</div>
+                        <div class="stat-label">Продажи (план / факт, шт)</div>
                         <div class="stat-value" id="ooDealsValue">0/0</div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="ooDealsProgress" style="width: 0%;"></div>
                         </div>
-                        <div class="stat-subtext" id="ooDealsText">Закрыто: 0 (0%)</div>
+                        <div class="stat-subtext" id="ooDealsText">Продано: 0 (0%)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Средний чек</div>
                         <div class="stat-value" id="ooAvgCheck">0 ₽</div>
-                        <div class="stat-subtext">Факт / закрытые сделки</div>
+                        <div class="stat-subtext">Факт выручка / продажи</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Выполнение плана продаж</div>
                         <div class="stat-value" id="ooSalesPercent">0%</div>
-                        <div class="stat-subtext">Факт от плана</div>
+                        <div class="stat-subtext">Факт от плана (₽)</div>
                     </div>
                 </div>
             </div>
@@ -2316,6 +2303,7 @@
         let calViewMonth = new Date().getMonth(); // 0-based
         let calSelectedDate = null;
         let editingNoteId = null;
+        let editingCompanyId = null;
         let invPollInterval  = null;
         let dataPollInterval = null;
         let activePollTab    = null;
@@ -2343,7 +2331,7 @@
             else if (tabName === 'expenses')    updateExpenses();
             else if (tabName === 'goals')       updateGoals();
             else if (tabName === 'stats')       updateStats();
-            else if (tabName === 'oneonone')    updateOneOnOne();
+            else if (tabName === 'oneonone')    { renderTariffs(); updateOneOnOne(); }
             else if (tabName === 'companies')   { updateNotes(); updateCompanies(); }
             else if (tabName === 'calendar')    { calRenderGrid(); calRenderSide(); }
         }
@@ -2396,6 +2384,7 @@
             notesData = [];
             companiesData = [];
             editingNoteId = null;
+            editingCompanyId = null;
             document.getElementById('loginPassword').value = '';
             document.getElementById('loginError').textContent = '';
             showLogin();
@@ -2507,18 +2496,7 @@
                 document.getElementById('projectsPlan').value = pp.plan;
                 document.getElementById('projectsAveragePlan').value = pp.averagePlan;
             }
-            const oo = data.oneOnOneParams;
-            if (oo) {
-                document.getElementById('ooSalesPlan').value   = oo.salesPlan   || 0;
-                document.getElementById('ooSalesActual').value = oo.salesActual || 0;
-                document.getElementById('ooDealsPlan').value   = oo.dealsPlan   || 0;
-                document.getElementById('ooDealsDone').value   = oo.dealsDone   || 0;
-            } else {
-                document.getElementById('ooSalesPlan').value   = 0;
-                document.getElementById('ooSalesActual').value = 0;
-                document.getElementById('ooDealsPlan').value   = 0;
-                document.getElementById('ooDealsDone').value   = 0;
-            }
+            // OneOnOne (тарифы) рендерятся отдельно через renderTariffs()
         }
 
         // ===== Календарь =====
@@ -2856,19 +2834,45 @@
                 return;
             }
 
+            const inputStyle = 'width:100%;padding:9px 10px;border:2px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--light);';
+            const statusOpts = ['Активна','В развитии','На паузе','Продана','Закрыта'];
+
             listEl.innerHTML = companiesData.map(c => {
+                // Режим редактирования
+                if (c.id === editingCompanyId) {
+                    return `
+                        <div style="border:2px solid var(--primary);border-radius:12px;padding:16px;margin-bottom:14px;background:var(--lighter);">
+                            <div class="input-grid">
+                                <div class="input-field"><label>Название компании</label><input type="text" id="editCompanyName_${c.id}" value="${escapeHtml(c.name || '')}" style="${inputStyle}"></div>
+                                <div class="input-field"><label>Сфера деятельности</label><input type="text" id="editCompanySphere_${c.id}" value="${escapeHtml(c.sphere || '')}" style="${inputStyle}"></div>
+                                <div class="input-field"><label>Оценка компании (₽)</label><input type="number" id="editCompanyValuation_${c.id}" value="${c.valuation || 0}" style="${inputStyle}"></div>
+                                <div class="input-field"><label>Моя доля (%)</label><input type="number" id="editCompanyShare_${c.id}" value="${c.share || 0}" min="0" max="100" step="0.1" style="${inputStyle}"></div>
+                                <div class="input-field"><label>Сайт / контакт</label><input type="text" id="editCompanyWebsite_${c.id}" value="${escapeHtml(c.website || '')}" style="${inputStyle}"></div>
+                                <div class="input-field"><label>Статус</label><select id="editCompanyStatus_${c.id}" style="${inputStyle}">${statusOpts.map(s => `<option ${s === c.status ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
+                                <div class="input-field" style="grid-column:1 / -1;"><label>Описание / заметки</label><textarea id="editCompanyNote_${c.id}" class="note-add-textarea" style="${inputStyle}">${escapeHtml(c.note || '')}</textarea></div>
+                            </div>
+                            <div style="display:flex;gap:8px;margin-top:8px;">
+                                <button class="btn btn-primary" onclick="saveCompanyEdit(${c.id})">✓ Сохранить</button>
+                                <button class="btn" style="background:var(--light);color:var(--text-secondary);" onclick="cancelEditCompany()">Отмена</button>
+                            </div>
+                        </div>`;
+                }
+
                 const mine = (c.valuation || 0) * (c.share || 0) / 100;
                 const site = c.website
                     ? `<a href="${escapeHtml(c.website)}" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none;">${escapeHtml(c.website)}</a>`
                     : '<span style="color:var(--text-secondary);">—</span>';
                 return `
-                    <div style="border:2px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;background:var(--card-bg, #fff);">
+                    <div style="border:2px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;background:var(--lighter);">
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
                             <div>
                                 <div style="font-size:17px;font-weight:700;color:var(--text-primary);">${escapeHtml(c.name)}</div>
                                 <div style="font-size:13px;color:var(--text-secondary);margin-top:2px;">${escapeHtml(c.sphere || '—')} • ${escapeHtml(c.status || '')}</div>
                             </div>
-                            <button class="btn btn-danger" onclick="deleteCompany(${c.id})">✕</button>
+                            <div style="display:flex;gap:8px;">
+                                <button class="btn" style="background:var(--light);color:var(--text-primary);" onclick="editCompany(${c.id})">✎</button>
+                                <button class="btn btn-danger" onclick="deleteCompany(${c.id})">✕</button>
+                            </div>
                         </div>
                         <div class="stats-grid" style="margin-top:12px;">
                             <div class="stat-card">
@@ -2890,6 +2894,31 @@
             }).join('');
         }
 
+        function editCompany(id) {
+            editingCompanyId = id;
+            updateCompanies();
+        }
+
+        function cancelEditCompany() {
+            editingCompanyId = null;
+            updateCompanies();
+        }
+
+        function saveCompanyEdit(id) {
+            const c = companiesData.find(x => x.id === id);
+            if (!c) return;
+            c.name      = document.getElementById('editCompanyName_' + id).value.trim();
+            c.sphere    = document.getElementById('editCompanySphere_' + id).value.trim();
+            c.valuation = parseFloat(document.getElementById('editCompanyValuation_' + id).value) || 0;
+            c.share     = parseFloat(document.getElementById('editCompanyShare_' + id).value) || 0;
+            c.website   = document.getElementById('editCompanyWebsite_' + id).value.trim();
+            c.status    = document.getElementById('editCompanyStatus_' + id).value;
+            c.note      = document.getElementById('editCompanyNote_' + id).value.trim();
+            editingCompanyId = null;
+            saveToServer();
+            updateCompanies();
+        }
+
         // Полное обновление всех вкладок под выбранный месяц
         function refreshAllForMonth() {
             loadMonthUI(selectedMonth);
@@ -2897,6 +2926,7 @@
             updateProjectsPlan();
             updateProjects();
             updateExpenses();
+            renderTariffs();
             updateOneOnOne();
             updateGoals();
             updateStats();
@@ -2998,7 +3028,7 @@
                     goals: [],
                     schoolParams: { plan: 0, done: 0, lessonsPerWeek: 0, price: 0, revenueTarget: 0 },
                     projectsParams: { plan: 0, averagePlan: 0 },
-                    oneOnOneParams: { salesPlan: 0, salesActual: 0, dealsPlan: 0, dealsDone: 0 }
+                    oneOnOneParams: { tariffs: [] }
                 };
             }
             return monthlyData[monthKey];
@@ -3017,7 +3047,7 @@
             if (tabName === 'stats') setTimeout(() => initCharts(), 100);
             if (tabName === 'goals') updateGoals();
             if (tabName === 'companies') { updateNotes(); updateCompanies(); }
-            if (tabName === 'oneonone') updateOneOnOne();
+            if (tabName === 'oneonone') { renderTariffs(); updateOneOnOne(); }
             if (tabName === 'calendar') { calRenderGrid(); calRenderSide(); }
             if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
             else if (['integro','expenses','goals','stats','oneonone','companies','calendar'].includes(tabName)) startDataPolling(tabName);
@@ -3261,10 +3291,28 @@
                 .reduce((sum, p) => sum + (p.check || 0), 0);
         }
 
-        function calcOneOnOneRevenue(monthKey) {
+        function getTariffs(monthKey) {
             const md = monthlyData[monthKey];
-            if (!md || !md.oneOnOneParams) return 0;
-            return md.oneOnOneParams.salesActual || 0;
+            const t = md && md.oneOnOneParams && md.oneOnOneParams.tariffs;
+            return Array.isArray(t) ? t : [];
+        }
+
+        // Фактическая выручка OneOnOne = Σ (цена × факт продаж) по тарифам
+        function calcOneOnOneRevenue(monthKey) {
+            return getTariffs(monthKey).reduce((s, t) => s + (t.price || 0) * (t.fact || 0), 0);
+        }
+
+        // Плановая выручка OneOnOne = Σ (цена × план продаж) по тарифам
+        function calcOneOnOnePlanRevenue(monthKey) {
+            return getTariffs(monthKey).reduce((s, t) => s + (t.price || 0) * (t.plan || 0), 0);
+        }
+
+        // Кол-во продаж OneOnOne (план/факт, штук) по всем тарифам
+        function calcOneOnOneCounts(monthKey) {
+            return getTariffs(monthKey).reduce(
+                (a, t) => ({ plan: a.plan + (t.plan || 0), fact: a.fact + (t.fact || 0) }),
+                { plan: 0, fact: 0 }
+            );
         }
 
         function getMonthlyBalance() {
@@ -3487,9 +3535,9 @@
             const projectsPlan = monthData.projectsParams ? (monthData.projectsParams.plan || 0) : 0;
 
             const oneOnOneMRR = calcOneOnOneRevenue(selectedMonth);
-            const ooParams = monthData.oneOnOneParams || {};
-            const ooDealsDone = ooParams.dealsDone || 0;
-            const ooDealsPlan = ooParams.dealsPlan || 0;
+            const ooCounts = calcOneOnOneCounts(selectedMonth);
+            const ooDealsDone = ooCounts.fact;
+            const ooDealsPlan = ooCounts.plan;
 
             const monthBalance = getMonthlyBalance();
             const totalMRR = schoolMRR + projectsMRR + oneOnOneMRR;
@@ -3554,8 +3602,9 @@
             const projectsDone = monthData.projects.filter(p => p.status === 'Завершено').length;
             const projectsPlan = monthData.projectsParams ? (monthData.projectsParams.plan || 0) : 0;
             const oneOnOneMonthly = calcOneOnOneRevenue(selectedMonth);
-            const ooDealsDone = monthData.oneOnOneParams ? (monthData.oneOnOneParams.dealsDone || 0) : 0;
-            const ooDealsPlan = monthData.oneOnOneParams ? (monthData.oneOnOneParams.dealsPlan || 0) : 0;
+            const ooChartCounts = calcOneOnOneCounts(selectedMonth);
+            const ooDealsDone = ooChartCounts.fact;
+            const ooDealsPlan = ooChartCounts.plan;
 
             if (charts.revenue) charts.revenue.destroy();
             if (charts.plan) charts.plan.destroy();
@@ -4402,32 +4451,106 @@
                 : '<span style="color:var(--text-secondary);font-size:13px;">Инструменты не добавлены</span>';
         }
 
-        // ===== OneOnOne — План по продажам =====
-        function updateOneOnOne() {
+        // ===== OneOnOne — План по продажам по тарифам =====
+        function ooTariffs() {
             const md = getCurrentMonthData();
-            const salesPlan   = parseFloat(document.getElementById('ooSalesPlan').value)   || 0;
-            const salesActual = parseFloat(document.getElementById('ooSalesActual').value) || 0;
-            const dealsPlan   = parseInt(document.getElementById('ooDealsPlan').value)      || 0;
-            const dealsDone   = parseInt(document.getElementById('ooDealsDone').value)      || 0;
+            if (!md.oneOnOneParams || !Array.isArray(md.oneOnOneParams.tariffs)) {
+                md.oneOnOneParams = { tariffs: [] };
+            }
+            return md.oneOnOneParams.tariffs;
+        }
 
-            md.oneOnOneParams = { salesPlan, salesActual, dealsPlan, dealsDone };
-
-            const salesPct = salesPlan > 0 ? Math.round((salesActual / salesPlan) * 100) : 0;
-            document.getElementById('ooSalesValue').textContent    = formatCurrency(salesPlan);
-            document.getElementById('ooSalesProgress').style.width  = Math.min(salesPct, 100) + '%';
-            document.getElementById('ooSalesText').textContent      = `Факт: ${formatCurrency(salesActual)} (${salesPct}%)`;
-
-            const dealsPct = dealsPlan > 0 ? Math.round((dealsDone / dealsPlan) * 100) : 0;
-            document.getElementById('ooDealsValue').textContent     = `${dealsDone}/${dealsPlan}`;
-            document.getElementById('ooDealsProgress').style.width   = Math.min(dealsPct, 100) + '%';
-            document.getElementById('ooDealsText').textContent       = `Закрыто: ${dealsDone} (${dealsPct}%)`;
-
-            document.getElementById('ooAvgCheck').textContent     = formatCurrency(dealsDone > 0 ? salesActual / dealsDone : 0);
-            document.getElementById('ooSalesPercent').textContent = salesPct + '%';
-            document.getElementById('ooSummaryActual').textContent = formatCurrency(salesActual);
-            document.getElementById('ooSummaryPlan').textContent   = formatCurrency(salesPlan);
-
+        function addTariff() {
+            ooTariffs().push({ id: Date.now(), name: '', price: 0, plan: 0, fact: 0 });
+            renderTariffs();
+            updateOneOnOne();
             saveToServer();
+        }
+
+        function deleteTariff(id) {
+            const md = getCurrentMonthData();
+            md.oneOnOneParams.tariffs = ooTariffs().filter(t => t.id !== id);
+            renderTariffs();
+            updateOneOnOne();
+            saveToServer();
+        }
+
+        function ooEditTariff(id, field, value) {
+            const t = ooTariffs().find(x => x.id === id);
+            if (!t) return;
+            if (field === 'name') t.name = value;
+            else t[field] = parseFloat(value) || 0;
+            updateOneOnOne();
+            saveToServer();
+        }
+
+        function renderTariffs() {
+            const el = document.getElementById('ooTariffsTable');
+            if (!el) return;
+            const tariffs = ooTariffs();
+            if (tariffs.length === 0) {
+                el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏷️</div><div>Тарифов нет. Добавьте первый тариф ниже</div></div>';
+                return;
+            }
+            el.innerHTML = `
+                <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:14px;min-width:640px;">
+                    <thead>
+                        <tr style="border-bottom:2px solid var(--border);color:var(--text-secondary);font-size:12px;text-transform:uppercase;">
+                            <th style="text-align:left;padding:8px;">Тариф</th>
+                            <th style="text-align:right;padding:8px;">Цена (₽)</th>
+                            <th style="text-align:right;padding:8px;">План (шт)</th>
+                            <th style="text-align:right;padding:8px;">Факт (шт)</th>
+                            <th style="text-align:right;padding:8px;">План (₽)</th>
+                            <th style="text-align:right;padding:8px;">Факт (₽)</th>
+                            <th style="padding:8px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tariffs.map(t => `
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:6px 8px;"><input type="text" value="${escapeHtml(t.name || '')}" placeholder="Напр.: Pro" oninput="ooEditTariff(${t.id},'name',this.value)" style="width:100%;min-width:120px;padding:8px;border:2px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--lighter,#fff);"></td>
+                                <td style="padding:6px 8px;"><input type="number" value="${t.price || 0}" min="0" oninput="ooEditTariff(${t.id},'price',this.value)" style="width:110px;padding:8px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:right;color:var(--text-primary);background:var(--lighter,#fff);"></td>
+                                <td style="padding:6px 8px;"><input type="number" value="${t.plan || 0}" min="0" oninput="ooEditTariff(${t.id},'plan',this.value)" style="width:80px;padding:8px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:right;color:var(--text-primary);background:var(--lighter,#fff);"></td>
+                                <td style="padding:6px 8px;"><input type="number" value="${t.fact || 0}" min="0" oninput="ooEditTariff(${t.id},'fact',this.value)" style="width:80px;padding:8px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:right;color:var(--text-primary);background:var(--lighter,#fff);"></td>
+                                <td style="padding:6px 8px;text-align:right;color:var(--text-secondary);" id="ooRowPlan_${t.id}">0 ₽</td>
+                                <td style="padding:6px 8px;text-align:right;font-weight:600;color:var(--text-primary);" id="ooRowFact_${t.id}">0 ₽</td>
+                                <td style="padding:6px 8px;text-align:center;"><button class="btn btn-danger" onclick="deleteTariff(${t.id})">✕</button></td>
+                            </tr>`).join('')}
+                    </tbody>
+                </table>
+                </div>`;
+        }
+
+        function updateOneOnOne() {
+            const tariffs = ooTariffs();
+            let planSum = 0, factSum = 0, planCount = 0, factCount = 0;
+            tariffs.forEach(t => {
+                const p = (t.price || 0) * (t.plan || 0);
+                const f = (t.price || 0) * (t.fact || 0);
+                planSum += p; factSum += f;
+                planCount += (t.plan || 0); factCount += (t.fact || 0);
+                const pe = document.getElementById('ooRowPlan_' + t.id);
+                const fe = document.getElementById('ooRowFact_' + t.id);
+                if (pe) pe.textContent = formatCurrency(p);
+                if (fe) fe.textContent = formatCurrency(f);
+            });
+
+            const salesPct = planSum > 0 ? Math.round((factSum / planSum) * 100) : 0;
+            document.getElementById('ooSalesValue').textContent    = formatCurrency(planSum);
+            document.getElementById('ooSalesProgress').style.width  = Math.min(salesPct, 100) + '%';
+            document.getElementById('ooSalesText').textContent      = `Факт: ${formatCurrency(factSum)} (${salesPct}%)`;
+
+            const dealsPct = planCount > 0 ? Math.round((factCount / planCount) * 100) : 0;
+            document.getElementById('ooDealsValue').textContent     = `${factCount}/${planCount}`;
+            document.getElementById('ooDealsProgress').style.width   = Math.min(dealsPct, 100) + '%';
+            document.getElementById('ooDealsText').textContent       = `Продано: ${factCount} (${dealsPct}%)`;
+
+            document.getElementById('ooAvgCheck').textContent     = formatCurrency(factCount > 0 ? factSum / factCount : 0);
+            document.getElementById('ooSalesPercent').textContent = salesPct + '%';
+            document.getElementById('ooSummaryActual').textContent = formatCurrency(factSum);
+            document.getElementById('ooSummaryPlan').textContent   = formatCurrency(planSum);
+
             updateStats();
             updateGoals();
             updateExpenses();
