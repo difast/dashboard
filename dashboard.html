@@ -1358,13 +1358,12 @@
 
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('integro', this)">Интегро</button>
-            <button class="tab-btn" onclick="switchTab('expenses', this)">Расходы</button>
-            <button class="tab-btn" onclick="switchTab('extra-income', this)">Доп. доходы</button>
-            <button class="tab-btn" onclick="switchTab('goals', this)">Цели</button>
-            <button class="tab-btn" onclick="switchTab('stats', this)">Статистика</button>
             <button class="tab-btn" onclick="switchTab('oneonone', this)">OneOnOne</button>
+            <button class="tab-btn" onclick="switchTab('expenses', this)">Расходы</button>
+            <button class="tab-btn" onclick="switchTab('stats', this)">Статистика</button>
+            <button class="tab-btn" onclick="switchTab('companies', this)">Мои Компании</button>
+            <button class="tab-btn" onclick="switchTab('goals', this)">Цели</button>
             <button class="tab-btn" onclick="switchTab('investments', this)">Инвестиции</button>
-            <button class="tab-btn" onclick="switchTab('notes', this)">Заметки</button>
             <button class="tab-btn" onclick="switchTab('calendar', this)">Календарь</button>
         </div>
 
@@ -1611,96 +1610,6 @@
             </div>
         </div>
 
-        <!-- ДОП. ДОХОДЫ -->
-        <div id="extra-income" class="content">
-            <div class="expenses-section">
-                <h2 class="section-title">➕ Добавить доход</h2>
-                <div class="expense-controls">
-                    <div class="input-field">
-                        <label>Источник дохода</label>
-                        <input type="text" id="extraIncomeName" placeholder="Например: фриланс проект">
-                    </div>
-                    <div class="input-field">
-                        <label>Сумма (₽)</label>
-                        <input type="number" id="extraIncomeAmount" placeholder="0">
-                    </div>
-                    <div class="input-field">
-                        <label>Категория</label>
-                        <select id="extraIncomeCategory">
-                            <option>💼 Фриланс</option>
-                            <option>🏠 Аренда</option>
-                            <option>📈 Дивиденды</option>
-                            <option>🎁 Подарок</option>
-                            <option>🛒 Продажа</option>
-                            <option>🤝 Партнёрство</option>
-                            <option>💡 Консультация</option>
-                            <option>📦 Прочее</option>
-                        </select>
-                    </div>
-                    <div class="input-field">
-                        <label>Дата</label>
-                        <input type="date" id="extraIncomeDate">
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="addExtraIncome()">➕ Добавить доход</button>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">📊 Показатели месяца</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Доп. доходы за месяц</div>
-                        <div class="stat-value" id="extraIncomeMonthTotal">0 ₽</div>
-                        <div class="stat-subtext" id="extraIncomeMonthCount">0 записей</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Средний доход</div>
-                        <div class="stat-value" id="extraIncomeAvg">0 ₽</div>
-                        <div class="stat-subtext">за запись в месяце</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Общий доход (все источники)</div>
-                        <div class="stat-value" id="extraIncomeTotalIncome">0 ₽</div>
-                        <div class="stat-subtext">Школа + Проекты + Продажи + Доп.</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Чистая прибыль</div>
-                        <div class="stat-value" id="extraIncomeNetProfit">0 ₽</div>
-                        <div class="stat-subtext">Все доходы − Расходы</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">📋 История доп. доходов</h2>
-                <div id="extraIncomeList" class="expenses-list">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">💸</div>
-                        <div>Доходов нет. Добавьте первый выше</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-label">💼 Школа</div>
-                    <div class="summary-value" id="extraIncomeSchool">0 ₽</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-label">💻 IT Проекты</div>
-                    <div class="summary-value" id="extraIncomeProjects">0 ₽</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-label">➕ Доп. доходы</div>
-                    <div class="summary-value" id="extraIncomeExtra">0 ₽</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-label">💰 Чистая прибыль</div>
-                    <div class="summary-value" id="extraIncomeNet">0 ₽</div>
-                </div>
-            </div>
-        </div>
-
         <!-- ЦЕЛИ -->
         <div id="goals" class="content">
             <div class="expenses-section">
@@ -1887,7 +1796,7 @@
                         </div>
                         <div class="comparison-row">
                             <span class="comparison-label">Цель MRR:</span>
-                            <span class="comparison-value">500 000 ₽</span>
+                            <span class="comparison-value">1 000 000 ₽</span>
                         </div>
                         <div class="comparison-row">
                             <span class="comparison-label">Выполнение цели:</span>
@@ -1896,7 +1805,7 @@
                         <div style="margin-top: 10px;">
                             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">
                                 <span>Прогресс к цели</span>
-                                <span id="statOneOnOneMRRProgress">0 / 500 000 ₽</span>
+                                <span id="statOneOnOneMRRProgress">0 / 1 000 000 ₽</span>
                             </div>
                             <div class="progress-bar">
                                 <div class="progress-fill" id="statOneOnOneMRRBar" style="width: 0%; max-width: 100%;"></div>
@@ -2285,33 +2194,112 @@
             </div>
         </div>
 
-        <!-- ЗАМЕТКИ -->
-        <div id="notes" class="content">
-            <div class="section">
-                <h2 class="section-title">Новая заметка</h2>
-                <div class="input-grid">
-                    <div class="input-field">
-                        <label>Заголовок</label>
-                        <input type="text" id="noteTitle" placeholder="Заголовок (необязательно)">
-                    </div>
-                    <div class="input-field" style="grid-column: 1 / -1;">
-                        <label>Содержание</label>
-                        <textarea id="noteContent" class="note-add-textarea" placeholder="Текст заметки..."></textarea>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                    <label style="font-size: 13px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">Цвет</label>
-                    <input type="color" id="noteColorInput" value="#ffffff" style="width: 40px; height: 32px; border: 2px solid var(--border); cursor: pointer; border-radius: 6px; padding: 2px;">
-                </div>
-                <button class="btn btn-primary" onclick="addNote()">Добавить заметку</button>
+        <!-- МОИ КОМПАНИИ -->
+        <div id="companies" class="content">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="companyTab('notes', this)">Заметки</button>
+                <button class="sub-tab-btn" onclick="companyTab('my-companies', this)">Мои компании</button>
             </div>
 
-            <div class="section">
-                <h2 class="section-title" style="display: flex; align-items: center; gap: 10px;">
-                    📋 Мои заметки
-                    <span id="notesCount" style="font-size: 13px; color: var(--text-secondary); font-weight: normal;"></span>
-                </h2>
-                <div id="notesList" class="notes-grid"></div>
+            <!-- ЗАМЕТКИ -->
+            <div id="notes" class="sub-content active">
+                <div class="section">
+                    <h2 class="section-title">Новая заметка</h2>
+                    <div class="input-grid">
+                        <div class="input-field">
+                            <label>Заголовок</label>
+                            <input type="text" id="noteTitle" placeholder="Заголовок (необязательно)">
+                        </div>
+                        <div class="input-field" style="grid-column: 1 / -1;">
+                            <label>Содержание</label>
+                            <textarea id="noteContent" class="note-add-textarea" placeholder="Текст заметки..."></textarea>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <label style="font-size: 13px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">Цвет</label>
+                        <input type="color" id="noteColorInput" value="#ffffff" style="width: 40px; height: 32px; border: 2px solid var(--border); cursor: pointer; border-radius: 6px; padding: 2px;">
+                    </div>
+                    <button class="btn btn-primary" onclick="addNote()">Добавить заметку</button>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title" style="display: flex; align-items: center; gap: 10px;">
+                        📋 Мои заметки
+                        <span id="notesCount" style="font-size: 13px; color: var(--text-secondary); font-weight: normal;"></span>
+                    </h2>
+                    <div id="notesList" class="notes-grid"></div>
+                </div>
+            </div>
+
+            <!-- МОИ КОМПАНИИ -->
+            <div id="my-companies" class="sub-content">
+                <div class="section">
+                    <h2 class="section-title">🏢 Добавить компанию</h2>
+                    <div class="input-grid">
+                        <div class="input-field">
+                            <label>Название компании</label>
+                            <input type="text" id="companyName" placeholder="Например: Интегро">
+                        </div>
+                        <div class="input-field">
+                            <label>Сфера деятельности</label>
+                            <input type="text" id="companySphere" placeholder="Например: EdTech">
+                        </div>
+                        <div class="input-field">
+                            <label>Оценка компании (₽)</label>
+                            <input type="number" id="companyValuation" placeholder="0">
+                        </div>
+                        <div class="input-field">
+                            <label>Моя доля (%)</label>
+                            <input type="number" id="companyShare" placeholder="0" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="input-field">
+                            <label>Сайт / контакт</label>
+                            <input type="text" id="companyWebsite" placeholder="https://...">
+                        </div>
+                        <div class="input-field">
+                            <label>Статус</label>
+                            <select id="companyStatus">
+                                <option>Активна</option>
+                                <option>В развитии</option>
+                                <option>На паузе</option>
+                                <option>Продана</option>
+                                <option>Закрыта</option>
+                            </select>
+                        </div>
+                        <div class="input-field" style="grid-column: 1 / -1;">
+                            <label>Описание / заметки</label>
+                            <textarea id="companyNote" class="note-add-textarea" placeholder="Дополнительная информация о компании..."></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addCompany()">Добавить компанию</button>
+                </div>
+
+                <div class="section">
+                    <div class="stats-grid" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-label">Всего компаний</div>
+                            <div class="stat-value" id="companiesCount">0</div>
+                            <div class="stat-subtext">в портфеле</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Суммарная оценка</div>
+                            <div class="stat-value" id="companiesTotalValuation">0 ₽</div>
+                            <div class="stat-subtext">всех компаний</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Моя доля (в деньгах)</div>
+                            <div class="stat-value" id="companiesMyValue">0 ₽</div>
+                            <div class="stat-subtext">сумма моих долей</div>
+                        </div>
+                    </div>
+                    <h2 class="section-title">📋 Список компаний</h2>
+                    <div id="companiesList" class="projects-list">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🏢</div>
+                            <div>Компаний нет. Добавьте первую выше</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -2322,6 +2310,7 @@
         let userRole = null;
         let saveTimer = null;
         let notesData = [];
+        let companiesData = []; // [{id, name, sphere, valuation, share, website, status, note}]
         let calendarEvents = {}; // { 'YYYY-MM-DD': [{id, type, title, time, desc}] }
         let calViewYear = new Date().getFullYear();
         let calViewMonth = new Date().getMonth(); // 0-based
@@ -2352,11 +2341,10 @@
         function refreshActiveTab(tabName) {
             if (tabName === 'integro')         { updateSchool(); updateProjects(); }
             else if (tabName === 'expenses')    updateExpenses();
-            else if (tabName === 'extra-income') updateExtraIncomes();
             else if (tabName === 'goals')       updateGoals();
             else if (tabName === 'stats')       updateStats();
             else if (tabName === 'oneonone')    updateOneOnOne();
-            else if (tabName === 'notes')       updateNotes();
+            else if (tabName === 'companies')   { updateNotes(); updateCompanies(); }
             else if (tabName === 'calendar')    { calRenderGrid(); calRenderSide(); }
         }
 
@@ -2406,6 +2394,7 @@
             userRole = null;
             monthlyData = {};
             notesData = [];
+            companiesData = [];
             editingNoteId = null;
             document.getElementById('loginPassword').value = '';
             document.getElementById('loginError').textContent = '';
@@ -2452,10 +2441,12 @@
                 if (raw._v2) {
                     monthlyData = deserializeMonthlyData(raw.months || {});
                     notesData = (raw.notes || []).map(n => ({ ...n, date: new Date(n.date) }));
+                    companiesData = raw.companies || [];
                     calendarEvents = raw.calendarEvents || {};
                 } else {
                     monthlyData = deserializeMonthlyData(raw);
                     notesData = [];
+                    companiesData = [];
                     calendarEvents = {};
                 }
             }
@@ -2472,8 +2463,7 @@
                         ...g,
                         date: new Date(g.date),
                         deadline: new Date(g.deadline)
-                    })),
-                    extraIncomes: (md.extraIncomes || []).map(e => ({ ...e, date: new Date(e.date) }))
+                    }))
                 };
             }
             return result;
@@ -2489,7 +2479,7 @@
                     const res = await fetch('/api/data', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ _v2: true, months: monthlyData, notes: notesData, calendarEvents })
+                        body: JSON.stringify({ _v2: true, months: monthlyData, notes: notesData, companies: companiesData, calendarEvents })
                     });
                     if (statusEl) {
                         statusEl.textContent = res.ok ? 'Сохранено ✓' : 'Ошибка сохранения';
@@ -2817,6 +2807,89 @@
             }).join('');
         }
 
+        // ===== Мои Компании =====
+        function addCompany() {
+            const name      = document.getElementById('companyName').value.trim();
+            if (!name) return;
+            const sphere    = document.getElementById('companySphere').value.trim();
+            const valuation = parseFloat(document.getElementById('companyValuation').value) || 0;
+            const share     = parseFloat(document.getElementById('companyShare').value) || 0;
+            const website   = document.getElementById('companyWebsite').value.trim();
+            const status    = document.getElementById('companyStatus').value;
+            const note      = document.getElementById('companyNote').value.trim();
+
+            companiesData.push({ id: Date.now(), name, sphere, valuation, share, website, status, note });
+
+            document.getElementById('companyName').value = '';
+            document.getElementById('companySphere').value = '';
+            document.getElementById('companyValuation').value = '';
+            document.getElementById('companyShare').value = '';
+            document.getElementById('companyWebsite').value = '';
+            document.getElementById('companyNote').value = '';
+
+            saveToServer();
+            updateCompanies();
+        }
+
+        function deleteCompany(id) {
+            companiesData = companiesData.filter(c => c.id !== id);
+            saveToServer();
+            updateCompanies();
+        }
+
+        function updateCompanies() {
+            const listEl = document.getElementById('companiesList');
+            if (!listEl) return;
+
+            const totalValuation = companiesData.reduce((s, c) => s + (c.valuation || 0), 0);
+            const myValue        = companiesData.reduce((s, c) => s + (c.valuation || 0) * (c.share || 0) / 100, 0);
+
+            const countEl = document.getElementById('companiesCount');
+            const valEl   = document.getElementById('companiesTotalValuation');
+            const myEl    = document.getElementById('companiesMyValue');
+            if (countEl) countEl.textContent = companiesData.length;
+            if (valEl)   valEl.textContent   = formatCurrency(totalValuation);
+            if (myEl)    myEl.textContent    = formatCurrency(myValue);
+
+            if (companiesData.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏢</div><div>Компаний нет. Добавьте первую выше</div></div>';
+                return;
+            }
+
+            listEl.innerHTML = companiesData.map(c => {
+                const mine = (c.valuation || 0) * (c.share || 0) / 100;
+                const site = c.website
+                    ? `<a href="${escapeHtml(c.website)}" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none;">${escapeHtml(c.website)}</a>`
+                    : '<span style="color:var(--text-secondary);">—</span>';
+                return `
+                    <div style="border:2px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;background:var(--card-bg, #fff);">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                            <div>
+                                <div style="font-size:17px;font-weight:700;color:var(--text-primary);">${escapeHtml(c.name)}</div>
+                                <div style="font-size:13px;color:var(--text-secondary);margin-top:2px;">${escapeHtml(c.sphere || '—')} • ${escapeHtml(c.status || '')}</div>
+                            </div>
+                            <button class="btn btn-danger" onclick="deleteCompany(${c.id})">✕</button>
+                        </div>
+                        <div class="stats-grid" style="margin-top:12px;">
+                            <div class="stat-card">
+                                <div class="stat-label">Оценка компании</div>
+                                <div class="stat-value">${formatCurrency(c.valuation || 0)}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Моя доля</div>
+                                <div class="stat-value">${(c.share || 0)}%</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Моя доля (в деньгах)</div>
+                                <div class="stat-value">${formatCurrency(mine)}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:10px;font-size:13px;color:var(--text-secondary);">Сайт / контакт: ${site}</div>
+                        ${c.note ? `<div style="margin-top:8px;font-size:14px;color:var(--text-primary);white-space:pre-wrap;">${escapeHtml(c.note)}</div>` : ''}
+                    </div>`;
+            }).join('');
+        }
+
         // Полное обновление всех вкладок под выбранный месяц
         function refreshAllForMonth() {
             loadMonthUI(selectedMonth);
@@ -2824,7 +2897,6 @@
             updateProjectsPlan();
             updateProjects();
             updateExpenses();
-            updateExtraIncomes();
             updateOneOnOne();
             updateGoals();
             updateStats();
@@ -2838,6 +2910,7 @@
             initializeMonth(selectedMonth);
             refreshAllForMonth();
             updateNotes();
+            updateCompanies();
         }
 
         // ===== Анимация заголовка =====
@@ -2923,7 +2996,6 @@
                     expenses: [],
                     projects: [],
                     goals: [],
-                    extraIncomes: [],
                     schoolParams: { plan: 0, done: 0, lessonsPerWeek: 0, price: 0, revenueTarget: 0 },
                     projectsParams: { plan: 0, averagePlan: 0 },
                     oneOnOneParams: { salesPlan: 0, salesActual: 0, dealsPlan: 0, dealsDone: 0 }
@@ -2944,20 +3016,32 @@
 
             if (tabName === 'stats') setTimeout(() => initCharts(), 100);
             if (tabName === 'goals') updateGoals();
-            if (tabName === 'notes') updateNotes();
+            if (tabName === 'companies') { updateNotes(); updateCompanies(); }
             if (tabName === 'oneonone') updateOneOnOne();
-            if (tabName === 'extra-income') updateExtraIncomes();
             if (tabName === 'calendar') { calRenderGrid(); calRenderSide(); }
             if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
-            else if (['integro','expenses','extra-income','goals','stats','oneonone','notes','calendar'].includes(tabName)) startDataPolling(tabName);
+            else if (['integro','expenses','goals','stats','oneonone','companies','calendar'].includes(tabName)) startDataPolling(tabName);
             else stopAllPolling();
         }
 
+        // Глобальные под-вкладки (Интегро: школа/проекты)
         function switchSubTab(subTabName, btn) {
-            document.querySelectorAll('.sub-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
+            const parent = btn ? btn.closest('.content') : document.getElementById(subTabName)?.closest('.content');
+            const scope = parent || document;
+            scope.querySelectorAll('.sub-content').forEach(el => el.classList.remove('active'));
+            scope.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(subTabName).classList.add('active');
             if (btn) btn.classList.add('active');
+        }
+
+        // Под-вкладки «Мои Компании» (заметки / компании)
+        function companyTab(id, btn) {
+            document.querySelectorAll('#companies .sub-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#companies .sub-tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (btn) btn.classList.add('active');
+            if (id === 'notes') updateNotes();
+            if (id === 'my-companies') updateCompanies();
         }
 
         function formatCurrency(value) {
@@ -3177,12 +3261,6 @@
                 .reduce((sum, p) => sum + (p.check || 0), 0);
         }
 
-        function calcExtraIncome(monthKey) {
-            const md = monthlyData[monthKey];
-            if (!md || !md.extraIncomes) return 0;
-            return md.extraIncomes.reduce((sum, e) => sum + e.amount, 0);
-        }
-
         function calcOneOnOneRevenue(monthKey) {
             const md = monthlyData[monthKey];
             if (!md || !md.oneOnOneParams) return 0;
@@ -3193,93 +3271,17 @@
             const monthData = getCurrentMonthData();
             const schoolMonthly   = calcSchoolRevenue(selectedMonth);
             const projectsMonthly = calcProjectsRevenue(selectedMonth);
-            const extraMonthly    = calcExtraIncome(selectedMonth);
             const oneOnOneMonthly = calcOneOnOneRevenue(selectedMonth);
             const monthExpenses   = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
-            const income = schoolMonthly + projectsMonthly + extraMonthly + oneOnOneMonthly;
+            const income = schoolMonthly + projectsMonthly + oneOnOneMonthly;
             return {
                 income,
                 school:   schoolMonthly,
                 projects: projectsMonthly,
-                extra:    extraMonthly,
                 oneOnOne: oneOnOneMonthly,
                 expenses: monthExpenses,
                 balance:  income - monthExpenses
             };
-        }
-
-        function addExtraIncome() {
-            const name     = document.getElementById('extraIncomeName').value.trim();
-            const amount   = parseFloat(document.getElementById('extraIncomeAmount').value);
-            const category = document.getElementById('extraIncomeCategory').value;
-            const dateVal  = document.getElementById('extraIncomeDate').value;
-            if (!name || !amount || amount <= 0) return;
-            const monthData = getCurrentMonthData();
-            if (!monthData.extraIncomes) monthData.extraIncomes = [];
-            monthData.extraIncomes.push({
-                id: Date.now(),
-                name, amount, category,
-                date: dateVal ? new Date(dateVal) : new Date()
-            });
-            document.getElementById('extraIncomeName').value  = '';
-            document.getElementById('extraIncomeAmount').value = '';
-            saveToServer();
-            updateExtraIncomes();
-            updateGoals();
-            updateStats();
-        }
-
-        function deleteExtraIncome(id) {
-            const monthData = getCurrentMonthData();
-            monthData.extraIncomes = (monthData.extraIncomes || []).filter(e => e.id !== id);
-            saveToServer();
-            updateExtraIncomes();
-            updateGoals();
-            updateStats();
-        }
-
-        function updateExtraIncomes() {
-            const monthData = getCurrentMonthData();
-            const items     = monthData.extraIncomes || [];
-            const listEl    = document.getElementById('extraIncomeList');
-            if (!listEl) return;
-
-            // Устанавливаем сегодня в поле даты если пустое
-            const dateInput = document.getElementById('extraIncomeDate');
-            if (dateInput && !dateInput.value) {
-                dateInput.value = new Date().toISOString().split('T')[0];
-            }
-
-            if (items.length === 0) {
-                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💸</div><div>Доходов нет. Добавьте первый выше</div></div>';
-            } else {
-                const sorted = [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
-                listEl.innerHTML = sorted.map(e => `
-                    <div class="expense-item">
-                        <div class="expense-info">
-                            <div class="expense-name">${escapeHtml(e.name)}</div>
-                            <div class="expense-category">${escapeHtml(e.category)} • ${new Date(e.date).toLocaleDateString('ru-RU')}</div>
-                        </div>
-                        <div class="expense-amount" style="color:var(--success);">+${formatCurrency(e.amount)}</div>
-                        <button class="btn btn-danger" onclick="deleteExtraIncome(${e.id})">✕</button>
-                    </div>
-                `).join('');
-            }
-
-            const monthBalance = getMonthlyBalance();
-            const monthTotal   = items.reduce((s, e) => s + e.amount, 0);
-            const avg          = items.length > 0 ? monthTotal / items.length : 0;
-
-            document.getElementById('extraIncomeMonthTotal').textContent = formatCurrency(monthTotal);
-            document.getElementById('extraIncomeMonthCount').textContent = `${items.length} записей`;
-            document.getElementById('extraIncomeAvg').textContent        = formatCurrency(avg);
-            document.getElementById('extraIncomeTotalIncome').textContent = formatCurrency(monthBalance.income);
-            document.getElementById('extraIncomeNetProfit').textContent   = formatCurrency(monthBalance.balance);
-
-            document.getElementById('extraIncomeSchool').textContent   = formatCurrency(monthBalance.school);
-            document.getElementById('extraIncomeProjects').textContent  = formatCurrency(monthBalance.projects);
-            document.getElementById('extraIncomeExtra').textContent     = formatCurrency(monthBalance.extra);
-            document.getElementById('extraIncomeNet').textContent       = formatCurrency(monthBalance.balance);
         }
 
         function updateExpenses() {
@@ -3504,11 +3506,12 @@
             const oneOnOneValuation = oneOnOneARR * 4;
             const totalValuation = totalARR * 4;
 
-            // Цель MRR для каждого направления - 500 000 рублей в месяц
+            // Цель MRR для Школы и Проектов - 500 000 ₽/мес, для OneOnOne - 1 000 000 ₽/мес
             const mrrGoal = 500000;
+            const ooMrrGoal = 1000000;
             const schoolMRRPerf = Math.round((schoolMRR / mrrGoal) * 100);
             const projectsMRRPerf = Math.round((projectsMRR / mrrGoal) * 100);
-            const oneOnOneMRRPerf = Math.round((oneOnOneMRR / mrrGoal) * 100);
+            const oneOnOneMRRPerf = Math.round((oneOnOneMRR / ooMrrGoal) * 100);
 
             // Обновляем страницу
             document.getElementById('statSchoolStudents').textContent = `${schoolDone}/${schoolPlan}`;
@@ -3532,11 +3535,10 @@
             document.getElementById('statOneOnOneARR').textContent = formatCurrency(oneOnOneARR);
             document.getElementById('statOneOnOneValuation').textContent = formatCurrency(oneOnOneValuation);
             document.getElementById('statOneOnOneMRRPerf').textContent = oneOnOneMRRPerf + '%';
-            document.getElementById('statOneOnOneMRRProgress').textContent = formatCurrency(oneOnOneMRR) + ' / 500 000 ₽';
+            document.getElementById('statOneOnOneMRRProgress').textContent = formatCurrency(oneOnOneMRR) + ' / 1 000 000 ₽';
             document.getElementById('statOneOnOneMRRBar').style.width = Math.min(oneOnOneMRRPerf, 100) + '%';
 
-            const extraMRR = calcExtraIncome(selectedMonth);
-            document.getElementById('statTotalMRR').textContent = formatCurrency(totalMRR + extraMRR);
+            document.getElementById('statTotalMRR').textContent = formatCurrency(totalMRR);
             document.getElementById('statTotalARR').textContent = formatCurrency(totalARR);
             document.getElementById('statTotalValuation').textContent = formatCurrency(totalValuation);
             document.getElementById('statTotalExpenses').textContent = formatCurrency(monthBalance.expenses);
