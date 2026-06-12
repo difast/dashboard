@@ -1362,10 +1362,8 @@
             <button class="tab-btn" onclick="switchTab('extra-income', this)">Доп. доходы</button>
             <button class="tab-btn" onclick="switchTab('goals', this)">Цели</button>
             <button class="tab-btn" onclick="switchTab('stats', this)">Статистика</button>
-            <button class="tab-btn" onclick="switchTab('calvix', this)">Calvix</button>
-            <button class="tab-btn" onclick="switchTab('1on1', this)">1on1</button>
+            <button class="tab-btn" onclick="switchTab('oneonone', this)">OneOnOne</button>
             <button class="tab-btn" onclick="switchTab('investments', this)">Инвестиции</button>
-            <button class="tab-btn" onclick="switchTab('crypto', this)">Крипто</button>
             <button class="tab-btn" onclick="switchTab('notes', this)">Заметки</button>
             <button class="tab-btn" onclick="switchTab('calendar', this)">Календарь</button>
         </div>
@@ -1663,7 +1661,7 @@
                     <div class="stat-card">
                         <div class="stat-label">Общий доход (все источники)</div>
                         <div class="stat-value" id="extraIncomeTotalIncome">0 ₽</div>
-                        <div class="stat-subtext">Школа + Проекты + Доп.</div>
+                        <div class="stat-subtext">Школа + Проекты + Продажи + Доп.</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Чистая прибыль</div>
@@ -1772,7 +1770,7 @@
                 <h2 class="section-title">💹 Выручка по месяцам</h2>
                 <div class="charts-grid">
                     <div class="chart-container" style="grid-column: 1 / -1;">
-                        <div class="chart-title">MRR по месяцам (Школа и IT Проекты)</div>
+                        <div class="chart-title">MRR по месяцам (Школа, IT Проекты, Продажи)</div>
                         <canvas id="monthlyRevenueChart" style="height: 300px;"></canvas>
                     </div>
                 </div>
@@ -1870,6 +1868,43 @@
                     </div>
 
                     <div class="comparison-card">
+                        <div class="comparison-title">📈 OneOnOne (Продажи)</div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Сделки:</span>
+                            <span class="comparison-value" id="statOneOnOneDeals">0/0</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">MRR (месячно):</span>
+                            <span class="comparison-value" id="statOneOnOneMRR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">ARR (годово):</span>
+                            <span class="comparison-value" id="statOneOnOneARR">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Оценка (x4):</span>
+                            <span class="comparison-value" id="statOneOnOneValuation">0 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Цель MRR:</span>
+                            <span class="comparison-value">500 000 ₽</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="comparison-label">Выполнение цели:</span>
+                            <span class="comparison-value" id="statOneOnOneMRRPerf">0%</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">
+                                <span>Прогресс к цели</span>
+                                <span id="statOneOnOneMRRProgress">0 / 500 000 ₽</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="statOneOnOneMRRBar" style="width: 0%; max-width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-card">
                         <div class="comparison-title">💳 Финансы (Всего)</div>
                         <div class="comparison-row">
                             <span class="comparison-label">MRR (месячно):</span>
@@ -1904,58 +1939,70 @@
             </div>
         </div>
 
-        <!-- CALVIX -->
-        <div id="calvix" class="content">
+        <!-- ONEONONE — План по продажам -->
+        <div id="oneonone" class="content">
             <div class="section">
-                <h2 class="section-title">🚀 Calvix</h2>
-                <p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">
-                    Раздел в разработке...
-                </p>
-            </div>
-        </div>
-
-        <!-- 1ON1 -->
-        <div id="1on1" class="content">
-            <div id="oo-loading" class="section" style="text-align:center;padding:40px 20px;color:var(--text-secondary);">
-                Загрузка статистики 1on1...
-            </div>
-            <div id="oo-not-configured" class="section" style="display:none;text-align:center;padding:40px 20px;">
-                <div style="font-size:14px;font-weight:600;letter-spacing:3px;margin-bottom:16px;color:var(--primary);opacity:0.5;">CONFIG</div>
-                <p style="color:var(--text-secondary);font-size:15px;">Укажи <code style="background:var(--light);padding:2px 6px;border-radius:4px;">ONE_ON_ONE_API_URL</code> в Railway env vars,<br>чтобы подключить статистику 1on1.</p>
-            </div>
-            <div id="oo-error" class="section" style="display:none;text-align:center;padding:40px 20px;">
-                <div style="font-size:14px;font-weight:600;letter-spacing:3px;margin-bottom:16px;color:var(--warning);opacity:0.7;">!</div>
-                <p id="oo-error-msg" style="color:var(--danger);font-size:14px;"></p>
-            </div>
-            <div id="oo-content" style="display:none;">
-                <!-- Overview -->
-                <div class="stats-grid" id="oo-overview" style="margin-bottom:24px;"></div>
-
-                <!-- Mood -->
-                <div class="section" id="oo-mood-section" style="display:none;">
-                    <h2 class="section-title">😊 Настроение команды</h2>
-                    <div class="stats-grid" id="oo-mood-cards"></div>
-                    <div id="oo-mood-trend" style="margin-top:16px;display:flex;gap:8px;align-items:flex-end;height:60px;"></div>
+                <h2 class="section-title">📈 План по продажам</h2>
+                <div class="input-grid">
+                    <div class="input-field">
+                        <label>План продаж (₽/мес)</label>
+                        <input type="number" id="ooSalesPlan" value="0" onchange="updateOneOnOne()">
+                    </div>
+                    <div class="input-field">
+                        <label>Факт продаж (₽)</label>
+                        <input type="number" id="ooSalesActual" value="0" onchange="updateOneOnOne()">
+                    </div>
+                    <div class="input-field">
+                        <label>План сделок</label>
+                        <input type="number" id="ooDealsPlan" value="0" onchange="updateOneOnOne()">
+                    </div>
+                    <div class="input-field">
+                        <label>Закрыто сделок</label>
+                        <input type="number" id="ooDealsDone" value="0" onchange="updateOneOnOne()">
+                    </div>
                 </div>
+            </div>
 
-                <!-- Teams -->
-                <div class="section">
-                    <h2 class="section-title">Команды</h2>
-                    <div id="oo-teams-list"></div>
+            <div class="section">
+                <h2 class="section-title">Показатели</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">План / Факт продаж</div>
+                        <div class="stat-value" id="ooSalesValue">0 ₽</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="ooSalesProgress" style="width: 0%;"></div>
+                        </div>
+                        <div class="stat-subtext" id="ooSalesText">Факт: 0 ₽ (0%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Сделки (план / факт)</div>
+                        <div class="stat-value" id="ooDealsValue">0/0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="ooDealsProgress" style="width: 0%;"></div>
+                        </div>
+                        <div class="stat-subtext" id="ooDealsText">Закрыто: 0 (0%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Средний чек</div>
+                        <div class="stat-value" id="ooAvgCheck">0 ₽</div>
+                        <div class="stat-subtext">Факт / закрытые сделки</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Выполнение плана продаж</div>
+                        <div class="stat-value" id="ooSalesPercent">0%</div>
+                        <div class="stat-subtext">Факт от плана</div>
+                    </div>
                 </div>
+            </div>
 
-                <!-- Users -->
-                <div class="section">
-                    <h2 class="section-title" style="display:flex;align-items:center;gap:10px;">
-                        👤 Участники
-                        <span id="oo-inactive-badge" style="display:none;font-size:12px;background:var(--danger);color:#fff;padding:2px 8px;border-radius:12px;font-weight:600;"></span>
-                    </h2>
-                    <div id="oo-users-list"></div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">📈 Продажи (факт)</div>
+                    <div class="summary-value" id="ooSummaryActual">0 ₽</div>
                 </div>
-
-                <div style="text-align:right;margin-top:8px;">
-                    <span id="oo-last-updated" style="font-size:12px;color:var(--text-secondary);"></span>
-                    <button class="btn" style="margin-left:12px;padding:6px 14px;font-size:13px;" onclick="load1on1Stats()">Обновить</button>
+                <div class="summary-card">
+                    <div class="summary-label">🎯 План продаж</div>
+                    <div class="summary-value" id="ooSummaryPlan">0 ₽</div>
                 </div>
             </div>
         </div>
@@ -2197,164 +2244,6 @@
             </div>
         </div>
 
-        <!-- КРИПТО -->
-        <div id="crypto" class="content">
-            <div class="sub-tabs">
-                <button class="sub-tab-btn active" onclick="crypTab('cry-overview',this)">Обзор</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-trades',this)">Сделки</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-portfolio',this)">Портфель</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-pnl',this)">P&amp;L</button>
-                <button class="sub-tab-btn" onclick="crypTab('cry-settings',this)">Настройки</button>
-            </div>
-
-            <!-- ОБЗОР -->
-            <div id="cry-overview" class="sub-content active">
-                <div id="cry-not-configured" class="section" style="display:none;text-align:center;padding:40px 20px;">
-                    <div style="font-size:14px;font-weight:600;letter-spacing:3px;margin-bottom:16px;color:var(--primary);opacity:0.5;">CONFIG</div>
-                    <p style="color:var(--text-secondary);">Укажи <code style="background:var(--light);padding:2px 6px;border-radius:4px;">CRYPTO_BOT_URL</code> в Railway,<br>затем введи Binance API ключи в разделе Настройки.</p>
-                </div>
-                <div id="cry-main" style="display:none;">
-                    <div class="section" style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <span style="font-weight:600;font-size:15px;">Бот:</span>
-                            <button id="cry-toggle-btn" class="btn btn-primary" onclick="cryToggleBot()" style="min-width:100px;">...</button>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span style="font-size:13px;color:var(--text-secondary);">Режим:</span>
-                            <select id="cry-mode-select" style="padding:6px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="crySaveConfig()">
-                                <option value="testnet">Testnet</option>
-                                <option value="live">Live</option>
-                            </select>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span style="font-size:13px;color:var(--text-secondary);">Стратегия:</span>
-                            <select id="cry-strategy-select" style="padding:6px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="crySaveConfig()">
-                                <option value="rsi">RSI</option>
-                                <option value="macd">MACD</option>
-                                <option value="bollinger">Bollinger Bands</option>
-                                <option value="scalping">Scalping (EMA)</option>
-                            </select>
-                        </div>
-                        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
-                            <span id="cry-status-dot" style="width:10px;height:10px;border-radius:50%;background:#d1d5db;display:inline-block;"></span>
-                            <span id="cry-status-text" style="font-size:13px;color:var(--text-secondary);">—</span>
-                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="cryLoadAll()">↻</button>
-                        </div>
-                    </div>
-                    <div class="stats-grid" id="cry-summary-cards" style="margin-bottom:24px;"></div>
-                    <div class="section">
-                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-                            <h2 class="section-title" style="margin:0;">График</h2>
-                            <select id="cry-chart-pair" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="cryLoadCandles()">
-                                <option value="">Выбери пару</option>
-                            </select>
-                            <select id="cry-chart-interval" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="cryLoadCandles()">
-                                <option value="1m">1 мин</option>
-                                <option value="5m">5 мин</option>
-                                <option value="15m">15 мин</option>
-                                <option value="1h" selected>1 час</option>
-                                <option value="1d">День</option>
-                            </select>
-                        </div>
-                        <canvas id="cry-candle-chart" height="100"></canvas>
-                    </div>
-                    <div class="section">
-                        <h2 class="section-title">💹 P&amp;L (30 дней)</h2>
-                        <canvas id="cry-pnl-mini-chart" height="80"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- СДЕЛКИ -->
-            <div id="cry-trades" class="sub-content">
-                <div class="section">
-                    <h2 class="section-title">🔍 Фильтры</h2>
-                    <div class="input-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">
-                        <div class="input-field"><label>С даты</label><input type="date" id="cry-tr-from"></div>
-                        <div class="input-field"><label>По дату</label><input type="date" id="cry-tr-to"></div>
-                        <div class="input-field"><label>Пара</label><input type="text" id="cry-tr-pair" placeholder="BTCUSDT..."></div>
-                        <div class="input-field"><label>Направление</label>
-                            <select id="cry-tr-direction"><option value="">Все</option><option value="buy">Buy</option><option value="sell">Sell</option></select>
-                        </div>
-                        <div class="input-field"><label>Стратегия</label>
-                            <select id="cry-tr-strategy"><option value="">Все</option><option value="rsi">RSI</option><option value="macd">MACD</option><option value="bollinger">Bollinger</option><option value="scalping">Scalping</option></select>
-                        </div>
-                        <div class="input-field"><label>Режим</label>
-                            <select id="cry-tr-mode"><option value="">Все</option><option value="testnet">Testnet</option><option value="live">Live</option></select>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="cryLoadTrades()" style="margin-top:8px;">🔍 Найти</button>
-                </div>
-                <div class="section"><div id="cry-trades-table"></div></div>
-            </div>
-
-            <!-- ПОРТФЕЛЬ -->
-            <div id="cry-portfolio" class="sub-content">
-                <div class="section">
-                    <h2 class="section-title">Баланс Binance</h2>
-                    <div id="cry-portfolio-table"></div>
-                </div>
-            </div>
-
-            <!-- P&L -->
-            <div id="cry-pnl" class="sub-content">
-                <div class="section">
-                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-                        <h2 class="section-title" style="margin:0;">P&amp;L по периодам</h2>
-                        <select id="cry-pnl-period" style="padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:13px;" onchange="cryLoadPnl()">
-                            <option value="day">По дням (30 дн)</option>
-                            <option value="week">По неделям (12 нед)</option>
-                            <option value="month" selected>По месяцам (год)</option>
-                            <option value="custom">Произвольный период</option>
-                        </select>
-                        <span id="cry-pnl-custom" style="display:none;gap:8px;align-items:center;">
-                            <input type="date" id="cry-pnl-from" style="padding:6px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
-                            <span>—</span>
-                            <input type="date" id="cry-pnl-to" style="padding:6px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
-                            <button class="btn" style="padding:6px 12px;font-size:13px;" onclick="cryLoadPnl()">OK</button>
-                        </span>
-                    </div>
-                    <div id="cry-pnl-total" style="font-size:22px;font-weight:700;margin-bottom:16px;"></div>
-                    <canvas id="cry-pnl-period-chart" height="100"></canvas>
-                    <div id="cry-pnl-table" style="margin-top:16px;"></div>
-                </div>
-            </div>
-
-            <!-- НАСТРОЙКИ -->
-            <div id="cry-settings" class="sub-content">
-                <div class="section">
-                    <h2 class="section-title">🔑 Binance API</h2>
-                    <div class="input-grid" style="grid-template-columns:1fr;">
-                        <div class="input-field"><label>API Key</label><input type="password" id="cry-api-key" placeholder="Binance API Key..."></div>
-                        <div class="input-field"><label>API Secret</label><input type="password" id="cry-api-secret" placeholder="Binance API Secret..."></div>
-                    </div>
-                    <button class="btn btn-primary" onclick="crySaveCredentials()" style="margin-top:8px;">Сохранить</button>
-                    <div id="cry-cred-status" style="margin-top:8px;font-size:13px;"></div>
-                </div>
-
-                <div class="section">
-                    <h2 class="section-title">Параметры стратегий</h2>
-                    <div id="cry-strategy-params"></div>
-                    <button class="btn btn-primary" onclick="crySaveStrategyParams()" style="margin-top:12px;">Сохранить параметры</button>
-                </div>
-
-                <div class="section">
-                    <h2 class="section-title">🔍 Поиск торговых пар</h2>
-                    <div style="display:flex;gap:8px;margin-bottom:12px;">
-                        <input type="text" id="cry-search-input" placeholder="BTC, ETH, SOL..." style="flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;" onkeydown="if(event.key==='Enter')crySearchPairs()">
-                        <button class="btn btn-primary" onclick="crySearchPairs()">🔍</button>
-                    </div>
-                    <div id="cry-search-results"></div>
-                </div>
-
-                <div class="section">
-                    <h2 class="section-title">📡 Активные пары</h2>
-                    <div id="cry-pairs-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
-                    <p style="font-size:13px;color:var(--text-secondary);">Добавляй через поиск выше (кнопка +)</p>
-                </div>
-            </div>
-        </div>
-
         <!-- КАЛЕНДАРЬ -->
         <div id="calendar" class="content">
             <div class="section">
@@ -2439,17 +2328,12 @@
         let calSelectedDate = null;
         let editingNoteId = null;
         let invPollInterval  = null;
-        let cryPollInterval  = null;
         let dataPollInterval = null;
         let activePollTab    = null;
 
         function startInvPolling() {
             stopAllPolling();
             invPollInterval = setInterval(invLoadAll, 30000);
-        }
-        function startCryPolling() {
-            stopAllPolling();
-            cryPollInterval = setInterval(cryLoadAll, 30000);
         }
         function startDataPolling(tabName) {
             stopAllPolling();
@@ -2462,7 +2346,6 @@
         }
         function stopAllPolling() {
             if (invPollInterval)  { clearInterval(invPollInterval);  invPollInterval  = null; }
-            if (cryPollInterval)  { clearInterval(cryPollInterval);  cryPollInterval  = null; }
             if (dataPollInterval) { clearInterval(dataPollInterval); dataPollInterval = null; }
             activePollTab = null;
         }
@@ -2472,7 +2355,7 @@
             else if (tabName === 'extra-income') updateExtraIncomes();
             else if (tabName === 'goals')       updateGoals();
             else if (tabName === 'stats')       updateStats();
-            else if (tabName === '1on1')        load1on1Stats();
+            else if (tabName === 'oneonone')    updateOneOnOne();
             else if (tabName === 'notes')       updateNotes();
             else if (tabName === 'calendar')    { calRenderGrid(); calRenderSide(); }
         }
@@ -2517,7 +2400,7 @@
         }
 
         async function logout() {
-            stopBotPolling();
+            stopAllPolling();
             await fetch('/api/auth/logout', { method: 'POST' });
             isAuthenticated = false;
             userRole = null;
@@ -2538,11 +2421,11 @@
             document.getElementById('loginOverlay').style.display = 'none';
             document.querySelector('.container').style.display = 'block';
             isAuthenticated = true;
-            // Trader role: show only investments + crypto tabs
+            // Trader role: show only investments tab
             if (userRole === 'trader') {
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     const tab = btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
-                    const visible = ['investments', 'crypto'].includes(tab);
+                    const visible = ['investments'].includes(tab);
                     btn.style.display = visible ? '' : 'none';
                 });
                 // Activate investments tab
@@ -2633,6 +2516,18 @@
             if (pp) {
                 document.getElementById('projectsPlan').value = pp.plan;
                 document.getElementById('projectsAveragePlan').value = pp.averagePlan;
+            }
+            const oo = data.oneOnOneParams;
+            if (oo) {
+                document.getElementById('ooSalesPlan').value   = oo.salesPlan   || 0;
+                document.getElementById('ooSalesActual').value = oo.salesActual || 0;
+                document.getElementById('ooDealsPlan').value   = oo.dealsPlan   || 0;
+                document.getElementById('ooDealsDone').value   = oo.dealsDone   || 0;
+            } else {
+                document.getElementById('ooSalesPlan').value   = 0;
+                document.getElementById('ooSalesActual').value = 0;
+                document.getElementById('ooDealsPlan').value   = 0;
+                document.getElementById('ooDealsDone').value   = 0;
             }
         }
 
@@ -2922,12 +2817,26 @@
             }).join('');
         }
 
-        function initDashboard() {
-            initializeMonth(selectedMonth);
+        // Полное обновление всех вкладок под выбранный месяц
+        function refreshAllForMonth() {
             loadMonthUI(selectedMonth);
             updateSchool();
             updateProjectsPlan();
+            updateProjects();
             updateExpenses();
+            updateExtraIncomes();
+            updateOneOnOne();
+            updateGoals();
+            updateStats();
+            // Перерисовываем графики, если открыта вкладка статистики
+            if (document.getElementById('stats').classList.contains('active')) {
+                initCharts();
+            }
+        }
+
+        function initDashboard() {
+            initializeMonth(selectedMonth);
+            refreshAllForMonth();
             updateNotes();
         }
 
@@ -3016,7 +2925,8 @@
                     goals: [],
                     extraIncomes: [],
                     schoolParams: { plan: 0, done: 0, lessonsPerWeek: 0, price: 0, revenueTarget: 0 },
-                    projectsParams: { plan: 0, averagePlan: 0 }
+                    projectsParams: { plan: 0, averagePlan: 0 },
+                    oneOnOneParams: { salesPlan: 0, salesActual: 0, dealsPlan: 0, dealsDone: 0 }
                 };
             }
             return monthlyData[monthKey];
@@ -3035,12 +2945,11 @@
             if (tabName === 'stats') setTimeout(() => initCharts(), 100);
             if (tabName === 'goals') updateGoals();
             if (tabName === 'notes') updateNotes();
-            if (tabName === '1on1') load1on1Stats();
+            if (tabName === 'oneonone') updateOneOnOne();
             if (tabName === 'extra-income') updateExtraIncomes();
             if (tabName === 'calendar') { calRenderGrid(); calRenderSide(); }
             if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
-            else if (tabName === 'crypto') { cryLoadAll(); startCryPolling(); }
-            else if (['integro','expenses','extra-income','goals','stats','1on1','notes','calendar'].includes(tabName)) startDataPolling(tabName);
+            else if (['integro','expenses','extra-income','goals','stats','oneonone','notes','calendar'].includes(tabName)) startDataPolling(tabName);
             else stopAllPolling();
         }
 
@@ -3274,19 +3183,28 @@
             return md.extraIncomes.reduce((sum, e) => sum + e.amount, 0);
         }
 
+        function calcOneOnOneRevenue(monthKey) {
+            const md = monthlyData[monthKey];
+            if (!md || !md.oneOnOneParams) return 0;
+            return md.oneOnOneParams.salesActual || 0;
+        }
+
         function getMonthlyBalance() {
             const monthData = getCurrentMonthData();
             const schoolMonthly   = calcSchoolRevenue(selectedMonth);
             const projectsMonthly = calcProjectsRevenue(selectedMonth);
             const extraMonthly    = calcExtraIncome(selectedMonth);
+            const oneOnOneMonthly = calcOneOnOneRevenue(selectedMonth);
             const monthExpenses   = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const income = schoolMonthly + projectsMonthly + extraMonthly + oneOnOneMonthly;
             return {
-                income:   schoolMonthly + projectsMonthly + extraMonthly,
+                income,
                 school:   schoolMonthly,
                 projects: projectsMonthly,
                 extra:    extraMonthly,
+                oneOnOne: oneOnOneMonthly,
                 expenses: monthExpenses,
-                balance:  schoolMonthly + projectsMonthly + extraMonthly - monthExpenses
+                balance:  income - monthExpenses
             };
         }
 
@@ -3566,23 +3484,31 @@
             const projectsDone = monthData.projects.filter(p => p.status === 'Завершено').length;
             const projectsPlan = monthData.projectsParams ? (monthData.projectsParams.plan || 0) : 0;
 
+            const oneOnOneMRR = calcOneOnOneRevenue(selectedMonth);
+            const ooParams = monthData.oneOnOneParams || {};
+            const ooDealsDone = ooParams.dealsDone || 0;
+            const ooDealsPlan = ooParams.dealsPlan || 0;
+
             const monthBalance = getMonthlyBalance();
-            const totalMRR = schoolMRR + projectsMRR;
+            const totalMRR = schoolMRR + projectsMRR + oneOnOneMRR;
 
             // Расчет ARR (Annual Recurring Revenue) - MRR × 12
             const schoolARR = schoolMRR * 12;
             const projectsARR = projectsMRR * 12;
+            const oneOnOneARR = oneOnOneMRR * 12;
             const totalARR = totalMRR * 12;
 
             // Оценка компании по мультипликатору x4 (ARR × 4)
             const schoolValuation = schoolARR * 4;
             const projectsValuation = projectsARR * 4;
+            const oneOnOneValuation = oneOnOneARR * 4;
             const totalValuation = totalARR * 4;
 
             // Цель MRR для каждого направления - 500 000 рублей в месяц
             const mrrGoal = 500000;
             const schoolMRRPerf = Math.round((schoolMRR / mrrGoal) * 100);
             const projectsMRRPerf = Math.round((projectsMRR / mrrGoal) * 100);
+            const oneOnOneMRRPerf = Math.round((oneOnOneMRR / mrrGoal) * 100);
 
             // Обновляем страницу
             document.getElementById('statSchoolStudents').textContent = `${schoolDone}/${schoolPlan}`;
@@ -3601,6 +3527,14 @@
             document.getElementById('statProjectsMRRProgress').textContent = formatCurrency(projectsMRR) + ' / 500 000 ₽';
             document.getElementById('statProjectsMRRBar').style.width = Math.min(projectsMRRPerf, 100) + '%';
 
+            document.getElementById('statOneOnOneDeals').textContent = `${ooDealsDone}/${ooDealsPlan}`;
+            document.getElementById('statOneOnOneMRR').textContent = formatCurrency(oneOnOneMRR);
+            document.getElementById('statOneOnOneARR').textContent = formatCurrency(oneOnOneARR);
+            document.getElementById('statOneOnOneValuation').textContent = formatCurrency(oneOnOneValuation);
+            document.getElementById('statOneOnOneMRRPerf').textContent = oneOnOneMRRPerf + '%';
+            document.getElementById('statOneOnOneMRRProgress').textContent = formatCurrency(oneOnOneMRR) + ' / 500 000 ₽';
+            document.getElementById('statOneOnOneMRRBar').style.width = Math.min(oneOnOneMRRPerf, 100) + '%';
+
             const extraMRR = calcExtraIncome(selectedMonth);
             document.getElementById('statTotalMRR').textContent = formatCurrency(totalMRR + extraMRR);
             document.getElementById('statTotalARR').textContent = formatCurrency(totalARR);
@@ -3617,6 +3551,9 @@
             const schoolPlan = monthData.schoolParams ? (monthData.schoolParams.plan || 0) : 0;
             const projectsDone = monthData.projects.filter(p => p.status === 'Завершено').length;
             const projectsPlan = monthData.projectsParams ? (monthData.projectsParams.plan || 0) : 0;
+            const oneOnOneMonthly = calcOneOnOneRevenue(selectedMonth);
+            const ooDealsDone = monthData.oneOnOneParams ? (monthData.oneOnOneParams.dealsDone || 0) : 0;
+            const ooDealsPlan = monthData.oneOnOneParams ? (monthData.oneOnOneParams.dealsPlan || 0) : 0;
 
             if (charts.revenue) charts.revenue.destroy();
             if (charts.plan) charts.plan.destroy();
@@ -3628,10 +3565,10 @@
             charts.revenue = new Chart(revenueCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Школа', 'IT Проекты'],
+                    labels: ['Школа', 'IT Проекты', 'OneOnOne (Продажи)'],
                     datasets: [{
-                        data: [schoolMonthly, projectsMonthly],
-                        backgroundColor: ['#3b82f6', '#fbbf24'],
+                        data: [schoolMonthly, projectsMonthly, oneOnOneMonthly],
+                        backgroundColor: ['#3b82f6', '#fbbf24', '#10b981'],
                         borderColor: '#ffffff',
                         borderWidth: 3
                     }]
@@ -3666,11 +3603,11 @@
             charts.plan = new Chart(planCtx, {
                 type: 'radar',
                 data: {
-                    labels: ['Школа (учеников)', 'IT Проекты'],
+                    labels: ['Школа (учеников)', 'IT Проекты', 'OneOnOne (сделки)'],
                     datasets: [
                         {
                             label: 'Выполнено',
-                            data: [schoolDone, projectsDone],
+                            data: [schoolDone, projectsDone, ooDealsDone],
                             borderColor: '#3b82f6',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                             borderWidth: 2,
@@ -3679,7 +3616,7 @@
                         },
                         {
                             label: 'План',
-                            data: [schoolPlan, projectsPlan],
+                            data: [schoolPlan, projectsPlan, ooDealsPlan],
                             borderColor: '#fbbf24',
                             backgroundColor: 'rgba(251, 191, 36, 0.1)',
                             borderWidth: 2,
@@ -3764,10 +3701,10 @@
                         {
                             label: 'Доход',
                             data: [
-                                (schoolMonthly + projectsMonthly) / 4,
-                                (schoolMonthly + projectsMonthly) / 4,
-                                (schoolMonthly + projectsMonthly) / 4,
-                                (schoolMonthly + projectsMonthly) / 4
+                                (schoolMonthly + projectsMonthly + oneOnOneMonthly) / 4,
+                                (schoolMonthly + projectsMonthly + oneOnOneMonthly) / 4,
+                                (schoolMonthly + projectsMonthly + oneOnOneMonthly) / 4,
+                                (schoolMonthly + projectsMonthly + oneOnOneMonthly) / 4
                             ],
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -3833,11 +3770,13 @@
 
             const schoolMRRData = [];
             const projectsMRRData = [];
+            const oneOnOneMRRData = [];
 
             monthsKeys.forEach(monthNum => {
                 const monthKey = `${currentYear}-${monthNum}`;
                 schoolMRRData.push(calcSchoolRevenue(monthKey));
                 projectsMRRData.push(calcProjectsRevenue(monthKey));
+                oneOnOneMRRData.push(calcOneOnOneRevenue(monthKey));
             });
 
             charts.monthlyRevenue = new Chart(monthlyRevenueCtx, {
@@ -3856,6 +3795,13 @@
                             label: 'IT Проекты MRR',
                             data: projectsMRRData,
                             backgroundColor: '#fbbf24',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'OneOnOne (Продажи) MRR',
+                            data: oneOnOneMRRData,
+                            backgroundColor: '#10b981',
                             borderRadius: 8,
                             borderSkipped: false
                         }
@@ -3911,9 +3857,11 @@
             csv += '=== ДОХОД ===\n';
             const schoolMonthly = calcSchoolRevenue(selectedMonth);
             const projectsMonthly = calcProjectsRevenue(selectedMonth);
+            const oneOnOneMonthly = calcOneOnOneRevenue(selectedMonth);
             csv += 'Школа MRR,' + formatCurrency(schoolMonthly) + '\n';
             csv += 'IT Проекты MRR,' + formatCurrency(projectsMonthly) + '\n';
-            csv += 'Всего MRR,' + formatCurrency(schoolMonthly + projectsMonthly) + '\n\n';
+            csv += 'OneOnOne (Продажи) MRR,' + formatCurrency(oneOnOneMonthly) + '\n';
+            csv += 'Всего MRR,' + formatCurrency(schoolMonthly + projectsMonthly + oneOnOneMonthly) + '\n\n';
             
             // Расходы
             csv += '=== РАСХОДЫ ===\n';
@@ -3943,8 +3891,9 @@
             
             // Прибыль
             csv += '\n=== ИТОГИ ===\n';
-            const profit = (schoolMonthly + projectsMonthly) - totalExpenses;
-            csv += 'Доход,' + formatCurrency(schoolMonthly + projectsMonthly) + '\n';
+            const totalIncome = schoolMonthly + projectsMonthly + oneOnOneMonthly;
+            const profit = totalIncome - totalExpenses;
+            csv += 'Доход,' + formatCurrency(totalIncome) + '\n';
             csv += 'Расходы,' + formatCurrency(totalExpenses) + '\n';
             csv += 'Чистая прибыль,' + formatCurrency(profit) + '\n';
             
@@ -4000,351 +3949,13 @@
                 document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                loadMonthUI(selectedMonth);
-                updateSchool();
-                updateProjectsPlan();
-                updateExpenses();
+                refreshAllForMonth();
             });
             
             monthButtonsContainer.appendChild(btn);
         });
         
         checkAuth();
-
-        // ===== Crypto / Binance Bot =====
-        let cryCandleChart = null, cryPnlMiniChart = null, cryPnlPeriodChart = null;
-        let cryConfig = null, cryPairs = [];
-
-        function crypTab(id, btn) {
-            document.querySelectorAll('#crypto .sub-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('#crypto .sub-tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if (btn) btn.classList.add('active');
-            if (id === 'cry-trades')    cryLoadTrades();
-            if (id === 'cry-portfolio') cryLoadPortfolio();
-            if (id === 'cry-pnl')       cryLoadPnl();
-            if (id === 'cry-settings')  cryLoadSettings();
-        }
-
-        async function cryFetch(path, opts = {}) {
-            const res = await fetch(path, opts);
-            return res.json();
-        }
-
-        async function cryLoadAll() {
-            const data = await cryFetch('/api/crypto/status');
-            if (data._not_configured) {
-                document.getElementById('cry-not-configured').style.display = 'block';
-                document.getElementById('cry-main').style.display = 'none';
-                return;
-            }
-            document.getElementById('cry-not-configured').style.display = 'none';
-            document.getElementById('cry-main').style.display = 'block';
-            cryRenderStatus(data);
-            const cfg = await cryFetch('/api/crypto/config');
-            if (!cfg._not_configured) {
-                cryConfig = cfg;
-                document.getElementById('cry-mode-select').value     = cfg.mode || 'testnet';
-                document.getElementById('cry-strategy-select').value = cfg.strategy || 'rsi';
-                cryPairs = cfg.pairs || [];
-            }
-            const summary = await cryFetch('/api/crypto/analytics/summary');
-            cryRenderSummaryCards(summary);
-            cryPopulateChartSelect();
-            cryLoadPnlMini();
-        }
-
-        function cryRenderStatus(s) {
-            const dot = document.getElementById('cry-status-dot');
-            const txt = document.getElementById('cry-status-text');
-            const btn = document.getElementById('cry-toggle-btn');
-            dot.style.background = s.active ? (s.last_error ? '#f59e0b' : '#22c55e') : '#d1d5db';
-            txt.textContent = s.active
-                ? `Активен · ${s.strategy?.toUpperCase()} · ${s.mode}${s.uptime_sec ? ' · ' + Math.round(s.uptime_sec/60) + 'мин' : ''}${s.last_error ? ' · ' + s.last_error.slice(0, 80) : ''}`
-                : `Остановлен · ${s.last_error ? s.last_error.slice(0, 80) : s.mode}`;
-            btn.textContent = s.active ? 'Стоп' : 'Старт';
-            btn.style.background = s.active ? 'var(--success)' : '';
-        }
-
-        function cryRenderSummaryCards(s) {
-            const fmt = v => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(4) + ' $';
-            const col = v => v == null ? '' : v > 0 ? 'color:#16a34a' : v < 0 ? 'color:var(--danger)' : '';
-            document.getElementById('cry-summary-cards').innerHTML = [
-                { icon: '', label: 'Сделок всего',  value: s.total_trades ?? '—' },
-                { icon: '', label: 'Сегодня',        value: s.trades_today ?? 0 },
-                { icon: '', label: 'Неделя',         value: s.trades_week ?? 0 },
-                { icon: '', label: 'P&L сегодня',    value: fmt(s.pnl_today),  style: col(s.pnl_today) },
-                { icon: '', label: 'P&L неделя',     value: fmt(s.pnl_week),   style: col(s.pnl_week) },
-                { icon: '', label: 'P&L месяц',      value: fmt(s.pnl_month),  style: col(s.pnl_month) },
-                { icon: '', label: 'P&L всего',      value: fmt(s.pnl_total),  style: col(s.pnl_total) },
-            ].map(c => `<div class="stat-card">
-                <div style="font-size:26px;margin-bottom:6px;">${c.icon}</div>
-                <div class="stat-value" style="${c.style||''}">${c.value}</div>
-                <div class="stat-label">${c.label}</div>
-            </div>`).join('');
-        }
-
-        function cryPopulateChartSelect() {
-            const sel = document.getElementById('cry-chart-pair');
-            sel.innerHTML = '<option value="">Выбери пару</option>' +
-                cryPairs.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
-        }
-
-        async function cryLoadCandles() {
-            const symbol   = document.getElementById('cry-chart-pair').value;
-            const interval = document.getElementById('cry-chart-interval').value;
-            if (!symbol) return;
-            const data = await cryFetch(`/api/crypto/candles?symbol=${encodeURIComponent(symbol)}&interval=${interval}`);
-            if (!data.candles?.length) return;
-            const labels = data.candles.map(c => c.time.slice(5,16).replace('T',' '));
-            const closes = data.candles.map(c => c.close);
-            const ctx = document.getElementById('cry-candle-chart').getContext('2d');
-            if (cryCandleChart) cryCandleChart.destroy();
-            cryCandleChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels, datasets: [{ label: symbol, data: closes, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(245,158,11,0.08)' }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 10 } } } },
-            });
-        }
-
-        async function cryLoadPnlMini() {
-            const data = await cryFetch('/api/crypto/analytics/pnl?period=day');
-            if (!data.entries?.length) return;
-            const ctx = document.getElementById('cry-pnl-mini-chart').getContext('2d');
-            if (cryPnlMiniChart) cryPnlMiniChart.destroy();
-            const values = data.entries.map(e => e.pnl);
-            cryPnlMiniChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: data.entries.map(e => e.label), datasets: [{ data: values, backgroundColor: values.map(v => v >= 0 ? '#22c55e' : '#e05252') }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 15 } } } },
-            });
-        }
-
-        async function cryToggleBot() {
-            const s = await cryFetch('/api/crypto/status');
-            await cryFetch(s.active ? '/api/crypto/stop' : '/api/crypto/start', { method: 'POST' });
-            setTimeout(cryLoadAll, 800);
-        }
-
-        async function crySaveConfig() {
-            await cryFetch('/api/crypto/config', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    mode:     document.getElementById('cry-mode-select').value,
-                    strategy: document.getElementById('cry-strategy-select').value,
-                }),
-            });
-        }
-
-        async function cryLoadTrades() {
-            const params = new URLSearchParams();
-            const v = id => document.getElementById(id)?.value;
-            if (v('cry-tr-from'))      params.set('from_date', v('cry-tr-from'));
-            if (v('cry-tr-to'))        params.set('to_date',   v('cry-tr-to'));
-            if (v('cry-tr-pair'))      params.set('pair',      v('cry-tr-pair'));
-            if (v('cry-tr-direction')) params.set('direction', v('cry-tr-direction'));
-            if (v('cry-tr-strategy'))  params.set('strategy',  v('cry-tr-strategy'));
-            if (v('cry-tr-mode'))      params.set('mode',      v('cry-tr-mode'));
-            const data  = await cryFetch(`/api/crypto/analytics/trades?${params}`);
-            const trades = Array.isArray(data) ? data : [];
-            const el     = document.getElementById('cry-trades-table');
-            if (!trades.length) { el.innerHTML = '<p style="color:var(--text-secondary);padding:20px 0;">Сделки не найдены</p>'; return; }
-            el.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">
-                <thead><tr style="border-bottom:2px solid var(--border);">
-                    <th style="text-align:left;padding:8px;">Дата</th><th style="padding:8px;">Пара</th>
-                    <th style="padding:8px;">Тип</th><th style="padding:8px;">Кол-во</th>
-                    <th style="padding:8px;">Цена</th><th style="padding:8px;">Сумма</th>
-                    <th style="padding:8px;">Стратегия</th><th style="padding:8px;">Режим</th><th style="padding:8px;">P&L</th>
-                </tr></thead>
-                <tbody>${trades.map(t => {
-                    const dir = t.direction === 'buy'
-                        ? '<span style="color:#16a34a;font-weight:600;">▲ BUY</span>'
-                        : '<span style="color:var(--danger);font-weight:600;">▼ SELL</span>';
-                    const pnl = t.pnl != null
-                        ? `<span style="color:${t.pnl>=0?'#16a34a':'var(--danger)'};">${t.pnl>=0?'+':''}${t.pnl.toFixed(6)}</span>`
-                        : '—';
-                    return `<tr style="border-bottom:1px solid var(--border);">
-                        <td style="padding:8px;white-space:nowrap;">${new Date(t.timestamp).toLocaleString('ru-RU')}</td>
-                        <td style="padding:8px;font-weight:600;">${escapeHtml(t.pair)}</td>
-                        <td style="padding:8px;text-align:center;">${dir}</td>
-                        <td style="padding:8px;text-align:right;">${t.quantity}</td>
-                        <td style="padding:8px;text-align:right;">${t.price.toFixed(6)}</td>
-                        <td style="padding:8px;text-align:right;">${t.total.toFixed(4)}</td>
-                        <td style="padding:8px;text-align:center;">${escapeHtml(t.strategy)}</td>
-                        <td style="padding:8px;text-align:center;">${escapeHtml(t.mode)}</td>
-                        <td style="padding:8px;text-align:right;">${pnl}</td>
-                    </tr>`;
-                }).join('')}</tbody></table></div>`;
-        }
-
-        async function cryLoadPortfolio() {
-            const data = await cryFetch('/api/crypto/portfolio');
-            const el   = document.getElementById('cry-portfolio-table');
-            const bals = data.balances || [];
-            if (!bals.length) { el.innerHTML = '<p style="color:var(--text-secondary);padding:20px 0;">Баланс пуст или недоступен</p>'; return; }
-            el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-                <thead><tr style="border-bottom:2px solid var(--border);">
-                    <th style="text-align:left;padding:8px;">Актив</th>
-                    <th style="padding:8px;text-align:right;">Свободно</th>
-                    <th style="padding:8px;text-align:right;">Заморожено</th>
-                    <th style="padding:8px;text-align:right;">Итого</th>
-                    <th style="padding:8px;text-align:right;">≈ USDT</th>
-                </tr></thead>
-                <tbody>${bals.map(b => `<tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:8px;font-weight:600;">${escapeHtml(b.asset)}</td>
-                    <td style="padding:8px;text-align:right;">${b.free}</td>
-                    <td style="padding:8px;text-align:right;">${b.locked}</td>
-                    <td style="padding:8px;text-align:right;">${b.total}</td>
-                    <td style="padding:8px;text-align:right;">${b.usdt_value}</td>
-                </tr>`).join('')}</tbody></table>`;
-        }
-
-        async function cryLoadPnl() {
-            const period = document.getElementById('cry-pnl-period')?.value || 'month';
-            const custom = document.getElementById('cry-pnl-custom');
-            if (custom) custom.style.display = period === 'custom' ? 'flex' : 'none';
-            const params = new URLSearchParams({ period });
-            if (period === 'custom') {
-                const f = document.getElementById('cry-pnl-from')?.value;
-                const t = document.getElementById('cry-pnl-to')?.value;
-                if (f) params.set('from_date', f);
-                if (t) params.set('to_date', t);
-            }
-            const data    = await cryFetch(`/api/crypto/analytics/pnl?${params}`);
-            const entries = data.entries || [];
-            const total   = data.total_pnl || 0;
-            const totalEl = document.getElementById('cry-pnl-total');
-            totalEl.textContent = `Итог: ${total>=0?'+':''}${total.toFixed(6)} $`;
-            totalEl.style.color = total >= 0 ? '#16a34a' : 'var(--danger)';
-            if (entries.length) {
-                const ctx = document.getElementById('cry-pnl-period-chart').getContext('2d');
-                if (cryPnlPeriodChart) cryPnlPeriodChart.destroy();
-                cryPnlPeriodChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: { labels: entries.map(e => e.label), datasets: [{ data: entries.map(e => e.pnl), backgroundColor: entries.map(e => e.pnl >= 0 ? '#22c55e' : '#e05252') }] },
-                    options: { responsive: true, plugins: { legend: { display: false } } },
-                });
-            }
-            document.getElementById('cry-pnl-table').innerHTML = entries.length
-                ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-                    <thead><tr style="border-bottom:2px solid var(--border);"><th style="text-align:left;padding:6px;">Период</th><th style="padding:6px;text-align:right;">P&L ($)</th><th style="padding:6px;text-align:center;">Сделок</th></tr></thead>
-                    <tbody>${entries.map(e => `<tr style="border-bottom:1px solid var(--border);">
-                        <td style="padding:6px;">${escapeHtml(e.label)}</td>
-                        <td style="padding:6px;text-align:right;color:${e.pnl>=0?'#16a34a':'var(--danger)'};">${e.pnl>=0?'+':''}${e.pnl.toFixed(6)}</td>
-                        <td style="padding:6px;text-align:center;">${e.trades}</td>
-                    </tr>`).join('')}</tbody></table>`
-                : '<p style="color:var(--text-secondary);">Нет данных</p>';
-        }
-
-        async function cryLoadSettings() {
-            if (!cryConfig) {
-                const cfg = await cryFetch('/api/crypto/config');
-                if (!cfg._not_configured) cryConfig = cfg;
-            }
-            if (cryConfig) {
-                cryPairs = cryConfig.pairs || [];
-                cryRenderPairs();
-                cryRenderStrategyParams();
-            }
-        }
-
-        async function crySaveCredentials() {
-            const key    = document.getElementById('cry-api-key').value.trim();
-            const secret = document.getElementById('cry-api-secret').value.trim();
-            if (!key || !secret) return;
-            await cryFetch('/api/crypto/config', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ api_key: key, api_secret: secret }),
-            });
-            document.getElementById('cry-api-key').value = '';
-            document.getElementById('cry-api-secret').value = '';
-            document.getElementById('cry-cred-status').textContent = 'Ключи сохранены';
-            setTimeout(() => { document.getElementById('cry-cred-status').textContent = ''; }, 3000);
-        }
-
-        function cryRenderStrategyParams() {
-            if (!cryConfig) return;
-            const labels = { period: 'Период', overbought: 'Перекупленность', oversold: 'Перепроданность',
-                fast: 'Быстрая EMA', slow: 'Медленная EMA', signal: 'Сигнал', std_dev: 'Откл. σ',
-                ema_fast: 'EMA быстрая', ema_slow: 'EMA медленная', stop_loss_pct: 'Стоп-лосс %',
-                quantity_pct: '% от USDT баланса' };
-            document.getElementById('cry-strategy-params').innerHTML =
-                Object.entries(cryConfig.strategy_params || {}).map(([strat, p]) => `
-                <div style="margin-bottom:16px;">
-                    <div style="font-weight:600;margin-bottom:8px;text-transform:uppercase;font-size:13px;">${escapeHtml(strat)}</div>
-                    <div class="input-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">
-                        ${Object.entries(p).map(([k, v]) => `
-                            <div class="input-field">
-                                <label>${escapeHtml(labels[k] || k)}</label>
-                                <input type="number" step="any" id="csp-${strat}-${k}" value="${v}">
-                            </div>`).join('')}
-                    </div>
-                </div>`).join('');
-        }
-
-        async function crySaveStrategyParams() {
-            if (!cryConfig) return;
-            const params = {};
-            Object.entries(cryConfig.strategy_params || {}).forEach(([strat, p]) => {
-                params[strat] = {};
-                Object.keys(p).forEach(k => {
-                    const el = document.getElementById(`csp-${strat}-${k}`);
-                    if (el) params[strat][k] = parseFloat(el.value) || 0;
-                });
-            });
-            await cryFetch('/api/crypto/config', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ strategy_params: params }),
-            });
-        }
-
-        async function crySearchPairs() {
-            const q = document.getElementById('cry-search-input').value.trim();
-            if (!q) return;
-            const data = await cryFetch(`/api/crypto/pairs/search?q=${encodeURIComponent(q)}`);
-            const el   = document.getElementById('cry-search-results');
-            const pairs = data.pairs || [];
-            if (!pairs.length) { el.innerHTML = '<p style="color:var(--text-secondary);">Ничего не найдено</p>'; return; }
-            el.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
-                ${pairs.map(p => `<span style="background:var(--light);border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:13px;display:flex;align-items:center;gap:6px;">
-                    ${escapeHtml(p)}
-                    <button onclick="cryAddPair('${escapeHtml(p)}')" style="border:none;background:none;cursor:pointer;color:#16a34a;font-size:16px;padding:0;line-height:1;font-weight:700;">+</button>
-                </span>`).join('')}
-            </div>`;
-        }
-
-        async function cryAddPair(pair) {
-            if (!cryPairs.includes(pair)) {
-                cryPairs.push(pair);
-                await cryFetch('/api/crypto/config', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pairs: cryPairs }),
-                });
-                cryRenderPairs();
-                cryPopulateChartSelect();
-            }
-        }
-
-        async function cryRemovePair(pair) {
-            cryPairs = cryPairs.filter(p => p !== pair);
-            await cryFetch('/api/crypto/config', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pairs: cryPairs }),
-            });
-            cryRenderPairs();
-            cryPopulateChartSelect();
-        }
-
-        function cryRenderPairs() {
-            const el = document.getElementById('cry-pairs-list');
-            if (!el) return;
-            el.innerHTML = cryPairs.length
-                ? cryPairs.map(p => `<span style="background:var(--light);border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:13px;display:flex;align-items:center;gap:6px;">
-                    ${escapeHtml(p)}
-                    <button onclick="cryRemovePair('${escapeHtml(p)}')" style="border:none;background:none;cursor:pointer;color:var(--danger);font-size:14px;padding:0;line-height:1;">×</button>
-                  </span>`).join('')
-                : '<span style="color:var(--text-secondary);font-size:13px;">Пары не добавлены</span>';
-        }
 
         // ===== Investments / Trading Bot =====
         let invCandleChart = null;
@@ -4789,131 +4400,35 @@
                 : '<span style="color:var(--text-secondary);font-size:13px;">Инструменты не добавлены</span>';
         }
 
-        // ===== 1on1 статистика =====
-        let oo1Loaded = false;
+        // ===== OneOnOne — План по продажам =====
+        function updateOneOnOne() {
+            const md = getCurrentMonthData();
+            const salesPlan   = parseFloat(document.getElementById('ooSalesPlan').value)   || 0;
+            const salesActual = parseFloat(document.getElementById('ooSalesActual').value) || 0;
+            const dealsPlan   = parseInt(document.getElementById('ooDealsPlan').value)      || 0;
+            const dealsDone   = parseInt(document.getElementById('ooDealsDone').value)      || 0;
 
-        async function load1on1Stats() {
-            const elLoad = document.getElementById('oo-loading');
-            const elCfg  = document.getElementById('oo-not-configured');
-            const elErr  = document.getElementById('oo-error');
-            const elCont = document.getElementById('oo-content');
+            md.oneOnOneParams = { salesPlan, salesActual, dealsPlan, dealsDone };
 
-            elLoad.style.display = 'block';
-            elCfg.style.display = elErr.style.display = elCont.style.display = 'none';
+            const salesPct = salesPlan > 0 ? Math.round((salesActual / salesPlan) * 100) : 0;
+            document.getElementById('ooSalesValue').textContent    = formatCurrency(salesPlan);
+            document.getElementById('ooSalesProgress').style.width  = Math.min(salesPct, 100) + '%';
+            document.getElementById('ooSalesText').textContent      = `Факт: ${formatCurrency(salesActual)} (${salesPct}%)`;
 
-            try {
-                const res = await fetch('/api/1on1/stats');
-                const data = await res.json();
+            const dealsPct = dealsPlan > 0 ? Math.round((dealsDone / dealsPlan) * 100) : 0;
+            document.getElementById('ooDealsValue').textContent     = `${dealsDone}/${dealsPlan}`;
+            document.getElementById('ooDealsProgress').style.width   = Math.min(dealsPct, 100) + '%';
+            document.getElementById('ooDealsText').textContent       = `Закрыто: ${dealsDone} (${dealsPct}%)`;
 
-                elLoad.style.display = 'none';
+            document.getElementById('ooAvgCheck').textContent     = formatCurrency(dealsDone > 0 ? salesActual / dealsDone : 0);
+            document.getElementById('ooSalesPercent').textContent = salesPct + '%';
+            document.getElementById('ooSummaryActual').textContent = formatCurrency(salesActual);
+            document.getElementById('ooSummaryPlan').textContent   = formatCurrency(salesPlan);
 
-                if (data._not_configured) { elCfg.style.display = 'block'; return; }
-                if (!res.ok || data.error) {
-                    document.getElementById('oo-error-msg').textContent = data.error || 'Ошибка';
-                    elErr.style.display = 'block';
-                    return;
-                }
-
-                render1on1(data);
-                elCont.style.display = 'block';
-                document.getElementById('oo-last-updated').textContent =
-                    'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
-            } catch (e) {
-                elLoad.style.display = 'none';
-                document.getElementById('oo-error-msg').textContent = 'Сеть: ' + e.message;
-                elErr.style.display = 'block';
-            }
-        }
-
-        function render1on1(d) {
-            // Overview cards
-            const taskPct = d.total_tasks ? Math.round(d.tasks_done / d.total_tasks * 100) : 0;
-            document.getElementById('oo-overview').innerHTML = [
-                { label: 'Пользователи', value: d.total_users, sub: `${d.total_leads} лид · ${d.total_members} участник`, icon: '👤' },
-                { label: 'Команды',       value: d.total_teams,    sub: '',                                     icon: '' },
-                { label: 'Встречи',       value: d.total_meetings, sub: `за 30 дней: ${d.meetings_30d}`,        icon: '🤝' },
-                { label: 'Задачи',        value: `${d.tasks_done}/${d.total_tasks}`, sub: `выполнено ${taskPct}%`, icon: '' },
-                { label: 'Звонки',        value: d.total_calls,    sub: '',                                     icon: '📞' },
-                { label: 'Настроение',    value: d.mood?.overall_avg ? d.mood.overall_avg.toFixed(1) : '—', sub: '(avg score)', icon: '😊' },
-            ].map(c => `
-                <div class="stat-card">
-                    <div style="font-size:28px;margin-bottom:6px;">${c.icon}</div>
-                    <div class="stat-value">${c.value}</div>
-                    <div class="stat-label">${c.label}</div>
-                    ${c.sub ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">${escapeHtml(c.sub)}</div>` : ''}
-                </div>`).join('');
-
-            // Mood
-            if (d.mood && (d.mood.submissions_7d > 0 || d.mood.daily_trend?.length)) {
-                document.getElementById('oo-mood-section').style.display = '';
-                document.getElementById('oo-mood-cards').innerHTML = [
-                    { label: 'Avg всё время', value: d.mood.overall_avg?.toFixed(2) || '—' },
-                    { label: 'Avg 7 дней',    value: d.mood.avg_7d?.toFixed(2) || '—' },
-                    { label: 'Записей 7 дней',value: d.mood.submissions_7d },
-                ].map(c => `<div class="stat-card"><div class="stat-value">${escapeHtml(String(c.value))}</div><div class="stat-label">${c.label}</div></div>`).join('');
-
-                const trend = d.mood.daily_trend || [];
-                const maxScore = Math.max(...trend.map(t => t.avg), 0.1);
-                document.getElementById('oo-mood-trend').innerHTML = trend.map(t => {
-                    const h = Math.round((t.avg / maxScore) * 52);
-                    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-                        <div style="background:var(--primary);width:100%;height:${h}px;border-radius:4px 4px 0 0;min-height:4px;"></div>
-                        <span style="font-size:10px;color:var(--text-secondary);">${escapeHtml(t.date)}</span>
-                    </div>`;
-                }).join('');
-            }
-
-            // Teams
-            document.getElementById('oo-teams-list').innerHTML = d.teams?.length
-                ? `<table style="width:100%;border-collapse:collapse;font-size:14px;">
-                    <thead><tr style="border-bottom:2px solid var(--border);">
-                        <th style="text-align:left;padding:8px;">Команда</th>
-                        <th style="text-align:center;padding:8px;">Участники</th>
-                        <th style="text-align:center;padding:8px;">Встречи</th>
-                        <th style="text-align:left;padding:8px;">Последняя встреча</th>
-                    </tr></thead>
-                    <tbody>${d.teams.map(t => `
-                        <tr style="border-bottom:1px solid var(--border);">
-                            <td style="padding:10px 8px;font-weight:600;">${escapeHtml(t.name)}</td>
-                            <td style="padding:10px 8px;text-align:center;">${t.member_count}</td>
-                            <td style="padding:10px 8px;text-align:center;">${t.meetings_count}</td>
-                            <td style="padding:10px 8px;color:var(--text-secondary);">${t.last_meeting ? new Date(t.last_meeting).toLocaleDateString('ru-RU') : '—'}</td>
-                        </tr>`).join('')}
-                    </tbody></table>`
-                : '<p style="color:var(--text-secondary);padding:16px 0;">Нет команд</p>';
-
-            // Users
-            const inactive = (d.users || []).filter(u => u.inactive);
-            const badge = document.getElementById('oo-inactive-badge');
-            if (inactive.length) {
-                badge.style.display = '';
-                badge.textContent = `${inactive.length} неактивных`;
-            } else { badge.style.display = 'none'; }
-
-            document.getElementById('oo-users-list').innerHTML = d.users?.length
-                ? `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-                    <thead><tr style="border-bottom:2px solid var(--border);">
-                        <th style="text-align:left;padding:8px;">Имя</th>
-                        <th style="text-align:left;padding:8px;">Роль</th>
-                        <th style="text-align:center;padding:8px;">Встречи</th>
-                        <th style="text-align:center;padding:8px;">Задачи</th>
-                        <th style="text-align:left;padding:8px;">Последняя встреча</th>
-                        <th style="text-align:center;padding:8px;">Статус</th>
-                    </tr></thead>
-                    <tbody>${d.users.map(u => `
-                        <tr style="border-bottom:1px solid var(--border);${u.inactive ? 'opacity:0.6;' : ''}">
-                            <td style="padding:8px;font-weight:500;">${escapeHtml(u.name)}</td>
-                            <td style="padding:8px;color:var(--text-secondary);">${escapeHtml(u.role)}</td>
-                            <td style="padding:8px;text-align:center;">${u.meetings_count}</td>
-                            <td style="padding:8px;text-align:center;">${u.tasks_count}</td>
-                            <td style="padding:8px;color:var(--text-secondary);">${u.last_meeting ? new Date(u.last_meeting).toLocaleDateString('ru-RU') : '—'}</td>
-                            <td style="padding:8px;text-align:center;">${u.inactive
-                                ? '<span style="background:#fee2e2;color:var(--danger);padding:2px 8px;border-radius:12px;font-size:11px;">неактивен</span>'
-                                : '<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:12px;font-size:11px;">активен</span>'
-                            }</td>
-                        </tr>`).join('')}
-                    </tbody></table>`
-                : '<p style="color:var(--text-secondary);padding:16px 0;">Нет участников</p>';
+            saveToServer();
+            updateStats();
+            updateGoals();
+            updateExpenses();
         }
     </script>
 </body>
