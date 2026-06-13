@@ -3221,9 +3221,9 @@
             const totalMonthly = monthlyPerStudent * done;
 
             document.getElementById('schoolPlanValue').textContent = plan;
-            document.getElementById('schoolWeekly').textContent = formatCurrency(weeklyPerStudent);
-            document.getElementById('schoolMonthly').textContent = formatCurrency(monthlyPerStudent);
-            document.getElementById('schoolTotal').textContent = formatCurrency(totalMonthly);
+            document.getElementById('schoolWeekly').textContent = formatDual(weeklyPerStudent);
+            document.getElementById('schoolMonthly').textContent = formatDual(monthlyPerStudent);
+            document.getElementById('schoolTotal').textContent = formatDual(totalMonthly);
 
             const planPercent = plan > 0 ? Math.round((done / plan) * 100) : 0;
             const revenuePercent = revenueTarget > 0 ? Math.round((totalMonthly / revenueTarget) * 100) : 0;
@@ -3321,7 +3321,7 @@
                                 <span>Добавлен: ${new Date(proj.date).toLocaleDateString('ru-RU')}</span>
                             </div>
                         </div>
-                        <div class="project-check">${formatCurrency(proj.check)}</div>
+                        <div class="project-check">${formatDual(proj.check)}</div>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <button class="project-status-btn ${proj.status === 'Завершено' ? 'status-completed' : 'status-in-progress'}"
                                     onclick="toggleProjectStatus(${proj.id})"
@@ -3346,8 +3346,8 @@
             document.getElementById('projectsDoneText').textContent = `Выполнено: ${completedProjects} (${planProjects > 0 ? Math.round((completedProjects / planProjects) * 100) : 0}%)`;
             document.getElementById('projectsPlanProgress').style.width = (planProjects > 0 ? Math.round((completedProjects / planProjects) * 100) : 0) + '%';
 
-            document.getElementById('projectsAverageValue').textContent = formatCurrency(averageCheck);
-            document.getElementById('projectsTotal').textContent = formatCurrency(totalRevenue);
+            document.getElementById('projectsAverageValue').textContent = formatDual(averageCheck);
+            document.getElementById('projectsTotal').textContent = formatDual(totalRevenue);
 
             const completionPercent = planProjects > 0 ? Math.round((completedProjects / planProjects) * 100) : 0;
             const revenuePercent = revenueTarget > 0 ? Math.round((totalRevenue / revenueTarget) * 100) : 0;
@@ -3480,7 +3480,7 @@
                         <div class="expense-name">${escapeHtml(exp.name)}</div>
                         <div class="expense-category">${escapeHtml(exp.category)} • ${new Date(exp.date).toLocaleDateString('ru-RU')}</div>
                     </div>
-                    <div class="expense-amount">${formatCurrency(exp.amount)}</div>
+                    <div class="expense-amount">${formatDual(exp.amount)}</div>
                     <button class="btn btn-danger" onclick="deleteExpense(${exp.id})">✕</button>
                 </div>
             `).join('');
@@ -3498,11 +3498,11 @@
             const planTotal = planItems.reduce((sum, e) => sum + e.amount, 0);
             const monthBalance = getMonthlyBalance();
 
-            document.getElementById('totalExpenses').textContent = formatCurrency(factTotal);
-            document.getElementById('totalProfit').textContent = formatCurrency(monthBalance.balance);
-            document.getElementById('avgExpense').textContent = factItems.length > 0 ? formatCurrency(factTotal / factItems.length) : '0 ₽';
-            document.getElementById('totalPlanExpenses').textContent = formatCurrency(planTotal);
-            document.getElementById('planForecastExpenses').textContent = formatCurrency(factTotal + planTotal);
+            document.getElementById('totalExpenses').textContent = formatDual(factTotal);
+            document.getElementById('totalProfit').textContent = formatDual(monthBalance.balance);
+            document.getElementById('avgExpense').textContent = factItems.length > 0 ? formatDual(factTotal / factItems.length) : formatDual(0);
+            document.getElementById('totalPlanExpenses').textContent = formatDual(planTotal);
+            document.getElementById('planForecastExpenses').textContent = formatDual(factTotal + planTotal);
 
             updateStats();
             updateGoals();
@@ -3630,12 +3630,12 @@
                                     <button class="goal-move-btn" onclick="moveGoal(${goal.id},-1)" title="Выше" ${idx===0?'disabled':''}>▲</button>
                                     <button class="goal-move-btn" onclick="moveGoal(${goal.id},1)"  title="Ниже" ${idx===activeGoals.length-1?'disabled':''}>▼</button>
                                 </div>
-                                <div class="goal-price" style="color:${percent===100?'#10b981':'var(--primary)'};">${formatCurrency(goal.amount)}</div>
+                                <div class="goal-price" style="color:${percent===100?'#10b981':'var(--primary)'};">${formatDual(goal.amount)}</div>
                             </div>
                             <div class="goal-progress-section">
                                 <div class="progress-label">
                                     <span>Накоплено из баланса:</span>
-                                    <span class="progress-value">${formatCurrency(goal.displaySaved)} (${percent}%)</span>
+                                    <span class="progress-value">${formatDual(goal.displaySaved)} (${percent}%)</span>
                                 </div>
                                 <div class="goal-progress-bar">
                                     <div class="goal-progress-fill" style="width:${percent}%"></div>
@@ -3669,7 +3669,7 @@
                                             Выполнено: ${doneStr} • Дедлайн был: ${deadlineStr}
                                         </div>
                                     </div>
-                                    <div class="goal-price" style="color:#10b981;">${formatCurrency(goal.amount)}</div>
+                                    <div class="goal-price" style="color:#10b981;">${formatDual(goal.amount)}</div>
                                 </div>
                                 <div class="goal-actions">
                                     <button class="btn" style="background:var(--light);color:var(--text-primary);flex:1;" onclick="toggleGoalComplete(${goal.id})">↩ Вернуть в активные</button>
@@ -3680,14 +3680,14 @@
                 }
             }
 
-            document.getElementById('availableBalance').textContent  = formatCurrency(availableBalance);
-            document.getElementById('totalGoalsAmount').textContent   = formatCurrency(activeGoals.reduce((s,g) => s+g.amount, 0));
-            document.getElementById('totalSavedAmount').textContent   = formatCurrency(goalsWithProgress.reduce((s,g) => s+g.displaySaved, 0));
+            document.getElementById('availableBalance').textContent  = formatDual(availableBalance);
+            document.getElementById('totalGoalsAmount').textContent   = formatDual(activeGoals.reduce((s,g) => s+g.amount, 0));
+            document.getElementById('totalSavedAmount').textContent   = formatDual(goalsWithProgress.reduce((s,g) => s+g.displaySaved, 0));
 
             const cntEl = document.getElementById('completedGoalsCount');
             const totEl = document.getElementById('completedGoalsTotal');
             if (cntEl) cntEl.textContent = completedGoals.length;
-            if (totEl) totEl.textContent = formatCurrency(completedGoals.reduce((s,g) => s+g.amount, 0));
+            if (totEl) totEl.textContent = formatDual(completedGoals.reduce((s,g) => s+g.amount, 0));
         }
 
         function goalDragStart(e, id) {
@@ -3835,7 +3835,7 @@
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const value = context.parsed;
                                     const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${formatCurrency(value)} (${percent}%)`;
+                                    return `${formatDual(value)} (${percent}%)`;
                                 }
                             }
                         }
@@ -3928,7 +3928,7 @@
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const value = context.parsed;
                                     const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${formatCurrency(value)} (${percent}%)`;
+                                    return `${formatDual(value)} (${percent}%)`;
                                 }
                             }
                         }
@@ -3990,7 +3990,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: (context) => `${formatCurrency(context.parsed.y)}`
+                                label: (context) => `${formatDual(context.parsed.y)}`
                             }
                         }
                     },
@@ -4065,7 +4065,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: (context) => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                                label: (context) => `${context.dataset.label}: ${formatDual(context.parsed.y)}`
                             }
                         }
                     },
@@ -4102,10 +4102,10 @@
             const schoolMonthly = calcSchoolRevenue(selectedMonth);
             const projectsMonthly = calcProjectsRevenue(selectedMonth);
             const oneOnOneMonthly = calcOneOnOneRevenue(selectedMonth);
-            csv += 'Школа MRR,' + formatCurrency(schoolMonthly) + '\n';
-            csv += 'IT Проекты MRR,' + formatCurrency(projectsMonthly) + '\n';
-            csv += 'OneOnOne (Продажи) MRR,' + formatCurrency(oneOnOneMonthly) + '\n';
-            csv += 'Всего MRR,' + formatCurrency(schoolMonthly + projectsMonthly + oneOnOneMonthly) + '\n\n';
+            csv += 'Школа MRR,' + formatDual(schoolMonthly) + '\n';
+            csv += 'IT Проекты MRR,' + formatDual(projectsMonthly) + '\n';
+            csv += 'OneOnOne (Продажи) MRR,' + formatDual(oneOnOneMonthly) + '\n';
+            csv += 'Всего MRR,' + formatDual(schoolMonthly + projectsMonthly + oneOnOneMonthly) + '\n\n';
             
             // Расходы (фактические — плановые не входят в итоги)
             csv += '=== РАСХОДЫ (ФАКТИЧЕСКИЕ) ===\n';
@@ -4149,9 +4149,9 @@
             csv += '\n=== ИТОГИ ===\n';
             const totalIncome = schoolMonthly + projectsMonthly + oneOnOneMonthly;
             const profit = totalIncome - totalExpenses;
-            csv += 'Доход,' + formatCurrency(totalIncome) + '\n';
-            csv += 'Расходы,' + formatCurrency(totalExpenses) + '\n';
-            csv += 'Чистая прибыль,' + formatCurrency(profit) + '\n';
+            csv += 'Доход,' + formatDual(totalIncome) + '\n';
+            csv += 'Расходы,' + formatDual(totalExpenses) + '\n';
+            csv += 'Чистая прибыль,' + formatDual(profit) + '\n';
             
             // Скачивание
             const element = document.createElement('a');
@@ -4737,24 +4737,24 @@
                 planCount += (t.plan || 0); factCount += (t.fact || 0);
                 const pe = document.getElementById('ooRowPlan_' + t.id);
                 const fe = document.getElementById('ooRowFact_' + t.id);
-                if (pe) pe.textContent = formatCurrency(p);
-                if (fe) fe.textContent = formatCurrency(f);
+                if (pe) pe.textContent = formatDual(p);
+                if (fe) fe.textContent = formatDual(f);
             });
 
             const salesPct = planSum > 0 ? Math.round((factSum / planSum) * 100) : 0;
-            document.getElementById('ooSalesValue').textContent    = formatCurrency(planSum);
+            document.getElementById('ooSalesValue').textContent    = formatDual(planSum);
             document.getElementById('ooSalesProgress').style.width  = Math.min(salesPct, 100) + '%';
-            document.getElementById('ooSalesText').textContent      = `Факт: ${formatCurrency(factSum)} (${salesPct}%)`;
+            document.getElementById('ooSalesText').textContent      = `Факт: ${formatDual(factSum)} (${salesPct}%)`;
 
             const dealsPct = planCount > 0 ? Math.round((factCount / planCount) * 100) : 0;
             document.getElementById('ooDealsValue').textContent     = `${factCount}/${planCount}`;
             document.getElementById('ooDealsProgress').style.width   = Math.min(dealsPct, 100) + '%';
             document.getElementById('ooDealsText').textContent       = `Продано: ${factCount} (${dealsPct}%)`;
 
-            document.getElementById('ooAvgCheck').textContent     = formatCurrency(factCount > 0 ? factSum / factCount : 0);
+            document.getElementById('ooAvgCheck').textContent     = formatDual(factCount > 0 ? factSum / factCount : 0);
             document.getElementById('ooSalesPercent').textContent = salesPct + '%';
-            document.getElementById('ooSummaryActual').textContent = formatCurrency(factSum);
-            document.getElementById('ooSummaryPlan').textContent   = formatCurrency(planSum);
+            document.getElementById('ooSummaryActual').textContent = formatDual(factSum);
+            document.getElementById('ooSummaryPlan').textContent   = formatDual(planSum);
 
             updateStats();
             updateGoals();
