@@ -1546,114 +1546,215 @@
 
         <!-- РАСХОДЫ -->
         <div id="expenses" class="content">
-            <div class="expenses-section">
-                <h2 class="section-title">💸 Управление расходами</h2>
-                <div class="expense-controls">
-                    <div class="input-field">
-                        <label>Название расхода</label>
-                        <input type="text" id="expenseName" placeholder="Например: оплата сервера">
-                    </div>
-                    <div class="input-field">
-                        <label>Сумма (₽)</label>
-                        <input type="number" id="expenseAmount" placeholder="0">
-                    </div>
-                    <div class="input-field">
-                        <label>Категория</label>
-                        <select id="expenseCategory">
-                            <option>Зарплата</option>
-                            <option>Маркетинг</option>
-                            <option>Реклама</option>
-                            <option>Оборудование</option>
-                            <option>Интернет/Сервис</option>
-                            <option>Программное обеспечение</option>
-                            <option>Аренда</option>
-                            <option>Коммунальные услуги</option>
-                            <option>Образование</option>
-                            <option>Налоги</option>
-                            <option>Транспорт</option>
-                            <option>Питание</option>
-                            <option>Подписки</option>
-                            <option>Прочее</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="addExpense()">Добавить расход</button>
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="expTab('exp-fact', this)">Фактические</button>
+                <button class="sub-tab-btn" onclick="expTab('exp-plan', this)">Плановые</button>
             </div>
 
-            <div class="section">
-                <h2 class="section-title">📋 История расходов</h2>
-                <div class="expenses-list" id="expensesList">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <div>Расходов нет. Добавьте первый расход выше</div>
+            <!-- ФАКТИЧЕСКИЕ -->
+            <div id="exp-fact" class="sub-content active">
+                <div class="expenses-section">
+                    <h2 class="section-title">💸 Добавить фактический расход</h2>
+                    <div class="expense-controls">
+                        <div class="input-field">
+                            <label>Название расхода</label>
+                            <input type="text" id="expenseName" placeholder="Например: оплата сервера">
+                        </div>
+                        <div class="input-field">
+                            <label>Сумма (₽)</label>
+                            <input type="number" id="expenseAmount" placeholder="0">
+                        </div>
+                        <div class="input-field">
+                            <label>Категория</label>
+                            <select id="expenseCategory">
+                                <option>Зарплата</option>
+                                <option>Маркетинг</option>
+                                <option>Реклама</option>
+                                <option>Оборудование</option>
+                                <option>Интернет/Сервис</option>
+                                <option>Программное обеспечение</option>
+                                <option>Аренда</option>
+                                <option>Коммунальные услуги</option>
+                                <option>Образование</option>
+                                <option>Налоги</option>
+                                <option>Транспорт</option>
+                                <option>Питание</option>
+                                <option>Подписки</option>
+                                <option>Прочее</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addExpense('fact')">Добавить расход</button>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📋 История фактических расходов</h2>
+                    <div class="expenses-list" id="expensesListFact">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <div>Расходов нет. Добавьте первый расход выше</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Фактические расходы (месяц)</div>
+                        <div class="summary-value" id="totalExpenses">0 ₽</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Чистая прибыль</div>
+                        <div class="summary-value" id="totalProfit">0 ₽</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Средний расход</div>
+                        <div class="summary-value" id="avgExpense">0 ₽</div>
                     </div>
                 </div>
             </div>
 
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-label">Всего расходов</div>
-                    <div class="summary-value" id="totalExpenses">0 ₽</div>
+            <!-- ПЛАНОВЫЕ -->
+            <div id="exp-plan" class="sub-content">
+                <div class="expenses-section">
+                    <h2 class="section-title">🗓️ Добавить плановый расход</h2>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 14px;">
+                        Плановые расходы — это бюджет/прогноз. Они <b>не учитываются</b> в прибыли и общей логике.
+                    </p>
+                    <div class="expense-controls">
+                        <div class="input-field">
+                            <label>Название расхода</label>
+                            <input type="text" id="planExpenseName" placeholder="Например: новая техника">
+                        </div>
+                        <div class="input-field">
+                            <label>Сумма (₽)</label>
+                            <input type="number" id="planExpenseAmount" placeholder="0">
+                        </div>
+                        <div class="input-field">
+                            <label>Категория</label>
+                            <select id="planExpenseCategory">
+                                <option>Зарплата</option>
+                                <option>Маркетинг</option>
+                                <option>Реклама</option>
+                                <option>Оборудование</option>
+                                <option>Интернет/Сервис</option>
+                                <option>Программное обеспечение</option>
+                                <option>Аренда</option>
+                                <option>Коммунальные услуги</option>
+                                <option>Образование</option>
+                                <option>Налоги</option>
+                                <option>Транспорт</option>
+                                <option>Питание</option>
+                                <option>Подписки</option>
+                                <option>Прочее</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addExpense('plan')">Добавить плановый расход</button>
                 </div>
-                <div class="summary-card">
-                    <div class="summary-label">Расходы за месяц</div>
-                    <div class="summary-value" id="monthExpenses">0 ₽</div>
+
+                <div class="section">
+                    <h2 class="section-title">📋 Плановые расходы</h2>
+                    <div class="expenses-list" id="expensesListPlan">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <div>Плановых расходов нет. Добавьте первый выше</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="summary-card">
-                    <div class="summary-label">Чистая прибыль</div>
-                    <div class="summary-value" id="totalProfit">0 ₽</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-label">Средний расход</div>
-                    <div class="summary-value" id="avgExpense">0 ₽</div>
+
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Плановые расходы (месяц)</div>
+                        <div class="summary-value" id="totalPlanExpenses">0 ₽</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Факт + План (прогноз)</div>
+                        <div class="summary-value" id="planForecastExpenses">0 ₽</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- ЦЕЛИ -->
         <div id="goals" class="content">
-            <div class="expenses-section">
-                <h2 class="section-title">Добавить новую цель</h2>
-                <div class="expense-controls">
-                    <div class="input-field">
-                        <label>Название цели</label>
-                        <input type="text" id="goalName" placeholder="Например: Новый ноутбук">
-                    </div>
-                    <div class="input-field">
-                        <label>Стоимость (₽)</label>
-                        <input type="number" id="goalAmount" placeholder="0">
-                    </div>
-                    <div class="input-field">
-                        <label>Дедлайн</label>
-                        <input type="date" id="goalDeadline">
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="addGoal()">Добавить цель</button>
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="goalTab('goals-active', this)">Цели</button>
+                <button class="sub-tab-btn" onclick="goalTab('goals-done', this)">Выполненные</button>
             </div>
 
-            <div class="section">
-                <h2 class="section-title">📋 Мои цели</h2>
-                <div class="stats-grid" style="margin-bottom: 20px;">
-                    <div class="stat-card">
-                        <div class="stat-label">Остаток (Доход - Расходы)</div>
-                        <div class="stat-value" id="availableBalance">0 ₽</div>
-                        <div class="stat-subtext">Доступно для целей</div>
+            <!-- АКТИВНЫЕ ЦЕЛИ -->
+            <div id="goals-active" class="sub-content active">
+                <div class="expenses-section">
+                    <h2 class="section-title">Добавить новую цель</h2>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 14px;">
+                        Цели общие и не зависят от выбранного месяца — они постоянны.
+                    </p>
+                    <div class="expense-controls">
+                        <div class="input-field">
+                            <label>Название цели</label>
+                            <input type="text" id="goalName" placeholder="Например: Новый ноутбук">
+                        </div>
+                        <div class="input-field">
+                            <label>Стоимость (₽)</label>
+                            <input type="number" id="goalAmount" placeholder="0">
+                        </div>
+                        <div class="input-field">
+                            <label>Дедлайн</label>
+                            <input type="date" id="goalDeadline">
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Всего целей</div>
-                        <div class="stat-value" id="totalGoalsAmount">0 ₽</div>
-                        <div class="stat-subtext">Сумма всех целей</div>
+                    <button class="btn btn-primary" onclick="addGoal()">Добавить цель</button>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📋 Мои цели</h2>
+                    <div class="stats-grid" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-label">Накоплено всего (все месяцы)</div>
+                            <div class="stat-value" id="availableBalance">0 ₽</div>
+                            <div class="stat-subtext">Доступно для целей</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Активные цели</div>
+                            <div class="stat-value" id="totalGoalsAmount">0 ₽</div>
+                            <div class="stat-subtext">Сумма активных целей</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Распределено</div>
+                            <div class="stat-value" id="totalSavedAmount">0 ₽</div>
+                            <div class="stat-subtext">Накоплено по целям</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Накоплено</div>
-                        <div class="stat-value" id="totalSavedAmount">0 ₽</div>
-                        <div class="stat-subtext">Сумма накопленных целей</div>
+                    <div id="goalsList" class="goals-list">
+                        <div class="empty-state">
+                            <div class="empty-state-icon"></div>
+                            <div>Целей нет. Добавьте первую цель выше</div>
+                        </div>
                     </div>
                 </div>
-                <div id="goalsList" class="goals-list">
-                    <div class="empty-state">
-                        <div class="empty-state-icon"></div>
-                        <div>Целей нет. Добавьте первую цель выше</div>
+            </div>
+
+            <!-- ВЫПОЛНЕННЫЕ ЦЕЛИ -->
+            <div id="goals-done" class="sub-content">
+                <div class="section">
+                    <div class="stats-grid" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-label">Выполнено целей</div>
+                            <div class="stat-value" id="completedGoalsCount">0</div>
+                            <div class="stat-subtext">шт.</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Общая сумма выполненных</div>
+                            <div class="stat-value" id="completedGoalsTotal">0 ₽</div>
+                            <div class="stat-subtext">сумма всех целей</div>
+                        </div>
+                    </div>
+                    <h2 class="section-title">✅ Выполненные цели</h2>
+                    <div id="completedGoalsList" class="goals-list">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🏁</div>
+                            <div>Пока нет выполненных целей</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2297,6 +2398,7 @@
         let saveTimer = null;
         let notesData = [];
         let companiesData = []; // [{id, name, sphere, valuation, share, website, status, note}]
+        let goalsData = []; // глобальные цели (не зависят от месяца)
         let calendarEvents = {}; // { 'YYYY-MM-DD': [{id, type, title, time, desc}] }
         let calViewYear = new Date().getFullYear();
         let calViewMonth = new Date().getMonth(); // 0-based
@@ -2340,6 +2442,7 @@
                 const data = await res.json();
                 if (data.authenticated) {
                     await loadFromServer();
+                    await loadRate();
                     showDashboard();
                 } else {
                     showLogin();
@@ -2360,6 +2463,7 @@
                 });
                 if (res.ok) {
                     await loadFromServer();
+                    await loadRate();
                     showDashboard();
                 } else {
                     const data = await res.json();
@@ -2377,6 +2481,7 @@
             monthlyData = {};
             notesData = [];
             companiesData = [];
+            goalsData = [];
             editingNoteId = null;
             editingCompanyId = null;
             document.getElementById('loginPassword').value = '';
@@ -2408,13 +2513,35 @@
                     notesData = (raw.notes || []).map(n => ({ ...n, date: new Date(n.date) }));
                     companiesData = raw.companies || [];
                     calendarEvents = raw.calendarEvents || {};
+                    goalsData = deserializeGoals(raw);
                 } else {
                     monthlyData = deserializeMonthlyData(raw);
                     notesData = [];
                     companiesData = [];
                     calendarEvents = {};
+                    goalsData = deserializeGoals(raw);
                 }
             }
+        }
+
+        // Цели теперь глобальные. Если в данных нет глобального списка целей —
+        // переносим их из помесячных данных (обратная совместимость).
+        function deserializeGoals(raw) {
+            const norm = g => ({
+                ...g,
+                deadline: new Date(g.deadline),
+                date: g.date ? new Date(g.date) : new Date(),
+                completedDate: g.completedDate ? new Date(g.completedDate) : null,
+                completed: !!g.completed
+            });
+            if (Array.isArray(raw.goals)) {
+                return raw.goals.map(norm);
+            }
+            const migrated = [];
+            Object.values(monthlyData).forEach(md => {
+                (md.goals || []).forEach(g => migrated.push(norm(g)));
+            });
+            return migrated;
         }
 
         function deserializeMonthlyData(data) {
@@ -2444,7 +2571,7 @@
                     const res = await fetch('/api/data', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ _v2: true, months: monthlyData, notes: notesData, companies: companiesData, calendarEvents })
+                        body: JSON.stringify({ _v2: true, months: monthlyData, notes: notesData, companies: companiesData, goals: goalsData, calendarEvents })
                     });
                     if (statusEl) {
                         statusEl.textContent = res.ok ? 'Сохранено ✓' : 'Ошибка сохранения';
@@ -2802,8 +2929,8 @@
             const valEl   = document.getElementById('companiesTotalValuation');
             const myEl    = document.getElementById('companiesMyValue');
             if (countEl) countEl.textContent = companiesData.length;
-            if (valEl)   valEl.textContent   = formatCurrency(totalValuation);
-            if (myEl)    myEl.textContent    = formatCurrency(myValue);
+            if (valEl)   valEl.textContent   = formatDual(totalValuation);
+            if (myEl)    myEl.textContent    = formatDual(myValue);
 
             if (companiesData.length === 0) {
                 listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏢</div><div>Компаний нет. Добавьте первую выше</div></div>';
@@ -2853,7 +2980,7 @@
                         <div class="stats-grid" style="margin-top:12px;">
                             <div class="stat-card">
                                 <div class="stat-label">Оценка компании</div>
-                                <div class="stat-value">${formatCurrency(c.valuation || 0)}</div>
+                                <div class="stat-value" style="font-size:18px;">${formatDual(c.valuation || 0)}</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-label">Моя доля</div>
@@ -2861,7 +2988,7 @@
                             </div>
                             <div class="stat-card">
                                 <div class="stat-label">Моя доля (в деньгах)</div>
-                                <div class="stat-value">${formatCurrency(mine)}</div>
+                                <div class="stat-value" style="font-size:18px;">${formatDual(mine)}</div>
                             </div>
                         </div>
                         <div style="margin-top:10px;font-size:13px;color:var(--text-secondary);">Сайт / контакт: ${site}</div>
@@ -3021,6 +3148,7 @@
             if (btn) btn.classList.add('active');
 
             if (tabName === 'stats') setTimeout(() => initCharts(), 100);
+            if (tabName === 'expenses') updateExpenses();
             if (tabName === 'goals') updateGoals();
             if (tabName === 'companies') { updateNotes(); updateCompanies(); }
             if (tabName === 'oneonone') { renderTariffs(); updateOneOnOne(); }
@@ -3056,6 +3184,25 @@
                 currency: 'RUB',
                 minimumFractionDigits: 0
             }).format(value).replace('₽', '₽').trim();
+        }
+
+        // Курс доллара (рублей за 1 USD) и формат с двойной валютой "₽ / $"
+        let usdRate = 90;
+        async function loadRate() {
+            try {
+                const r = await fetch('/api/rate');
+                if (r.ok) {
+                    const d = await r.json();
+                    if (d && d.rate > 0) usdRate = d.rate;
+                }
+            } catch (e) { /* запасное значение */ }
+        }
+        function formatUSD(value) {
+            return '$' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(value || 0));
+        }
+        // Возвращает "X ₽ / $Y" по текущему курсу
+        function formatDual(rub) {
+            return formatCurrency(rub || 0) + ' / ' + formatUSD((rub || 0) / (usdRate || 1));
         }
 
         function updateSchool() {
@@ -3216,10 +3363,20 @@
             updateGoals();
         }
 
-        function addExpense() {
-            const name = document.getElementById('expenseName').value.trim();
-            const amount = parseFloat(document.getElementById('expenseAmount').value);
-            const category = document.getElementById('expenseCategory').value;
+        // Под-вкладки расходов (фактические / плановые)
+        function expTab(id, btn) {
+            document.querySelectorAll('#expenses .sub-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#expenses .sub-tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        function addExpense(type) {
+            const planned = type === 'plan';
+            const prefix  = planned ? 'planExpense' : 'expense';
+            const name = document.getElementById(prefix + 'Name').value.trim();
+            const amount = parseFloat(document.getElementById(prefix + 'Amount').value);
+            const category = document.getElementById(prefix + 'Category').value;
 
             if (!name || !amount || amount <= 0) {
                 alert('Заполните все поля корректно');
@@ -3232,11 +3389,12 @@
                 name,
                 amount,
                 category,
+                planned,
                 date: new Date()
             });
 
-            document.getElementById('expenseName').value = '';
-            document.getElementById('expenseAmount').value = '';
+            document.getElementById(prefix + 'Name').value = '';
+            document.getElementById(prefix + 'Amount').value = '';
             updateExpenses();
             saveToServer();
         }
@@ -3296,7 +3454,8 @@
             const schoolMonthly   = calcSchoolRevenue(selectedMonth);
             const projectsMonthly = calcProjectsRevenue(selectedMonth);
             const oneOnOneMonthly = calcOneOnOneRevenue(selectedMonth);
-            const monthExpenses   = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
+            // В общей логике учитываем только ФАКТИЧЕСКИЕ расходы (плановые игнорируем)
+            const monthExpenses   = monthData.expenses.filter(e => !e.planned).reduce((sum, e) => sum + e.amount, 0);
             const income = schoolMonthly + projectsMonthly + oneOnOneMonthly;
             return {
                 income,
@@ -3308,35 +3467,65 @@
             };
         }
 
+        function renderExpenseList(items, elId, emptyText) {
+            const listEl = document.getElementById(elId);
+            if (!listEl) return;
+            if (items.length === 0) {
+                listEl.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><div>${emptyText}</div></div>`;
+                return;
+            }
+            listEl.innerHTML = items.map(exp => `
+                <div class="expense-item">
+                    <div class="expense-info">
+                        <div class="expense-name">${escapeHtml(exp.name)}</div>
+                        <div class="expense-category">${escapeHtml(exp.category)} • ${new Date(exp.date).toLocaleDateString('ru-RU')}</div>
+                    </div>
+                    <div class="expense-amount">${formatCurrency(exp.amount)}</div>
+                    <button class="btn btn-danger" onclick="deleteExpense(${exp.id})">✕</button>
+                </div>
+            `).join('');
+        }
+
         function updateExpenses() {
             const monthData = getCurrentMonthData();
-            const listEl = document.getElementById('expensesList');
+            const factItems = monthData.expenses.filter(e => !e.planned);
+            const planItems = monthData.expenses.filter(e => e.planned);
 
-            if (monthData.expenses.length === 0) {
-                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div>Расходов нет. Добавьте первый расход выше</div></div>';
-            } else {
-                listEl.innerHTML = monthData.expenses.map(exp => `
-                    <div class="expense-item">
-                        <div class="expense-info">
-                            <div class="expense-name">${exp.name}</div>
-                            <div class="expense-category">${exp.category} • ${exp.date.toLocaleDateString('ru-RU')}</div>
-                        </div>
-                        <div class="expense-amount">${formatCurrency(exp.amount)}</div>
-                        <button class="btn btn-danger" onclick="deleteExpense(${exp.id})">✕</button>
-                    </div>
-                `).join('');
-            }
+            renderExpenseList(factItems, 'expensesListFact', 'Расходов нет. Добавьте первый расход выше');
+            renderExpenseList(planItems, 'expensesListPlan', 'Плановых расходов нет. Добавьте первый выше');
 
-            const total = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const factTotal = factItems.reduce((sum, e) => sum + e.amount, 0);
+            const planTotal = planItems.reduce((sum, e) => sum + e.amount, 0);
             const monthBalance = getMonthlyBalance();
 
-            document.getElementById('totalExpenses').textContent = formatCurrency(total);
-            document.getElementById('monthExpenses').textContent = formatCurrency(monthBalance.expenses);
+            document.getElementById('totalExpenses').textContent = formatCurrency(factTotal);
             document.getElementById('totalProfit').textContent = formatCurrency(monthBalance.balance);
-            document.getElementById('avgExpense').textContent = monthData.expenses.length > 0 ? formatCurrency(total / monthData.expenses.length) : '0 ₽';
+            document.getElementById('avgExpense').textContent = factItems.length > 0 ? formatCurrency(factTotal / factItems.length) : '0 ₽';
+            document.getElementById('totalPlanExpenses').textContent = formatCurrency(planTotal);
+            document.getElementById('planForecastExpenses').textContent = formatCurrency(factTotal + planTotal);
 
             updateStats();
             updateGoals();
+        }
+
+        // Под-вкладки целей (активные / выполненные)
+        function goalTab(id, btn) {
+            document.querySelectorAll('#goals .sub-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#goals .sub-tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        // Накоплено всего = сумма чистой прибыли (доход − фактические расходы) по всем месяцам
+        function calcTotalSavings() {
+            let total = 0;
+            Object.keys(monthlyData).forEach(monthKey => {
+                const md = monthlyData[monthKey];
+                const income = calcSchoolRevenue(monthKey) + calcProjectsRevenue(monthKey) + calcOneOnOneRevenue(monthKey);
+                const expenses = (md.expenses || []).filter(e => !e.planned).reduce((s, e) => s + (e.amount || 0), 0);
+                total += income - expenses;
+            });
+            return total;
         }
 
         function addGoal() {
@@ -3349,14 +3538,14 @@
                 return;
             }
 
-            const monthData = getCurrentMonthData();
-            monthData.goals.push({
+            goalsData.push({
                 id: Date.now(),
                 name,
                 amount,
                 deadline: new Date(deadline),
                 saved: 0,
                 completed: false,
+                completedDate: null,
                 date: new Date()
             });
 
@@ -3368,34 +3557,33 @@
         }
 
         function deleteGoal(id) {
-            const monthData = getCurrentMonthData();
-            const index = monthData.goals.findIndex(g => g.id === id);
+            const index = goalsData.findIndex(g => g.id === id);
             if (index > -1) {
-                monthData.goals.splice(index, 1);
+                goalsData.splice(index, 1);
                 updateGoals();
                 saveToServer();
             }
         }
 
         function toggleGoalComplete(id) {
-            const monthData = getCurrentMonthData();
-            const goal = monthData.goals.find(g => g.id === id);
+            const goal = goalsData.find(g => g.id === id);
             if (goal) {
                 goal.completed = !goal.completed;
+                goal.completedDate = goal.completed ? new Date() : null;
                 updateGoals();
                 saveToServer();
             }
         }
 
         function moveGoal(id, direction) {
-            const monthData = getCurrentMonthData();
-            const idx = monthData.goals.findIndex(g => g.id === id);
+            // Переставляем только среди активных целей
+            const active = goalsData.filter(g => !g.completed);
+            const idx = active.findIndex(g => g.id === id);
             if (idx < 0) return;
             const newIdx = idx + direction;
-            if (newIdx < 0 || newIdx >= monthData.goals.length) return;
-            const tmp = monthData.goals[idx];
-            monthData.goals[idx]    = monthData.goals[newIdx];
-            monthData.goals[newIdx] = tmp;
+            if (newIdx < 0 || newIdx >= active.length) return;
+            [active[idx], active[newIdx]] = [active[newIdx], active[idx]];
+            goalsData = [...active, ...goalsData.filter(g => g.completed)];
             saveToServer();
             updateGoals();
         }
@@ -3403,32 +3591,26 @@
         let _dragGoalId = null;
 
         function updateGoals() {
-            const monthData       = getCurrentMonthData();
-            const monthBalance    = getMonthlyBalance();
-            const availableBalance = Math.max(0, monthBalance.balance);
-            const goals           = monthData.goals; // порядок = приоритет
+            const availableBalance = Math.max(0, calcTotalSavings());
+            const activeGoals    = goalsData.filter(g => !g.completed); // порядок = приоритет
+            const completedGoals = goalsData.filter(g => g.completed);
 
-            // Распределяем баланс строго по порядку списка
+            // Распределяем накопленный баланс по активным целям строго по приоритету
             let tempBalance = availableBalance;
-            const goalsWithProgress = goals.map(goal => {
-                let displaySaved = 0;
-                if (goal.completed) {
-                    displaySaved = goal.amount;
-                } else {
-                    displaySaved = Math.min(tempBalance, goal.amount);
-                    tempBalance  = Math.max(0, tempBalance - displaySaved);
-                }
+            const goalsWithProgress = activeGoals.map(goal => {
+                const displaySaved = Math.min(tempBalance, goal.amount);
+                tempBalance = Math.max(0, tempBalance - displaySaved);
                 return { ...goal, displaySaved };
             });
 
             const listEl = document.getElementById('goalsList');
-            if (goals.length === 0) {
-                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><div>Целей нет. Добавьте первую цель выше</div></div>';
+            if (activeGoals.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><div>Активных целей нет. Добавьте первую цель выше</div></div>';
             } else {
                 listEl.innerHTML = goalsWithProgress.map((goal, idx) => {
                     const daysLeft  = Math.ceil((new Date(goal.deadline) - new Date()) / 86400000);
                     const percent   = goal.amount > 0 ? Math.min(100, Math.round((goal.displaySaved / goal.amount) * 100)) : 0;
-                    const isOverdue = daysLeft < 0 && !goal.completed;
+                    const isOverdue = daysLeft < 0;
                     return `
                         <div class="goal-card" draggable="true"
                             ondragstart="goalDragStart(event,${goal.id})"
@@ -3439,14 +3621,14 @@
                                 <span class="goal-drag-handle" title="Перетащи для изменения приоритета">⠿</span>
                                 <span class="goal-priority-badge">${idx + 1}</span>
                                 <div style="flex:1;">
-                                    <div class="goal-title">${goal.completed ? '✓ ' : ''}${escapeHtml(goal.name)}</div>
+                                    <div class="goal-title">${escapeHtml(goal.name)}</div>
                                     <div class="goal-deadline" style="color:${isOverdue ? 'var(--danger)' : 'var(--text-secondary)'}">
-                                        ${isOverdue ? 'Просрочено на ' + Math.abs(daysLeft) + ' дн.' : goal.completed ? 'Выполнено' : 'До дедлайна: ' + daysLeft + ' дн.'}
+                                        ${isOverdue ? 'Просрочено на ' + Math.abs(daysLeft) + ' дн.' : 'До дедлайна: ' + daysLeft + ' дн.'}
                                     </div>
                                 </div>
                                 <div class="goal-move-btns">
                                     <button class="goal-move-btn" onclick="moveGoal(${goal.id},-1)" title="Выше" ${idx===0?'disabled':''}>▲</button>
-                                    <button class="goal-move-btn" onclick="moveGoal(${goal.id},1)"  title="Ниже" ${idx===goals.length-1?'disabled':''}>▼</button>
+                                    <button class="goal-move-btn" onclick="moveGoal(${goal.id},1)"  title="Ниже" ${idx===activeGoals.length-1?'disabled':''}>▼</button>
                                 </div>
                                 <div class="goal-price" style="color:${percent===100?'#10b981':'var(--primary)'};">${formatCurrency(goal.amount)}</div>
                             </div>
@@ -3460,8 +3642,8 @@
                                 </div>
                             </div>
                             <div class="goal-actions">
-                                <button class="btn ${goal.completed?'btn-success':'btn-primary'}" onclick="toggleGoalComplete(${goal.id})" style="flex:1;">
-                                    ${goal.completed ? '✓ Готово' : '📌 Отметить готово'}
+                                <button class="btn btn-primary" onclick="toggleGoalComplete(${goal.id})" style="flex:1;">
+                                    📌 Отметить готово
                                 </button>
                                 <button class="btn btn-danger" onclick="deleteGoal(${goal.id})">✕ Удалить</button>
                             </div>
@@ -3469,9 +3651,43 @@
                 }).join('');
             }
 
+            // Выполненные цели
+            const doneEl = document.getElementById('completedGoalsList');
+            if (doneEl) {
+                if (completedGoals.length === 0) {
+                    doneEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏁</div><div>Пока нет выполненных целей</div></div>';
+                } else {
+                    doneEl.innerHTML = completedGoals.map(goal => {
+                        const doneStr = goal.completedDate ? new Date(goal.completedDate).toLocaleDateString('ru-RU') : '—';
+                        const deadlineStr = goal.deadline ? new Date(goal.deadline).toLocaleDateString('ru-RU') : '—';
+                        return `
+                            <div class="goal-card">
+                                <div class="goal-card-header-row">
+                                    <div style="flex:1;">
+                                        <div class="goal-title">✓ ${escapeHtml(goal.name)}</div>
+                                        <div class="goal-deadline" style="color:var(--text-secondary)">
+                                            Выполнено: ${doneStr} • Дедлайн был: ${deadlineStr}
+                                        </div>
+                                    </div>
+                                    <div class="goal-price" style="color:#10b981;">${formatCurrency(goal.amount)}</div>
+                                </div>
+                                <div class="goal-actions">
+                                    <button class="btn" style="background:var(--light);color:var(--text-primary);flex:1;" onclick="toggleGoalComplete(${goal.id})">↩ Вернуть в активные</button>
+                                    <button class="btn btn-danger" onclick="deleteGoal(${goal.id})">✕ Удалить</button>
+                                </div>
+                            </div>`;
+                    }).join('');
+                }
+            }
+
             document.getElementById('availableBalance').textContent  = formatCurrency(availableBalance);
-            document.getElementById('totalGoalsAmount').textContent   = formatCurrency(goals.reduce((s,g) => s+g.amount, 0));
+            document.getElementById('totalGoalsAmount').textContent   = formatCurrency(activeGoals.reduce((s,g) => s+g.amount, 0));
             document.getElementById('totalSavedAmount').textContent   = formatCurrency(goalsWithProgress.reduce((s,g) => s+g.displaySaved, 0));
+
+            const cntEl = document.getElementById('completedGoalsCount');
+            const totEl = document.getElementById('completedGoalsTotal');
+            if (cntEl) cntEl.textContent = completedGoals.length;
+            if (totEl) totEl.textContent = formatCurrency(completedGoals.reduce((s,g) => s+g.amount, 0));
         }
 
         function goalDragStart(e, id) {
@@ -3490,12 +3706,13 @@
             e.preventDefault();
             e.currentTarget.classList.remove('drag-over');
             if (_dragGoalId === null || _dragGoalId === targetId) return;
-            const monthData = getCurrentMonthData();
-            const fromIdx   = monthData.goals.findIndex(g => g.id === _dragGoalId);
-            const toIdx     = monthData.goals.findIndex(g => g.id === targetId);
+            const active = goalsData.filter(g => !g.completed);
+            const fromIdx = active.findIndex(g => g.id === _dragGoalId);
+            const toIdx   = active.findIndex(g => g.id === targetId);
             if (fromIdx < 0 || toIdx < 0) return;
-            const [item] = monthData.goals.splice(fromIdx, 1);
-            monthData.goals.splice(toIdx, 0, item);
+            const [item] = active.splice(fromIdx, 1);
+            active.splice(toIdx, 0, item);
+            goalsData = [...active, ...goalsData.filter(g => g.completed)];
             _dragGoalId = null;
             saveToServer();
             updateGoals();
@@ -3539,34 +3756,34 @@
 
             // Обновляем страницу
             document.getElementById('statSchoolStudents').textContent = `${schoolDone}/${schoolPlan}`;
-            document.getElementById('statSchoolMRR').textContent = formatCurrency(schoolMRR);
-            document.getElementById('statSchoolARR').textContent = formatCurrency(schoolARR);
-            document.getElementById('statSchoolValuation').textContent = formatCurrency(schoolValuation);
+            document.getElementById('statSchoolMRR').textContent = formatDual(schoolMRR);
+            document.getElementById('statSchoolARR').textContent = formatDual(schoolARR);
+            document.getElementById('statSchoolValuation').textContent = formatDual(schoolValuation);
             document.getElementById('statSchoolMRRPerf').textContent = schoolMRRPerf + '%';
-            document.getElementById('statSchoolMRRProgress').textContent = formatCurrency(schoolMRR) + ' / 500 000 ₽';
+            document.getElementById('statSchoolMRRProgress').textContent = formatDual(schoolMRR) + ' / 500 000 ₽';
             document.getElementById('statSchoolMRRBar').style.width = Math.min(schoolMRRPerf, 100) + '%';
 
             document.getElementById('statProjectsProjects').textContent = `${projectsDone}/${projectsPlan}`;
-            document.getElementById('statProjectsMRR').textContent = formatCurrency(projectsMRR);
-            document.getElementById('statProjectsARR').textContent = formatCurrency(projectsARR);
-            document.getElementById('statProjectsValuation').textContent = formatCurrency(projectsValuation);
+            document.getElementById('statProjectsMRR').textContent = formatDual(projectsMRR);
+            document.getElementById('statProjectsARR').textContent = formatDual(projectsARR);
+            document.getElementById('statProjectsValuation').textContent = formatDual(projectsValuation);
             document.getElementById('statProjectsMRRPerf').textContent = projectsMRRPerf + '%';
-            document.getElementById('statProjectsMRRProgress').textContent = formatCurrency(projectsMRR) + ' / 500 000 ₽';
+            document.getElementById('statProjectsMRRProgress').textContent = formatDual(projectsMRR) + ' / 500 000 ₽';
             document.getElementById('statProjectsMRRBar').style.width = Math.min(projectsMRRPerf, 100) + '%';
 
             document.getElementById('statOneOnOneDeals').textContent = `${ooDealsDone}/${ooDealsPlan}`;
-            document.getElementById('statOneOnOneMRR').textContent = formatCurrency(oneOnOneMRR);
-            document.getElementById('statOneOnOneARR').textContent = formatCurrency(oneOnOneARR);
-            document.getElementById('statOneOnOneValuation').textContent = formatCurrency(oneOnOneValuation);
+            document.getElementById('statOneOnOneMRR').textContent = formatDual(oneOnOneMRR);
+            document.getElementById('statOneOnOneARR').textContent = formatDual(oneOnOneARR);
+            document.getElementById('statOneOnOneValuation').textContent = formatDual(oneOnOneValuation);
             document.getElementById('statOneOnOneMRRPerf').textContent = oneOnOneMRRPerf + '%';
-            document.getElementById('statOneOnOneMRRProgress').textContent = formatCurrency(oneOnOneMRR) + ' / 1 000 000 ₽';
+            document.getElementById('statOneOnOneMRRProgress').textContent = formatDual(oneOnOneMRR) + ' / 1 000 000 ₽';
             document.getElementById('statOneOnOneMRRBar').style.width = Math.min(oneOnOneMRRPerf, 100) + '%';
 
-            document.getElementById('statTotalMRR').textContent = formatCurrency(totalMRR);
-            document.getElementById('statTotalARR').textContent = formatCurrency(totalARR);
-            document.getElementById('statTotalValuation').textContent = formatCurrency(totalValuation);
-            document.getElementById('statTotalExpenses').textContent = formatCurrency(monthBalance.expenses);
-            document.getElementById('statNetProfit').textContent = formatCurrency(monthBalance.balance);
+            document.getElementById('statTotalMRR').textContent = formatDual(totalMRR);
+            document.getElementById('statTotalARR').textContent = formatDual(totalARR);
+            document.getElementById('statTotalValuation').textContent = formatDual(totalValuation);
+            document.getElementById('statTotalExpenses').textContent = formatDual(monthBalance.expenses);
+            document.getElementById('statNetProfit').textContent = formatDual(monthBalance.balance);
         }
 
         function initCharts() {
@@ -3890,14 +4107,26 @@
             csv += 'OneOnOne (Продажи) MRR,' + formatCurrency(oneOnOneMonthly) + '\n';
             csv += 'Всего MRR,' + formatCurrency(schoolMonthly + projectsMonthly + oneOnOneMonthly) + '\n\n';
             
-            // Расходы
-            csv += '=== РАСХОДЫ ===\n';
+            // Расходы (фактические — плановые не входят в итоги)
+            csv += '=== РАСХОДЫ (ФАКТИЧЕСКИЕ) ===\n';
             csv += 'Название,Категория,Сумма\n';
-            monthData.expenses.forEach(exp => {
+            const factExpenses = monthData.expenses.filter(e => !e.planned);
+            factExpenses.forEach(exp => {
                 csv += '"' + exp.name + '","' + exp.category + '",' + exp.amount + '\n';
             });
-            const totalExpenses = monthData.expenses.reduce((sum, e) => sum + e.amount, 0);
-            csv += 'Всего расходов,,' + totalExpenses + '\n\n';
+            const totalExpenses = factExpenses.reduce((sum, e) => sum + e.amount, 0);
+            csv += 'Всего фактических расходов,,' + totalExpenses + '\n\n';
+
+            // Плановые расходы (справочно)
+            const planExpenses = monthData.expenses.filter(e => e.planned);
+            if (planExpenses.length) {
+                csv += '=== РАСХОДЫ (ПЛАНОВЫЕ, не в итогах) ===\n';
+                csv += 'Название,Категория,Сумма\n';
+                planExpenses.forEach(exp => {
+                    csv += '"' + exp.name + '","' + exp.category + '",' + exp.amount + '\n';
+                });
+                csv += 'Всего плановых расходов,,' + planExpenses.reduce((s, e) => s + e.amount, 0) + '\n\n';
+            }
             
             // Проекты
             csv += '=== ПРОЕКТЫ ===\n';
@@ -3909,11 +4138,11 @@
             const totalProjectsRevenue = completedProjects.reduce((sum, p) => sum + p.check, 0);
             csv += 'Завершено проектов,' + completedProjects.length + ',' + totalProjectsRevenue + '\n\n';
             
-            // Цели
+            // Цели (общие, не зависят от месяца)
             csv += '=== ЦЕЛИ ===\n';
             csv += 'Название,Статус,Сумма,Дедлайн\n';
-            monthData.goals.forEach(goal => {
-                csv += '"' + goal.name + '","' + (goal.completed ? 'Готово' : 'В процессе') + '",' + goal.amount + ',"' + goal.deadline.toLocaleDateString('ru-RU') + '"\n';
+            goalsData.forEach(goal => {
+                csv += '"' + goal.name + '","' + (goal.completed ? 'Готово' : 'В процессе') + '",' + goal.amount + ',"' + new Date(goal.deadline).toLocaleDateString('ru-RU') + '"\n';
             });
             
             // Прибыль

@@ -173,6 +173,26 @@ app.get('/api/storage/status', requireAuth, (req, res) => {
     res.json({ persistent: pgReady, type: pgReady ? 'postgresql' : 'file', db_url_set: !!process.env.DATABASE_URL });
 });
 
+// Курс доллара (RUB за 1 USD) — кэшируется на 1 час, есть запасное значение
+let rateCache = { value: Number(process.env.USD_RUB_FALLBACK) || 90, ts: 0 };
+app.get('/api/rate', requireAuth, async (req, res) => {
+    const ONE_HOUR = 60 * 60 * 1000;
+    if (Date.now() - rateCache.ts < ONE_HOUR && rateCache.ts > 0) {
+        return res.json({ rate: rateCache.value, cached: true });
+    }
+    try {
+        const r = await fetch('https://www.cbr-xml-daily.ru/daily_json.js', { signal: AbortSignal.timeout(8000) });
+        const d = await r.json();
+        const v = d && d.Valute && d.Valute.USD && d.Valute.USD.Value;
+        if (typeof v === 'number' && v > 0) {
+            rateCache = { value: v, ts: Date.now() };
+        }
+    } catch (e) {
+        // оставляем предыдущее/запасное значение
+    }
+    res.json({ rate: rateCache.value, cached: false });
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
