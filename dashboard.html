@@ -1359,6 +1359,7 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('integro', this)">Интегро</button>
             <button class="tab-btn" onclick="switchTab('oneonone', this)">OneOnOne</button>
+            <button class="tab-btn" onclick="switchTab('income', this)">Доходы</button>
             <button class="tab-btn" onclick="switchTab('expenses', this)">Расходы</button>
             <button class="tab-btn" onclick="switchTab('stats', this)">Статистика</button>
             <button class="tab-btn" onclick="switchTab('companies', this)">Мои Компании</button>
@@ -1668,8 +1669,12 @@
                         <div class="summary-value" id="totalPlanExpenses">0 ₽</div>
                     </div>
                     <div class="summary-card">
-                        <div class="summary-label">Факт + План (прогноз)</div>
-                        <div class="summary-value" id="planForecastExpenses">0 ₽</div>
+                        <div class="summary-label">Разница (план − факт)</div>
+                        <div class="summary-value" id="planVsFact">0 ₽</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Можно скопить</div>
+                        <div class="summary-value" id="canSave">0 ₽</div>
                     </div>
                 </div>
             </div>
@@ -1763,6 +1768,27 @@
         <!-- СТАТИСТИКА -->
         <div id="stats" class="content">
             <div class="section">
+                <h2 class="section-title">💰 Доходы и расходы</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-left:4px solid #22c55e;">
+                        <div class="stat-label">Доходы (всего)</div>
+                        <div class="stat-value" id="statIncomeTotal" style="color:#22c55e;">0 ₽</div>
+                        <div class="stat-subtext">все источники</div>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid #ef4444;">
+                        <div class="stat-label">Расходы (факт)</div>
+                        <div class="stat-value" id="statExpensesTotal" style="color:#ef4444;">0 ₽</div>
+                        <div class="stat-subtext">без плановых</div>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid #a855f7;">
+                        <div class="stat-label">Доходы − Расходы</div>
+                        <div class="stat-value" id="statIncomeMinusExpenses" style="color:#a855f7;">0 ₽</div>
+                        <div class="stat-subtext">чистый результат месяца</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
                 <h2 class="section-title">Динамика выручки</h2>
                 <div class="charts-grid">
                     <div class="chart-container">
@@ -1803,8 +1829,8 @@
             <div class="section">
                 <h2 class="section-title">Метрики по направлениям</h2>
                 <div class="stats-comparison">
-                    <div class="comparison-card">
-                        <div class="comparison-title">Школа</div>
+                    <div class="comparison-card" style="border-left:4px solid #3b82f6;">
+                        <div class="comparison-title" style="color:#3b82f6;">🏫 Школа</div>
                         <div class="comparison-row">
                             <span class="comparison-label">Студентов:</span>
                             <span class="comparison-value" id="statSchoolStudents">0/0</span>
@@ -1840,8 +1866,8 @@
                         </div>
                     </div>
 
-                    <div class="comparison-card">
-                        <div class="comparison-title">💻 IT Проекты</div>
+                    <div class="comparison-card" style="border-left:4px solid #fbbf24;">
+                        <div class="comparison-title" style="color:#fbbf24;">💻 IT Проекты</div>
                         <div class="comparison-row">
                             <span class="comparison-label">Проектов:</span>
                             <span class="comparison-value" id="statProjectsProjects">0/0</span>
@@ -1877,8 +1903,8 @@
                         </div>
                     </div>
 
-                    <div class="comparison-card">
-                        <div class="comparison-title">📈 OneOnOne (Продажи)</div>
+                    <div class="comparison-card" style="border-left:4px solid #10b981;">
+                        <div class="comparison-title" style="color:#10b981;">📈 OneOnOne (Продажи)</div>
                         <div class="comparison-row">
                             <span class="comparison-label">Сделки:</span>
                             <span class="comparison-value" id="statOneOnOneDeals">0/0</span>
@@ -1914,8 +1940,8 @@
                         </div>
                     </div>
 
-                    <div class="comparison-card">
-                        <div class="comparison-title">💳 Финансы (Всего)</div>
+                    <div class="comparison-card" style="border-left:4px solid #a855f7;">
+                        <div class="comparison-title" style="color:#a855f7;">💳 Финансы (Всего)</div>
                         <div class="comparison-row">
                             <span class="comparison-label">MRR (месячно):</span>
                             <span class="comparison-value" id="statTotalMRR">0 ₽</span>
@@ -2000,6 +2026,55 @@
                 <div class="summary-card">
                     <div class="summary-label">🎯 План продаж</div>
                     <div class="summary-value" id="ooSummaryPlan">0 ₽</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ДОХОДЫ -->
+        <div id="income" class="content">
+            <div class="section">
+                <h2 class="section-title">💰 Доходы за месяц (все источники)</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-left:4px solid #3b82f6;">
+                        <div class="stat-label">Школа (MRR)</div>
+                        <div class="stat-value" id="incSchool">0 ₽</div>
+                        <div class="stat-subtext">Интегро · Школа</div>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid #fbbf24;">
+                        <div class="stat-label">IT Проекты</div>
+                        <div class="stat-value" id="incProjects">0 ₽</div>
+                        <div class="stat-subtext">завершённые проекты</div>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid #10b981;">
+                        <div class="stat-label">OneOnOne (Продажи)</div>
+                        <div class="stat-value" id="incOneOnOne">0 ₽</div>
+                        <div class="stat-subtext">факт продаж по тарифам</div>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid #a855f7;">
+                        <div class="stat-label">Итого доход</div>
+                        <div class="stat-value" id="incTotal">0 ₽</div>
+                        <div class="stat-subtext">все источники</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">📊 Структура доходов</h2>
+                <div id="incomeBreakdown"></div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">💰 Доход (месяц)</div>
+                    <div class="summary-value" id="incSummaryTotal">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">💸 Расходы (факт)</div>
+                    <div class="summary-value" id="incSummaryExpenses">0 ₽</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">📈 Доходы − Расходы</div>
+                    <div class="summary-value" id="incSummaryNet">0 ₽</div>
                 </div>
             </div>
         </div>
@@ -2429,6 +2504,7 @@
         function refreshActiveTab(tabName) {
             if (tabName === 'integro')         { updateSchool(); updateProjects(); }
             else if (tabName === 'expenses')    updateExpenses();
+            else if (tabName === 'income')      updateIncome();
             else if (tabName === 'goals')       updateGoals();
             else if (tabName === 'stats')       updateStats();
             else if (tabName === 'oneonone')    { renderTariffs(); updateOneOnOne(); }
@@ -3031,6 +3107,7 @@
             updateExpenses();
             renderTariffs();
             updateOneOnOne();
+            updateIncome();
             updateGoals();
             updateStats();
             // Перерисовываем графики, если открыта вкладка статистики
@@ -3149,12 +3226,13 @@
 
             if (tabName === 'stats') setTimeout(() => initCharts(), 100);
             if (tabName === 'expenses') updateExpenses();
+            if (tabName === 'income') updateIncome();
             if (tabName === 'goals') updateGoals();
             if (tabName === 'companies') { updateNotes(); updateCompanies(); }
             if (tabName === 'oneonone') { renderTariffs(); updateOneOnOne(); }
             if (tabName === 'calendar') { calRenderGrid(); calRenderSide(); }
             if (tabName === 'investments') { invLoadAll(); startInvPolling(); }
-            else if (['integro','expenses','goals','stats','oneonone','companies','calendar'].includes(tabName)) startDataPolling(tabName);
+            else if (['integro','expenses','income','goals','stats','oneonone','companies','calendar'].includes(tabName)) startDataPolling(tabName);
             else stopAllPolling();
         }
 
@@ -3502,10 +3580,55 @@
             document.getElementById('totalProfit').textContent = formatDual(monthBalance.balance);
             document.getElementById('avgExpense').textContent = factItems.length > 0 ? formatDual(factTotal / factItems.length) : formatDual(0);
             document.getElementById('totalPlanExpenses').textContent = formatDual(planTotal);
-            document.getElementById('planForecastExpenses').textContent = formatDual(factTotal + planTotal);
+            document.getElementById('planVsFact').textContent = formatDual(planTotal - factTotal);
+            document.getElementById('canSave').textContent = formatDual(monthBalance.income - factTotal - planTotal);
 
             updateStats();
             updateGoals();
+            updateIncome();
+        }
+
+        // ===== Доходы (сводка всех источников) =====
+        function updateIncome() {
+            const school   = calcSchoolRevenue(selectedMonth);
+            const projects = calcProjectsRevenue(selectedMonth);
+            const oneonone = calcOneOnOneRevenue(selectedMonth);
+            const total    = school + projects + oneonone;
+            const bal      = getMonthlyBalance();
+
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = formatDual(v); };
+            set('incSchool', school);
+            set('incProjects', projects);
+            set('incOneOnOne', oneonone);
+            set('incTotal', total);
+            set('incSummaryTotal', bal.income);
+            set('incSummaryExpenses', bal.expenses);
+            set('incSummaryNet', bal.balance);
+
+            const el = document.getElementById('incomeBreakdown');
+            if (!el) return;
+            const rows = [
+                { name: 'Школа',                v: school,   c: '#3b82f6' },
+                { name: 'IT Проекты',           v: projects, c: '#fbbf24' },
+                { name: 'OneOnOne (Продажи)',   v: oneonone, c: '#10b981' },
+            ];
+            if (total <= 0) {
+                el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div>Доходов за этот месяц пока нет</div></div>';
+                return;
+            }
+            el.innerHTML = rows.map(r => {
+                const pct = total > 0 ? Math.round((r.v / total) * 100) : 0;
+                return `
+                    <div style="margin-bottom:14px;">
+                        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;">
+                            <span style="color:var(--text-primary);font-weight:600;">${r.name}</span>
+                            <span style="color:var(--text-secondary);">${formatDual(r.v)} • ${pct}%</span>
+                        </div>
+                        <div style="height:12px;background:var(--light);border-radius:6px;overflow:hidden;">
+                            <div style="height:100%;width:${pct}%;background:${r.c};border-radius:6px;"></div>
+                        </div>
+                    </div>`;
+            }).join('');
         }
 
         // Под-вкладки целей (активные / выполненные)
@@ -3784,9 +3907,19 @@
             document.getElementById('statTotalValuation').textContent = formatDual(totalValuation);
             document.getElementById('statTotalExpenses').textContent = formatDual(monthBalance.expenses);
             document.getElementById('statNetProfit').textContent = formatDual(monthBalance.balance);
+
+            // Доходы / Расходы / Доходы − Расходы
+            document.getElementById('statIncomeTotal').textContent = formatDual(monthBalance.income);
+            document.getElementById('statExpensesTotal').textContent = formatDual(monthBalance.expenses);
+            document.getElementById('statIncomeMinusExpenses').textContent = formatDual(monthBalance.income - monthBalance.expenses);
         }
 
         function initCharts() {
+            // Светлый текст и слабая сетка для читаемости на тёмной теме
+            if (window.Chart) {
+                Chart.defaults.color = '#e8eaf2';
+                Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+            }
             const monthData = getCurrentMonthData();
             const schoolMonthly = calcSchoolRevenue(selectedMonth);
             const projectsMonthly = calcProjectsRevenue(selectedMonth);
@@ -3905,8 +4038,8 @@
                     labels: Object.keys(categoryTotals).length > 0 ? Object.keys(categoryTotals) : ['Нет расходов'],
                     datasets: [{
                         data: Object.values(categoryTotals).length > 0 ? Object.values(categoryTotals) : [1],
-                        backgroundColor: ['#c9a84c', '#a67c3a', '#d4b96a', '#8a6430', '#f0ddb0'],
-                        borderColor: '#ffffff',
+                        backgroundColor: ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#14b8a6', '#8b5cf6', '#eab308', '#10b981', '#64748b'],
+                        borderColor: '#0b0d14',
                         borderWidth: 3
                     }]
                 },
@@ -3960,19 +4093,17 @@
                         },
                         {
                             label: 'Расходы',
-                            data: [
-                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0,
-                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0,
-                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0,
-                                monthData.expenses.length > 0 ? monthData.expenses.reduce((sum, e) => sum + e.amount, 0) / 4 : 0
-                            ],
-                            borderColor: '#c9a84c',
-                            backgroundColor: 'rgba(201, 168, 76, 0.1)',
+                            data: (() => {
+                                const factExp = monthData.expenses.filter(e => !e.planned).reduce((sum, e) => sum + e.amount, 0) / 4;
+                                return [factExp, factExp, factExp, factExp];
+                            })(),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.12)',
                             borderWidth: 3,
                             fill: true,
                             tension: 0.4,
                             pointRadius: 6,
-                            pointBackgroundColor: '#c9a84c'
+                            pointBackgroundColor: '#ef4444'
                         }
                     ]
                 },
