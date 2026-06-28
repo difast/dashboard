@@ -2480,6 +2480,7 @@
         let calSelectedDate = null;
         let editingNoteId = null;
         let editingCompanyId = null;
+        let editingGoalId = null;
         let invPollInterval  = null;
         let dataPollInterval = null;
         let activePollTab    = null;
@@ -2560,6 +2561,7 @@
             goalsData = [];
             editingNoteId = null;
             editingCompanyId = null;
+            editingGoalId = null;
             document.getElementById('loginPassword').value = '';
             document.getElementById('loginError').textContent = '';
             showLogin();
@@ -3698,6 +3700,34 @@
             }
         }
 
+        function editGoal(id) {
+            editingGoalId = id;
+            updateGoals();
+        }
+
+        function cancelEditGoal() {
+            editingGoalId = null;
+            updateGoals();
+        }
+
+        function saveGoalEdit(id) {
+            const goal = goalsData.find(g => g.id === id);
+            if (!goal) return;
+            const name = document.getElementById('editGoalName_' + id).value.trim();
+            const amount = parseFloat(document.getElementById('editGoalAmount_' + id).value);
+            const deadline = document.getElementById('editGoalDeadline_' + id).value;
+            if (!name || !amount || amount <= 0 || !deadline) {
+                alert('Заполните все поля корректно');
+                return;
+            }
+            goal.name = name;
+            goal.amount = amount;
+            goal.deadline = new Date(deadline);
+            editingGoalId = null;
+            saveToServer();
+            updateGoals();
+        }
+
         function moveGoal(id, direction) {
             // Переставляем только среди активных целей
             const active = goalsData.filter(g => !g.completed);
@@ -3734,6 +3764,23 @@
                     const daysLeft  = Math.ceil((new Date(goal.deadline) - new Date()) / 86400000);
                     const percent   = goal.amount > 0 ? Math.min(100, Math.round((goal.displaySaved / goal.amount) * 100)) : 0;
                     const isOverdue = daysLeft < 0;
+                    // Режим редактирования
+                    if (goal.id === editingGoalId) {
+                        const dl = goal.deadline ? new Date(goal.deadline).toISOString().split('T')[0] : '';
+                        const inp = 'width:100%;padding:9px 10px;border:2px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--light);';
+                        return `
+                            <div class="goal-card" style="border:2px solid var(--primary);">
+                                <div class="input-grid">
+                                    <div class="input-field"><label>Название цели</label><input type="text" id="editGoalName_${goal.id}" value="${escapeHtml(goal.name || '')}" style="${inp}"></div>
+                                    <div class="input-field"><label>Стоимость (₽)</label><input type="number" id="editGoalAmount_${goal.id}" value="${goal.amount || 0}" style="${inp}"></div>
+                                    <div class="input-field"><label>Дедлайн</label><input type="date" id="editGoalDeadline_${goal.id}" value="${dl}" style="${inp}"></div>
+                                </div>
+                                <div class="goal-actions" style="margin-top:12px;">
+                                    <button class="btn btn-primary" onclick="saveGoalEdit(${goal.id})" style="flex:1;">✓ Сохранить</button>
+                                    <button class="btn" style="background:var(--light);color:var(--text-secondary);" onclick="cancelEditGoal()">Отмена</button>
+                                </div>
+                            </div>`;
+                    }
                     return `
                         <div class="goal-card" draggable="true"
                             ondragstart="goalDragStart(event,${goal.id})"
@@ -3768,6 +3815,7 @@
                                 <button class="btn btn-primary" onclick="toggleGoalComplete(${goal.id})" style="flex:1;">
                                     📌 Отметить готово
                                 </button>
+                                <button class="btn" style="background:var(--light);color:var(--text-primary);" onclick="editGoal(${goal.id})">✎ Изменить</button>
                                 <button class="btn btn-danger" onclick="deleteGoal(${goal.id})">✕ Удалить</button>
                             </div>
                         </div>`;
